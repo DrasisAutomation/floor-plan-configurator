@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script src="./login/firebase-config.js"></script>
+
+    <script src="./scripts/auth-check.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor Plan Selection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2533, #0d141c);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+
+        .logo p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .selection-cards {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 40px 30px;
+            width: 300px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(52, 152, 219, 0.5);
+        }
+
+        .card-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .upload-area {
+            margin-top: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .upload-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .upload-box:hover {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+
+        .upload-box p {
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            max-width: 500px;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .back-link {
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .selection-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 350px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>Home Automation Configurator</h1>
+            <p>Design and configure your smart home layout</p>
+        </div>
+
+        <div class="selection-cards">
+            <div class="card" id="newPlanCard">
+                <div class="card-icon">🏠</div>
+                <h2>Create New Plan</h2>
+                <p>Start with a blank canvas and design your floor plan from scratch using our intuitive tools.</p>
+                <button class="btn" id="newPlanBtn">Get Started</button>
+            </div>
+
+            <div class="card" id="existingPlanCard">
+                <div class="card-icon">📁</div>
+                <h2>Use Existing Plan</h2>
+                <p>Upload an existing floor plan image and add your automation products directly to it.</p>
+                <button class="btn" id="existingPlanBtn">Upload Plan</button>
+            </div>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-icon">📤</div>
+                <p>Drag & drop your floor plan image here</p>
+                <p class="upload-hint">or click to browse files</p>
+                <p class="upload-hint">Supported formats: JPG, PNG, GIF</p>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <div class="preview-container" id="previewContainer">
+                <img class="preview-image" id="previewImage" src="" alt="Floor plan preview">
+                <div class="action-buttons">
+                    <button class="btn" id="usePlanBtn">Use This Plan</button>
+                    <button class="btn btn-secondary" id="changePlanBtn">Change Image</button>
+                </div>
+            </div>
+        </div>
+
+        <a href="#" class="back-link" id="backLink" style="display: none;">
+            <span>←</span> Back to selection
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const newPlanCard = document.getElementById('newPlanCard');
+            const existingPlanCard = document.getElementById('existingPlanCard');
+            const newPlanBtn = document.getElementById('newPlanBtn');
+            const existingPlanBtn = document.getElementById('existingPlanBtn');
+            const uploadArea = document.getElementById('uploadArea');
+            const uploadBox = document.getElementById('uploadBox');
+            const fileInput = document.getElementById('fileInput');
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+            const usePlanBtn = document.getElementById('usePlanBtn');
+            const changePlanBtn = document.getElementById('changePlanBtn');
+            const backLink = document.getElementById('backLink');
+            const selectionCards = document.querySelector('.selection-cards');
+
+            // New Plan - redirect to index.html
+            newPlanBtn.addEventListener('click', function () {
+                window.location.href = 'floorplan.html';
+            });
+
+            // Existing Plan - show upload area
+            existingPlanBtn.addEventListener('click', function () {
+                selectionCards.style.display = 'none';
+                uploadArea.style.display = 'flex';
+                backLink.style.display = 'inline-flex';
+            });
+
+            // Back to selection
+            backLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                selectionCards.style.display = 'flex';
+                uploadArea.style.display = 'none';
+                previewContainer.style.display = 'none';
+                backLink.style.display = 'none';
+            });
+
+            // Upload box click
+            uploadBox.addEventListener('click', function () {
+                fileInput.click();
+            });
+
+            // File input change
+            fileInput.addEventListener('change', function (e) {
+                if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+
+                    // Check if file is an image
+                    if (!file.type.match('image.*')) {
+                        alert('Please select an image file (JPG, PNG, GIF)');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                        uploadBox.style.display = 'none';
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Drag and drop functionality
+            uploadBox.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                uploadBox.style.borderColor = '#3498db';
+                uploadBox.style.background = 'rgba(52, 152, 219, 0.1)';
+            });
+
+            uploadBox.addEventListener('dragleave', function () {
+                uploadBox.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                uploadBox.style.background = 'rgba(255, 255, 255, 0.05)';
+            });
+
+            uploadBox.addEventListener('drop', function (e) {
+                e.preventDefault();
+                uploadBox.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                uploadBox.style.background = 'rgba(255, 255, 255, 0.05)';
+
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    const file = e.dataTransfer.files[0];
+
+                    // Check if file is an image
+                    if (!file.type.match('image.*')) {
+                        alert('Please select an image file (JPG, PNG, GIF)');
+                        return;
+                    }
+
+                    fileInput.files = e.dataTransfer.files;
+
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                        uploadBox.style.display = 'none';
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Use this plan button
+            usePlanBtn.addEventListener('click', function () {
+                // Store the image in sessionStorage for use in panel.html
+                sessionStorage.setItem('uploadedFloorPlan', previewImage.src);
+
+                // Redirect to panel.html
+                window.location.href = 'panel.html';
+            });
+
+            // Change image button
+            changePlanBtn.addEventListener('click', function () {
+                previewContainer.style.display = 'none';
+                uploadBox.style.display = 'block';
+                fileInput.value = '';
+            });
+        });
+    </script>
+</body>
+
+</html>

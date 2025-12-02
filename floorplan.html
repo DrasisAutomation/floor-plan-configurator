@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Home Floor Planner</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script src="./login/firebase-config.js"></script>
+
+    <script src="./scripts/auth-check.js"></script>
+</head>
+
+<body>
+    <div id="device-warning">
+        <div class="warning-box">
+            <div class="warning-icon">⚠️</div>
+            <h2>Please Use a Laptop or Desktop</h2>
+            <p>This 2D Floor Planner works only on larger screens.</p>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div class="top-bar">
+            <div class="app-title">
+                <h1>2D Home Floor Planner</h1>
+            </div>
+            <div class="controls">
+                <button class="control-btn" id="new-plan">New Plan</button>
+                <button class="control-btn" id="save-plan">Save Plan</button>
+                <button class="control-btn" id="load-plan">Load Plan</button>
+                <button class="control-btn" id="download-json">Download JSON</button>
+                <button class="control-btn" id="export-png">Export PNG</button>
+                <button class="control-btn" id="undo-btn">Undo</button>
+                <button class="control-btn" id="redo-btn">Redo</button>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoom-out">-</button>
+                    <span id="zoom-level">100%</span>
+                    <button class="zoom-btn" id="zoom-in">+</button>
+                    <button class="control-btn" id="reset-view">Reset View</button>
+                    <!-- Add this button in the top-bar controls section after existing buttons -->
+<button class="control-btn" id="export-to-configurator">EXPORT TO CONFIGURATOR</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <button class="panel-toggle" id="toggle-toolbox">Toggle Toolbox</button>
+            <div class="toolbox" id="toolbox">
+                <div class="tool-section">
+                    <h3>Drawing Tools</h3>
+                    <button class="tool-btn active" id="select-tool">
+                        <i>↔</i> Select
+                    </button>
+                    <button class="tool-btn" id="wall-tool">
+                        <i>📏</i> Draw Wall
+                    </button>
+                    <button class="tool-btn" id="pan-tool">
+                        <i>✋</i> Pan
+                    </button>
+                    <button class="tool-btn" id="measure-tool">
+                        <i>📐</i> Measure
+                    </button>
+
+                    <div class="property-group">
+                        <label class="property-label" style="color: white;">Wall Thickness</label>
+                        <select id="wall-thickness" class="property-input">
+                            <option value="3">Thin (3px)</option>
+                            <option value="5" selected>Normal (5px)</option>
+                            <option value="8">Thick (8px)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Furniture</h3>
+                    <div class="furniture-item" data-type="door">
+                        <div class="furniture-icon">
+                            <img src="images/furniture/2.png" alt="Door"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;">D</span>
+                        </div>
+                        <span>Door</span>
+                    </div>
+                    <div class="furniture-item" data-type="window">
+                        <div class="furniture-icon">
+                            <img src="images/furniture/1.png" alt="Window"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;">W</span>
+                        </div>
+                        <span>Window</span>
+                    </div>
+                    <div class="furniture-item" data-type="sofa">
+                        <div class="furniture-icon">
+                            <img src="images/furniture/3.png" alt="Sofa"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;">S</span>
+                        </div>
+                        <span>Bed</span>
+                    </div>
+                    <div class="furniture-item" data-type="table">
+                        <div class="furniture-icon">
+                            <img src="images/furniture/4.png" alt="Table"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;">T</span>
+                        </div>
+                        <span>Dining Table</span>
+                    </div>
+                    <div class="furniture-item" data-type="bed">
+                        <div class="furniture-icon">
+                            <img src="images/furniture/5.png" alt="Bed"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;">B</span>
+                        </div>
+                        <span>Sofa</span>
+                    </div>
+                    <div class="furniture-item" data-type="tv">
+                        <div class="furniture-icon">
+                            <img src="images/furniture/6.png" alt="TV"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;">TV</span>
+                        </div>
+                        <span>TV</span>
+                    </div>
+                </div>
+
+                <div class="tool-section" style="display: none;">
+                    <h3>Settings</h3>
+                    <div class="property-group">
+                        <label class="property-label">Grid Snap</label>
+                        <input type="checkbox" id="grid-snap" checked>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <h4>Instructions:</h4>
+                    <ul>
+                        <li>Select a tool from the toolbar</li>
+                        <li>Click and drag to draw walls</li>
+                        <li>Click on furniture to place it</li>
+                        <li>Drag to move items</li>
+                        <li>Select items to edit properties</li>
+                        <li>Use mouse wheel to zoom</li>
+                        <li>Hold Space + drag to pan</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="drawing-area">
+                <canvas id="floor-plan-canvas"></canvas>
+            </div>
+
+            <button class="panel-toggle" id="toggle-properties">Toggle Properties</button>
+            <div class="properties-panel" id="properties-panel">
+                <div class="properties-section">
+                    <h3>Properties</h3>
+                    <div id="no-selection">
+                        <p>No item selected. Select a wall or furniture item to edit its properties.</p>
+                    </div>
+                    <div id="wall-properties" style="display: none;">
+                        <div class="property-group">
+                            <label class="property-label">Start Point (X1, Y1)</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="number" class="property-input" id="wall-x1">
+                                <input type="number" class="property-input" id="wall-y1">
+                            </div>
+                        </div>
+                        <div class="property-group">
+                            <label class="property-label">End Point (X2, Y2)</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="number" class="property-input" id="wall-x2">
+                                <input type="number" class="property-input" id="wall-y2">
+                            </div>
+                        </div>
+                        <div class="property-group">
+                            <label class="property-label">Length</label>
+                            <input type="text" class="property-input" id="wall-length" readonly>
+                        </div>
+                        <div class="property-group">
+                            <label class="property-label">Angle</label>
+                            <input type="text" class="property-input" id="wall-angle" readonly>
+                        </div>
+                        <button class="delete-btn" id="delete-wall">Delete Wall</button>
+                    </div>
+                    <div id="furniture-properties" style="display: none;">
+                        <div class="property-group">
+                            <label class="property-label">Type</label>
+                            <input type="text" class="property-input" id="furniture-type" readonly>
+                        </div>
+                        <div class="property-group">
+                            <label class="property-label">Position (X, Y)</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="number" class="property-input" id="furniture-x">
+                                <input type="number" class="property-input" id="furniture-y">
+                            </div>
+                        </div>
+                        <div class="property-group">
+                            <label class="property-label">Size (Width, Height)</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="number" class="property-input" id="furniture-width">
+                                <input type="number" class="property-input" id="furniture-height">
+                            </div>
+                        </div>
+                        <div class="property-group">
+                            <label class="property-label">Rotation</label>
+                            <input type="range" class="property-slider" id="furniture-rotation" min="0" max="360"
+                                value="0">
+                            <span id="rotation-value">0°</span>
+                        </div>
+                        <div class="property-group">
+                            <label class="property-label">Quick Rotate</label>
+                            <button class="rotate-btn" id="rotate-90-btn">
+                                Rotate +90°
+                            </button>
+                        </div>
+                        <button class="delete-btn" id="delete-furniture">Delete Furniture</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div id="cursor-position">Cursor: (0, 0)</div>
+            <div id="operation-status">Ready</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
