@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const userData = userDoc.exists ? userDoc.data() : { role: isAdmin ? 'admin' : 'user' };
             
             if (userData.role === 'admin') {
-                window.location.href = 'admin-panel.html';
+                window.location.href = 'index.html';
             } else {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'index.html';
             }
             
         } catch (error) {
