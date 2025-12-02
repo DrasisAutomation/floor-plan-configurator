@@ -41,7 +41,7 @@ async function signInWithGoogle() {
         });
         
         // Redirect to main page
-        window.location.href = '../index.html';
+        window.location.href = '/index.html';
         
     } catch (error) {
         console.error('Google Sign-In Error:', error);
