@@ -1502,6 +1502,13 @@
     let imageDisplayWidth = 0;
     let imageDisplayHeight = 0;
 
+    // KNX Wire Mapping variables
+    const wires = []; // Array to store wire connections
+    let isWireMode = false; // Whether we're in wire connection mode
+    let wireStartMark = null; // First selected mark for wiring
+    let wireEndMark = null; // Second selected mark for wiring
+    let selectedWire = null; // Currently selected wire
+
     function orientTooltip(mark) {
         const tooltip = mark?.tooltip;
         if (!tooltip || !imageNaturalWidth || !imageNaturalHeight) return;
@@ -1570,6 +1577,44 @@
 
     function buildList() {
         productListEl.innerHTML = '';
+        
+        // Add KNX Wire option at the top
+        const wireItem = document.createElement('div');
+        wireItem.className = 'tab-btn';
+        wireItem.dataset.name = 'KNX_WIRE';
+        wireItem.innerHTML = `
+            <div class="tab-title" style="color: #4CAF50; font-weight: 600;">
+                <span class="material-icons" style="font-size: 18px; margin-right: 8px; vertical-align: middle;">electric_bolt</span>
+                KNX Wire Mapping
+            </div>
+            <div class="tab-sub">
+                <span class="material-icons" style="font-size:20px;color:#4CAF50">add_link</span>
+            </div>
+        `;
+        wireItem.addEventListener('click', () => {
+            // Toggle wire mode
+            isWireMode = !isWireMode;
+            wireItem.classList.toggle('active', isWireMode);
+            
+            if (isWireMode) {
+                // Show wire controls in middle panel
+                showWireControls();
+                alert('KNX Wire Mode: Select two marks to connect them with a wire');
+            } else {
+                // Hide wire controls
+                hideWireControls();
+                resetWireSelection();
+            }
+        });
+        productListEl.appendChild(wireItem);
+        
+        // Add separator
+        const separator = document.createElement('div');
+        separator.style.height = '1px';
+        separator.style.backgroundColor = 'var(--border)';
+        separator.style.margin = '15px 0';
+        productListEl.appendChild(separator);
+        
         const keys = PRODUCT_ORDER.length ? PRODUCT_ORDER.filter(k => productData[k]) : Object.keys(productData);
         for (const key of keys) {
             const item = document.createElement('div');
@@ -1771,6 +1816,613 @@
         // DO NOT clear marks - allow multiple labels to persist
     }
 
+    /* ------------------------- KNX WIRE MAPPING ------------------------- */
+    function showWireControls() {
+        // Create wire controls in middle panel
+        const wireControlsHTML = `
+            <div class="mark-controls-box" id="wireControls" style="margin-top: 20px; border-color: #4CAF50;">
+                <h3 style="color: #4CAF50;">
+                    <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">electric_bolt</span>
+                    KNX Wire Mapping
+                </h3>
+                
+                <div class="form-group">
+                    <div style="background: #f0f9f0; padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #c8e6c9;">
+                        <div style="font-size: 12px; color: #2e7d32; margin-bottom: 8px;">
+                            <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                            Select two marks to connect them with a KNX wire
+                        </div>
+                        <div style="font-size: 11px; color: #555; display: flex; align-items: center; gap: 12px;">
+                            <span id="wireStartLabel">Start: <strong>None</strong></span>
+                            <span class="material-icons" style="font-size: 16px; color: #4CAF50;">arrow_forward</span>
+                            <span id="wireEndLabel">End: <strong>None</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="wireCurveControl" style="display: none;">
+                    <label style="color: #4CAF50;">Wire Curve Level</label>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 11px; color: #666;">-100</span>
+                        <input type="range" id="wireCurveSlider" min="-100" max="100" value="0" style="flex: 1;">
+                        <span style="font-size: 11px; color: #666;">100</span>
+                        <span id="curveValue" style="font-size: 12px; font-weight: bold; color: #4CAF50; min-width: 30px; text-align: center;">0</span>
+                    </div>
+                    <div style="font-size: 10px; color: #888; margin-top: 4px; text-align: center;">
+                        <span style="display: inline-block; margin-right: 15px;">← Straight</span>
+                        <span style="display: inline-block;">Diagonal →</span>
+                        <span style="display: inline-block; margin-left: 15px;">90° Angle</span>
+                    </div>
+                </div>
+
+                <div class="form-group" id="wireActionButtons" style="display: none;">
+                    <button id="createWireBtn" class="btn primary full-width" style="background: #4CAF50; border-color: #4CAF50;">
+                        <span class="material-icons" style="font-size: 16px; margin-right: 8px;">add_link</span>
+                        Create KNX Wire
+                    </button>
+                    <button id="cancelWireBtn" class="btn full-width" style="margin-top: 8px; border-color: #f44336; color: #f44336;">
+                        Cancel
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label style="color: #4CAF50;">Existing Wires</label>
+                    <div id="wiresList" style="max-height: 120px; overflow-y: auto; padding: 8px; background: #f8f9fa; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="color: var(--muted); font-size: 12px; text-align: center; padding: 8px;">No wires created yet</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 12px; color: #666; font-size: 11px; text-align: center; padding: 8px; background: #f8f9fa; border-radius: 6px;">
+                    <span class="material-icons" style="font-size: 12px; vertical-align: middle; margin-right: 4px;">tips_and_updates</span>
+                    Wire color: Green (#4CAF50) • Click wire to select • Drag to move
+                </div>
+            </div>
+        `;
+        
+        // Insert after mark controls box
+        const markControlsBox = document.querySelector('.mark-controls-box');
+        markControlsBox.insertAdjacentHTML('afterend', wireControlsHTML);
+        
+        // Add event listeners
+        document.getElementById('wireCurveSlider').addEventListener('input', function() {
+            document.getElementById('curveValue').textContent = this.value;
+            updateWirePreview();
+        });
+        
+        document.getElementById('createWireBtn').addEventListener('click', createWire);
+        document.getElementById('cancelWireBtn').addEventListener('click', cancelWire);
+        
+        // Update wire selection labels
+        updateWireSelectionLabels();
+    }
+
+    function hideWireControls() {
+        const wireControls = document.getElementById('wireControls');
+        if (wireControls) {
+            wireControls.remove();
+        }
+    }
+
+    function updateWireSelectionLabels() {
+        const startLabel = document.getElementById('wireStartLabel');
+        const endLabel = document.getElementById('wireEndLabel');
+        
+        if (startLabel && endLabel) {
+            startLabel.innerHTML = `Start: <strong>${wireStartMark ? wireStartMark.seriesLabel : 'None'}</strong>`;
+            endLabel.innerHTML = `End: <strong>${wireEndMark ? wireEndMark.seriesLabel : 'None'}</strong>`;
+            
+            // Show/hide controls based on selection
+            const wireCurveControl = document.getElementById('wireCurveControl');
+            const wireActionButtons = document.getElementById('wireActionButtons');
+            
+            if (wireStartMark && wireEndMark) {
+                if (wireCurveControl) wireCurveControl.style.display = 'block';
+                if (wireActionButtons) wireActionButtons.style.display = 'block';
+                updateWirePreview();
+            } else {
+                if (wireCurveControl) wireCurveControl.style.display = 'none';
+                if (wireActionButtons) wireActionButtons.style.display = 'none';
+            }
+        }
+    }
+
+    function resetWireSelection() {
+        wireStartMark = null;
+        wireEndMark = null;
+        updateWireSelectionLabels();
+        
+        // Remove any temporary preview
+        const tempWire = document.querySelector('.wire-preview');
+        if (tempWire) {
+            tempWire.remove();
+        }
+    }
+
+    function updateWirePreview() {
+        if (!wireStartMark || !wireEndMark) return;
+        
+        // Remove existing preview
+        const existingPreview = document.querySelector('.wire-preview');
+        if (existingPreview) {
+            existingPreview.remove();
+        }
+        
+        // Get curve value
+        const curveSlider = document.getElementById('wireCurveSlider');
+        const curveValue = curveSlider ? parseInt(curveSlider.value) : 0;
+        
+        // Create preview wire
+        createWireElement(wireStartMark, wireEndMark, curveValue, true);
+    }
+
+    function createWireElement(startMark, endMark, curveValue = 0, isPreview = false) {
+        const transform = getImageTransform();
+        if (!transform) return null;
+        
+        // Calculate center points of marks in display coordinates
+        const startX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
+        const startY = startMark.y * transform.scaleY + transform.imgOffsetY + (startMark.size * transform.scaleY / 2);
+        const endX = endMark.x * transform.scaleX + transform.imgOffsetX + (endMark.size * transform.scaleX / 2);
+        const endY = endMark.y * transform.scaleY + transform.imgOffsetY + (endMark.size * transform.scaleY / 2);
+        
+        // Create SVG path for wire
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("class", isPreview ? "wire-preview" : "wire");
+        svg.style.position = "absolute";
+        svg.style.top = "0";
+        svg.style.left = "0";
+        svg.style.width = "100%";
+        svg.style.height = "100%";
+        svg.style.pointerEvents = isPreview ? "none" : "auto";
+        svg.style.zIndex = isPreview ? "5" : "9";
+        
+        // Calculate control points for Bezier curve based on curveValue
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Normalize curve value to control point distance
+        const curveFactor = Math.abs(curveValue) / 100;
+        const controlDistance = distance * 0.5 * curveFactor;
+        
+        // Determine curve direction based on curveValue sign
+        let controlX1, controlY1, controlX2, controlY2;
+        
+        if (curveValue === 0) {
+            // Straight line - no curve
+            controlX1 = startX;
+            controlY1 = startY;
+            controlX2 = endX;
+            controlY2 = endY;
+        } else if (curveValue > 0) {
+            // Positive curve - bend upward/right
+            const angle = Math.atan2(dy, dx);
+            const perpendicular = angle + Math.PI / 2;
+            
+            controlX1 = startX + Math.cos(perpendicular) * controlDistance;
+            controlY1 = startY + Math.sin(perpendicular) * controlDistance;
+            controlX2 = endX + Math.cos(perpendicular) * controlDistance;
+            controlY2 = endY + Math.sin(perpendicular) * controlDistance;
+        } else {
+            // Negative curve - bend downward/left
+            const angle = Math.atan2(dy, dx);
+            const perpendicular = angle - Math.PI / 2;
+            
+            controlX1 = startX + Math.cos(perpendicular) * controlDistance;
+            controlY1 = startY + Math.sin(perpendicular) * controlDistance;
+            controlX2 = endX + Math.cos(perpendicular) * controlDistance;
+            controlY2 = endY + Math.sin(perpendicular) * controlDistance;
+        }
+        
+        // Create path
+        const path = document.createElementNS(svgNS, "path");
+        if (curveValue === 0) {
+            // Straight line
+            path.setAttribute("d", `M ${startX} ${startY} L ${endX} ${endY}`);
+        } else {
+            // Curved line
+            path.setAttribute("d", `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`);
+        }
+        
+        path.setAttribute("stroke", isPreview ? "rgba(76, 175, 80, 0.5)" : "#4CAF50");
+        path.setAttribute("stroke-width", isPreview ? "3" : "4");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-dasharray", isPreview ? "5,5" : "none");
+        
+        if (!isPreview) {
+            // Add interaction for real wires
+            path.style.cursor = "pointer";
+            path.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectWire(startMark, endMark);
+            });
+            
+            // Make wire draggable
+            makeWireDraggable(path, startMark, endMark, curveValue);
+        }
+        
+        svg.appendChild(path);
+        
+        // Add connection points (circles at ends)
+        const startCircle = document.createElementNS(svgNS, "circle");
+        startCircle.setAttribute("cx", startX);
+        startCircle.setAttribute("cy", startY);
+        startCircle.setAttribute("r", "6");
+        startCircle.setAttribute("fill", "#4CAF50");
+        startCircle.setAttribute("stroke", "#fff");
+        startCircle.setAttribute("stroke-width", "2");
+        
+        const endCircle = document.createElementNS(svgNS, "circle");
+        endCircle.setAttribute("cx", endX);
+        endCircle.setAttribute("cy", endY);
+        endCircle.setAttribute("r", "6");
+        endCircle.setAttribute("fill", "#4CAF50");
+        endCircle.setAttribute("stroke", "#fff");
+        endCircle.setAttribute("stroke-width", "2");
+        
+        svg.appendChild(startCircle);
+        svg.appendChild(endCircle);
+        
+        // Add to image container
+        imgInner.appendChild(svg);
+        
+        return {
+            svg,
+            path,
+            startCircle,
+            endCircle,
+            startX, startY, endX, endY,
+            curveValue
+        };
+    }
+
+    function makeWireDraggable(pathElement, startMark, endMark, curveValue) {
+        let isDragging = false;
+        let startDragX = 0, startDragY = 0;
+        let originalStartX = 0, originalStartY = 0, originalEndX = 0, originalEndY = 0;
+        
+        pathElement.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            startDragX = e.clientX;
+            startDragY = e.clientY;
+            
+            // Store original positions
+            const transform = getImageTransform();
+            if (transform) {
+                originalStartX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
+                originalStartY = startMark.y * transform.scaleY + transform.imgOffsetY + (startMark.size * transform.scaleY / 2);
+                originalEndX = endMark.x * transform.scaleX + transform.imgOffsetX + (endMark.size * transform.scaleX / 2);
+                originalEndY = endMark.y * transform.scaleY + transform.imgOffsetY + (endMark.size * transform.scaleY / 2);
+            }
+            
+            e.stopPropagation();
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            
+            const dx = e.clientX - startDragX;
+            const dy = e.clientY - startDragY;
+            
+            // Calculate new positions
+            const newStartX = originalStartX + dx;
+            const newStartY = originalStartY + dy;
+            const newEndX = originalEndX + dx;
+            const newEndY = originalEndY + dy;
+            
+            // Update wire position
+            const transform = getImageTransform();
+            if (!transform) return;
+            
+            // Convert back to natural coordinates for marks
+            const scaleX = transform.scaleX;
+            const scaleY = transform.scaleY;
+            const imgOffsetX = transform.imgOffsetX;
+            const imgOffsetY = transform.imgOffsetY;
+            
+            // Update start mark position
+            startMark.x = (newStartX - imgOffsetX - (startMark.size * scaleX / 2)) / scaleX;
+            startMark.y = (newStartY - imgOffsetY - (startMark.size * scaleY / 2)) / scaleY;
+            
+            // Update end mark position
+            endMark.x = (newEndX - imgOffsetX - (endMark.size * scaleX / 2)) / scaleX;
+            endMark.y = (newEndY - imgOffsetY - (endMark.size * scaleY / 2)) / scaleY;
+            
+            // Update marks positions
+            updateMarkPosition(startMark);
+            updateMarkPosition(endMark);
+            
+            // Update wire display
+            updateAllWires();
+            
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+    }
+
+    function createWire() {
+        if (!wireStartMark || !wireEndMark) {
+            alert('Please select two marks to connect');
+            return;
+        }
+        
+        if (wireStartMark === wireEndMark) {
+            alert('Cannot connect a mark to itself');
+            return;
+        }
+        
+        // Check if wire already exists
+        const existingWire = wires.find(w => 
+            (w.startMark === wireStartMark && w.endMark === wireEndMark) ||
+            (w.startMark === wireEndMark && w.endMark === wireStartMark)
+        );
+        
+        if (existingWire) {
+            alert('A wire already exists between these marks');
+            return;
+        }
+        
+        // Get curve value
+        const curveSlider = document.getElementById('wireCurveSlider');
+        const curveValue = curveSlider ? parseInt(curveSlider.value) : 0;
+        
+        // Create wire element
+        const wireElement = createWireElement(wireStartMark, wireEndMark, curveValue, false);
+        
+        if (!wireElement) return;
+        
+        // Store wire data
+        const wire = {
+            id: `wire-${Date.now()}`,
+            startMark: wireStartMark,
+            endMark: wireEndMark,
+            element: wireElement,
+            curveValue: curveValue,
+            color: '#4CAF50'
+        };
+        
+        wires.push(wire);
+        
+        // Update wires list
+        updateWiresList();
+        
+        // Reset selection
+        resetWireSelection();
+        
+        // Show success message
+        showNotification(`KNX wire created between ${wireStartMark.seriesLabel} and ${wireEndMark.seriesLabel}`, 'success');
+    }
+
+    function cancelWire() {
+        resetWireSelection();
+    }
+
+    function selectWire(startMark, endMark) {
+        selectedWire = { startMark, endMark };
+        
+        // Highlight the selected wire
+        document.querySelectorAll('.wire path').forEach(path => {
+            path.setAttribute('stroke-width', '4');
+            path.setAttribute('stroke', '#4CAF50');
+        });
+        
+        // Find and highlight the clicked wire
+        wires.forEach(wire => {
+            if ((wire.startMark === startMark && wire.endMark === endMark) ||
+                (wire.startMark === endMark && wire.endMark === startMark)) {
+                wire.element.path.setAttribute('stroke-width', '6');
+                wire.element.path.setAttribute('stroke', '#2E7D32');
+            }
+        });
+        
+        // Show edit options
+        showWireEditOptions(startMark, endMark);
+    }
+
+    function showWireEditOptions(startMark, endMark) {
+        // Remove existing edit controls
+        const existingEdit = document.querySelector('.wire-edit-controls');
+        if (existingEdit) {
+            existingEdit.remove();
+        }
+        
+        // Find the wire
+        const wire = wires.find(w => 
+            (w.startMark === startMark && w.endMark === endMark) ||
+            (w.startMark === endMark && w.endMark === startMark)
+        );
+        
+        if (!wire) return;
+        
+        // Create edit controls
+        const editHTML = `
+            <div class="mark-controls-box wire-edit-controls" style="margin-top: 20px; border-color: #2E7D32;">
+                <h3 style="color: #2E7D32;">
+                    <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">edit</span>
+                    Edit KNX Wire
+                </h3>
+                
+                <div class="form-group">
+                    <div style="background: #f0f9f0; padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #c8e6c9;">
+                        <div style="font-size: 12px; color: #2e7d32; margin-bottom: 8px;">
+                            <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">link</span>
+                            Wire between <strong>${startMark.seriesLabel}</strong> and <strong>${endMark.seriesLabel}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="color: #2E7D32;">Wire Curve Level</label>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 11px; color: #666;">-100</span>
+                        <input type="range" id="editWireCurveSlider" min="-100" max="100" value="${wire.curveValue}" style="flex: 1;">
+                        <span style="font-size: 11px; color: #666;">100</span>
+                        <span id="editCurveValue" style="font-size: 12px; font-weight: bold; color: #2E7D32; min-width: 30px; text-align: center;">${wire.curveValue}</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button id="updateWireBtn" class="btn primary full-width" style="background: #2E7D32; border-color: #2E7D32;">
+                        <span class="material-icons" style="font-size: 16px; margin-right: 8px;">update</span>
+                        Update Wire
+                    </button>
+                    <button id="deleteWireBtn" class="btn full-width" style="margin-top: 8px; border-color: #f44336; color: #f44336;">
+                        <span class="material-icons" style="font-size: 16px; margin-right: 8px;">delete</span>
+                        Delete Wire
+                    </button>
+                    <button id="closeEditBtn" class="btn full-width" style="margin-top: 8px;">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Insert after wire controls
+        const wireControls = document.getElementById('wireControls');
+        if (wireControls) {
+            wireControls.insertAdjacentHTML('afterend', editHTML);
+            
+            // Add event listeners
+            document.getElementById('editWireCurveSlider').addEventListener('input', function() {
+                document.getElementById('editCurveValue').textContent = this.value;
+                updateWireDisplay(wire, parseInt(this.value));
+            });
+            
+            document.getElementById('updateWireBtn').addEventListener('click', function() {
+                updateWire(wire);
+            });
+            
+            document.getElementById('deleteWireBtn').addEventListener('click', function() {
+                deleteWire(wire);
+            });
+            
+            document.getElementById('closeEditBtn').addEventListener('click', function() {
+                const editControls = document.querySelector('.wire-edit-controls');
+                if (editControls) {
+                    editControls.remove();
+                }
+                
+                // Reset wire highlighting
+                document.querySelectorAll('.wire path').forEach(path => {
+                    path.setAttribute('stroke-width', '4');
+                    path.setAttribute('stroke', '#4CAF50');
+                });
+                
+                selectedWire = null;
+            });
+        }
+    }
+
+    function updateWireDisplay(wire, newCurveValue) {
+        // Remove old wire element
+        if (wire.element && wire.element.svg) {
+            wire.element.svg.remove();
+        }
+        
+        // Create new wire element with updated curve
+        const newElement = createWireElement(wire.startMark, wire.endMark, newCurveValue, false);
+        wire.element = newElement;
+        wire.curveValue = newCurveValue;
+    }
+
+    function updateWire(wire) {
+        const slider = document.getElementById('editWireCurveSlider');
+        const newCurveValue = slider ? parseInt(slider.value) : wire.curveValue;
+        
+        updateWireDisplay(wire, newCurveValue);
+        showNotification('Wire updated successfully', 'success');
+    }
+
+    function deleteWire(wire) {
+        // Remove wire element
+        if (wire.element && wire.element.svg) {
+            wire.element.svg.remove();
+        }
+        
+        // Remove from wires array
+        const index = wires.indexOf(wire);
+        if (index > -1) {
+            wires.splice(index, 1);
+        }
+        
+        // Remove edit controls
+        const editControls = document.querySelector('.wire-edit-controls');
+        if (editControls) {
+            editControls.remove();
+        }
+        
+        // Update wires list
+        updateWiresList();
+        
+        showNotification('Wire deleted successfully', 'success');
+        selectedWire = null;
+    }
+
+    function updateAllWires() {
+        wires.forEach(wire => {
+            // Remove old wire element
+            if (wire.element && wire.element.svg) {
+                wire.element.svg.remove();
+            }
+            
+            // Create new wire element at updated positions
+            const newElement = createWireElement(wire.startMark, wire.endMark, wire.curveValue, false);
+            wire.element = newElement;
+        });
+    }
+
+    function updateWiresList() {
+        const wiresList = document.getElementById('wiresList');
+        if (!wiresList) return;
+        
+        wiresList.innerHTML = '';
+        
+        if (wires.length === 0) {
+            wiresList.innerHTML = '<div style="color: var(--muted); font-size: 12px; text-align: center; padding: 8px;">No wires created yet</div>';
+            return;
+        }
+        
+        wires.forEach((wire, index) => {
+            const wireItem = document.createElement('div');
+            wireItem.className = 'mark-item';
+            wireItem.style.borderColor = '#4CAF50';
+            wireItem.style.background = 'rgba(76, 175, 80, 0.1)';
+            
+            wireItem.innerHTML = `
+                <span style="flex: 1; font-size: 12px;">
+                    <span style="font-weight: bold; color: #4CAF50;">${wire.startMark.seriesLabel}</span>
+                    <span class="material-icons" style="font-size: 12px; vertical-align: middle; margin: 0 4px; color: #4CAF50;">arrow_forward</span>
+                    <span style="font-weight: bold; color: #4CAF50;">${wire.endMark.seriesLabel}</span>
+                    <span style="font-size: 10px; color: #666; margin-left: 8px;">Curve: ${wire.curveValue}</span>
+                </span>
+                <button class="btn" style="padding: 4px 6px; min-height: 24px; font-size: 11px; opacity: 0.7;">
+                    <span class="material-icons" style="font-size: 14px;">delete</span>
+                </button>
+            `;
+            
+            // Add click event to select wire
+            wireItem.addEventListener('click', function(e) {
+                if (!e.target.closest('button')) {
+                    selectWire(wire.startMark, wire.endMark);
+                }
+            });
+            
+            // Add delete button event
+            const deleteBtn = wireItem.querySelector('button');
+            deleteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                deleteWire(wire);
+            });
+            
+            wiresList.appendChild(wireItem);
+        });
+    }
+
     /* ------------------------- MARKS & DRAGGING ------------------------- */
     const marksListEl = document.getElementById('marksList');
     const addMarkBtn = document.getElementById('addMarkBtn');
@@ -1830,6 +2482,7 @@
         const transform = getImageTransform();
         if (transform) {
             updateAllMarks();
+            updateAllWires();
         }
     }
 
@@ -2041,6 +2694,31 @@
 
         marks.push(markData);
 
+        // Add click event for wire mode
+        el.addEventListener('click', function(e) {
+            if (isWireMode && !e.defaultPrevented) {
+                if (!wireStartMark) {
+                    wireStartMark = markData;
+                    showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
+                } else if (!wireEndMark && wireStartMark !== markData) {
+                    wireEndMark = markData;
+                    showNotification(`Second mark selected: ${label}. Adjust curve and click "Create KNX Wire".`, 'info');
+                } else if (wireStartMark === markData) {
+                    // Reset first selection
+                    wireStartMark = null;
+                    wireEndMark = null;
+                    showNotification('First mark selection cleared.', 'info');
+                } else if (wireEndMark === markData) {
+                    // Reset second selection
+                    wireEndMark = null;
+                    showNotification('Second mark selection cleared.', 'info');
+                }
+                updateWireSelectionLabels();
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
         // Dragging functionality
         let dragging = false;
         let startX = 0, startY = 0;
@@ -2103,6 +2781,7 @@
             markData.y = newY;
 
             updateMarkPosition(markData);
+            updateAllWires();
         }
 
         function onPointerUp(ev) {
@@ -2115,7 +2794,7 @@
                 el.classList.remove('selected');
 
                 // If it was a click (not drag), select the mark
-                if (!dragStarted) {
+                if (!dragStarted && !isWireMode) {
                     selectedMarkId = id;
                     updateMarkSelection();
                     openProductModal(markData);
@@ -2144,6 +2823,21 @@
         const idx = marks.findIndex(x => x.id === id);
         if (idx === -1) return;
         const m = marks[idx];
+        
+        // Remove any wires connected to this mark
+        const connectedWires = wires.filter(w => w.startMark === m || w.endMark === m);
+        connectedWires.forEach(wire => {
+            // Remove wire element
+            if (wire.element && wire.element.svg) {
+                wire.element.svg.remove();
+            }
+            // Remove from wires array
+            const wireIndex = wires.indexOf(wire);
+            if (wireIndex > -1) {
+                wires.splice(wireIndex, 1);
+            }
+        });
+        
         if (m.el && m.el.parentNode) {
             m.el.parentNode.removeChild(m.el);
         }
@@ -2151,6 +2845,9 @@
         if (selectedMarkId === id) {
             selectedMarkId = null;
         }
+        
+        // Update wires list
+        updateWiresList();
         
         // Renumber all marks after removal
         renumberAllMarks();
@@ -2270,9 +2967,14 @@
 
     // Click outside marks to deselect
     imgContainer.addEventListener('click', (e) => {
-        if (!e.target.closest('.mark')) {
+        if (!e.target.closest('.mark') && !e.target.closest('.wire')) {
             selectedMarkId = null;
             updateMarkSelection();
+            
+            // Reset wire selection if not in wire mode
+            if (!isWireMode) {
+                resetWireSelection();
+            }
         }
     });
 
