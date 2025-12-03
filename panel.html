@@ -7,13 +7,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script src="./login/firebase-config.js"></script>
 
-    <script src="./scripts/auth-check.js"></script>
+    <script src="./scripts/auth-check.js"></script> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Premium Product Layout — 20/20/60 Split</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -909,7 +909,7 @@
                     </div>
                     <div class="form-group">
                         <label>Size (%)</label>
-                        <input type="text" id="markSizeText" value="4" placeholder="e.g. 4">
+                        <input type="text" id="markSizeText" value="5" placeholder="e.g. 5">
                     </div>
                 </div>
 
@@ -978,1749 +978,1829 @@
         </div>
     </div>
 
-    <script>
-        /* ------------------------- PRODUCT DATA ------------------------- */
-        const productData = {
-            "DOOR LOCK": {
-                title: "Door Lock",
-                desc: "Smart door locks with multiple access methods.",
-                subProducts: {
-                    "DS811": {
-                        title: "DS811",
-                        desc: "Smart door lock with multiple access methods",
-                        img: "./images/doorlock/7.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-                    },
-                    "DG10S": {
-                        title: "DG10S",
-                        desc: "Advanced smart door lock",
-                        img: "./images/doorlock/8.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-                    },
-                    "DMSGSERIES": {
-                        title: "DMSGSERIES",
-                        desc: "Premium smart door lock series",
-                        img: "./images/doorlock/9.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-                    },
-                    "DS605": {
-                        title: "DS605",
-                        desc: "Compact smart door lock",
-                        img: "./images/doorlock/10.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-                    },
-                    "DS923MAX": {
-                        title: "DS923MAX",
-                        desc: "Maximum security door lock",
-                        img: "./images/doorlock/11.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-                    },
-                    "DMFASL53": {
-                        title: "DMFASL53",
-                        desc: "Advanced fingerprint door lock",
-                        img: "./images/doorlock/12.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-                    },
-                    "DMSASL54": {
-                        title: "DMSASL54",
-                        desc: "Smart access door lock",
-                        img: "./images/doorlock/13.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-                    },
-                    "DS812": {
-                        title: "DS812",
-                        desc: "Multi-access door lock",
-                        img: "./images/doorlock/14.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-                    },
-                    "DMSSL56": {
-                        title: "DMSSL56",
-                        desc: "Smart lock with advanced features",
-                        img: "./images/doorlock/15.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-                    },
-                    "DMRSL55": {
-                        title: "DMRSL55",
-                        desc: "Reliable smart door lock",
-                        img: "./images/doorlock/16.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-                    },
-                    "DMSSL57": {
-                        title: "DMSSL56",
-                        desc: "Smart lock with advanced features",
-                        img: "./images/doorlock/17.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-                    },
-                    "DMSSL58": {
-                        title: "DMSSL58",
-                        desc: "Secure smart lock system",
-                        img: "./images/doorlock/18.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-                    },
-                    "DMFSL": {
-                        title: "DMFSL",
-                        desc: "Fingerprint smart lock",
-                        img: "./images/doorlock/19.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-                    },
-                    "DMRSL59": {
-                        title: "DMRSL59",
-                        desc: "Advanced smart lock",
-                        img: "./images/doorlock/20.png",
-                        features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-                    }
-                }
-            },
-            "PROCESSOR": {
-                title: "Processor",
-                desc: "High-performance automation processors.",
-                subProducts: {
-                    "LUMI MINI": {
-                        title: "LUMI MINI",
-                        desc: "Intel N2830 Dual Core, 4GB RAM + 128GB SSD, dual USB 2.0 & 3.0 ports, compact aluminium body, Gigabit Ethernet & Wi-Fi.",
-                        img: "./images/processor/21.png",
-                        features: ["Intel N2830 Dual Core", "4GB RAM + 128GB SSD", "Dual USB 2.0 & 3.0 ports", "Compact aluminium body", "Gigabit Ethernet & Wi-Fi"]
-                    },
-                    "LUMI PLUS": {
-                        title: "LUMI PLUS",
-                        desc: "Intel N5105 (2.0–2.9 GHz), 8GB RAM + 128GB SSD, dual USB 2.0 & USB 3.0 ports, compact plastic body, Gigabit Ethernet & Wi-Fi.",
-                        img: "./images/processor/22.png",
-                        features: ["Intel N5105 (2.0–2.9 GHz)", "8GB RAM + 128GB SSD", "Dual USB 2.0 & USB 3.0 ports", "Compact plastic body", "Gigabit Ethernet & Wi-Fi"]
-                    },
-                    "LUMI ULTRA": {
-                        title: "LUMI ULTRA",
-                        desc: "Intel i7 (2.8–4.7 GHz), 16GB RAM + 256GB SSD, aluminium body, dual USB 2.0 & USB 3.0 ports, Gigabit Ethernet & Wi-Fi.",
-                        img: "./images/processor/23.png",
-                        features: ["Intel i7 (2.8–4.7 GHz)", "16GB RAM + 256GB SSD", "Aluminium body", "Dual USB 2.0 & USB 3.0 ports", "Gigabit Ethernet & Wi-Fi"]
-                    }
-                }
-            },
-            "LUMI GLASS SERIES": {
-                title: "LUMI Glass Series",
-                desc: "Modular glass touch panels in multiple model sizes.",
-                subProducts: {
-                    "2 MODEL": {
-                        title: "2 MODEL",
-                        desc: "Frame size 85×85×8 mm, fits 2M box, available in black & white glass colours.",
-                        img: "./images/lumiglass/24.png",
-                        features: ["Frame size 85×85×8 mm", "Fits 2M box", "Black & white glass colours"]
-                    },
-                    "4 MODEL": {
-                        title: "4 MODEL",
-                        desc: "Frame size 150×85×8 mm, 4M variants (2 Quads / 1 Quad + 1 Blank), fits 4M box, available in black & white glass colours.",
-                        img: "./images/lumiglass/25.png",
-                        features: ["Frame size 150×85×8 mm", "4M variants (2 Quads / 1 Quad + 1 Blank)", "Fits 4M box", "Black & white glass colours"]
-                    },
-                    "6 MODEL": {
-                        title: "6 MODEL",
-                        desc: "Frame size 220×85×8 mm, 6M variants (3 Quads / 2 Quads + 1 Blank / 1 Quad + 2 Blanks), fits 6M box, available in black & white glass colours.",
-                        img: "./images/lumiglass/26.png",
-                        features: ["Frame size 220×85×8 mm", "6M variants", "Fits 6M box", "Black & white glass colours"]
-                    },
-                    "8 MODEL": {
-                        title: "8 MODEL",
-                        desc: "Frame size 240×90×8 mm, 8M variants (3 Quads / 2 Quads + 1 Blank / 1 Quad + 2 Blanks), fits 8M box, available in black & white glass colours.",
-                        img: "./images/lumiglass/26.png",
-                        features: ["Frame size 240×90×8 mm", "8M variants", "Fits 8M box", "Black & white glass colours"]
-                    },
-                    "12 MODEL": {
-                        title: "12 MODEL",
-                        desc: "Frame size 220×155×8 mm, 12M variant (3 Quads + 3 Blanks), fits 12M box, available in black & white glass colours.",
-                        img: "./images/lumiglass/27.png",
-                        features: ["Frame size 220×155×8 mm", "12M variant (3 Quads + 3 Blanks)", "Fits 12M box", "Black & white glass colours"]
-                    }
-                }
-            },
-            "ESCULT SERIES": {
-                title: "Escult Series",
-                desc: "Designer sculpted smart touch panels.",
-                subProducts: {
-                    "2 MODEL": {
-                        title: "2 MODEL",
-                        desc: "Board size 114×86×9 mm, fits 2M box, available in 9 Colors and 27 Finish",
-                        img: "./images/escultseries/28.png",
-                        features: ["Board size 114×86×9 mm", "Fits 2M box", "9 Colors", "27 Finish"]
-                    },
-                    "4 MODEL": {
-                        title: "4 MODEL",
-                        desc: "Board size 174×86×9 mm, fits 4M box, available in 9 Colors and 27 Finish",
-                        img: "./images/escultseries/29.png",
-                        features: ["Board size 174×86×9 mm", "Fits 4M box", "9 Colors", "27 Finish"]
-                    },
-                    "6 MODEL": {
-                        title: "6 MODEL",
-                        desc: "Board size 250×86×9 mm, fits 6M box, available in 9 Colors and 27 Finish",
-                        img: "./images/escultseries/30.png",
-                        features: ["Board size 250×86×9 mm", "Fits 6M box", "9 Colors", "27 Finish"]
-                    },
-                    "8 MODEL": {
-                        title: "8 MODEL",
-                        desc: "Board size 250×86×9 mm, fits 8M box, available in 9 Colors and 27 Finish",
-                        img: "./images/escultseries/30.png",
-                        features: ["Board size 250×86×9 mm", "Fits 8M box", "9 Colors", "27 Finish"]
-                    }
-                }
-            },
-            "WALL MOUNT DISPLAY": {
-                title: "Wall Mount Display",
-                desc: "Android-powered wall mount tablets.",
-                subProducts: {
-                    "10\" POE ANDROID WALL MOUNT TABLET": {
-                        title: "10\" POE ANDROID WALL MOUNT TABLET",
-                        desc: "RK3566 Quad-core, Android 11, 4GB RAM + 16GB ROM, 10\" IPS display (800×1280, 500 nits), PoE & 12V power, USB-C & RS485, Wi-Fi/Bluetooth/Ethernet, durable metal body.",
-                        img: "./images/walldisplay/37.png",
-                        features: ["RK3566 Quad-core", "Android 11", "4GB RAM + 16GB ROM", "10\" IPS display (800×1280, 500 nits)", "PoE & 12V power", "USB-C & RS485", "Wi-Fi/Bluetooth/Ethernet", "Durable metal body"]
-                    },
-                    "4\" POE ANDROID WALL MOUNT TABLET": {
-                        title: "4\" POE ANDROID WALL MOUNT TABLET",
-                        desc: "RK3566 Quad-core, Android 11, 2GB RAM + 16GB ROM, 4\" IPS display (480×480), PoE & AC power, USB-C/RS485/Speaker/Mic, Wi-Fi/Bluetooth/Ethernet, durable in-wall design (White/Black).",
-                        img: "./images/walldisplay/36.png",
-                        features: ["RK3566 Quad-core", "Android 11", "2GB RAM + 16GB ROM", "4\" IPS display (480×480)", "PoE & AC power", "USB-C/RS485/Speaker/Mic", "Wi-Fi/Bluetooth/Ethernet", "Durable in-wall design (White/Black)"]
-                    }
-                }
-            },
-            "TACTILE HEXA SERIES": {
-                title: "Tactile Hexa Series",
-                desc: "Premium tactile switches and controls.",
-                subProducts: {
-                    "6 BUTTON KNX SWITCH": {
-                        title: "6 BUTTON KNX SWITCH",
-                        desc: "KNX BUS protocol, CNC metal build, 21–30 VDC input, max 90% humidity, 86×86×24 mm size, –5° to +45°C operating range, ETS-configurable backlight LED.",
-                        img: "./images/hexaseries/38.png",
-                        features: ["KNX BUS protocol", "CNC metal build", "21–30 VDC input", "Max 90% humidity", "86×86×24 mm size", "–5° to +45°C operating range", "ETS-configurable backlight LED"]
-                    },
-                    "MULTI SOCKET + 2 USB": {
-                        title: "MULTI SOCKET + 2 USB",
-                        desc: "CNC metal body, 230V AC input, max 90% humidity, 86×86×24 mm size, –5° to +45°C operating temperature.",
-                        img: "./images/hexaseries/39.png",
-                        features: ["CNC metal body", "230V AC input", "Max 90% humidity", "86×86×24 mm size", "–5° to +45°C operating temperature"]
-                    },
-                    "DND SWITCH": {
-                        title: "DND SWITCH",
-                        desc: "CNC metal, 230V AC, max 90% humidity, 86×86×24 mm, –5° to +45°C, features: Calling Bell, DND, Clean Room, Wait.",
-                        img: "./images/hexaseries/40.png",
-                        features: ["CNC metal", "230V AC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C", "Calling Bell", "DND", "Clean Room", "Wait"]
-                    },
-                    "RFIC CARD READER": {
-                        title: "RFIC CARD READER",
-                        desc: "CNC metal, 230V AC, max 90% humidity, 86×86×24 mm, –5° to +45°C, supports 13.56 MHz IC cards.",
-                        img: "./images/hexaseries/41.png",
-                        features: ["CNC metal", "230V AC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C", "Supports 13.56 MHz IC cards"]
-                    },
-                    "THERMOSTAT": {
-                        title: "THERMOSTAT",
-                        desc: "KNX protocol, aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
-                        img: "./images/hexaseries/42.png",
-                        features: ["KNX protocol", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
-                    }
-                }
-            },
-            "DUO-QUAD SERIES": {
-                title: "Duo-Quad Series",
-                desc: "Advanced KNX control devices.",
-                subProducts: {
-                    "8 BUTTON KNX SWITCH": {
-                        title: "8 BUTTON KNX SWITCH",
-                        desc: "KNX BUS device, CNC metal body, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to +45°C operating range.",
-                        img: "./images/duoquad/43.png",
-                        features: ["KNX BUS device", "CNC metal body", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C operating range"]
-                    },
-                    "8 BUTTON KNX SWITCH WITH 4 GANG RELAY": {
-                        title: "8 BUTTON KNX SWITCH WITH 4 GANG RELAY",
-                        desc: "KNX BUS 4×16A output module CNC metal, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to +45°C operating range.",
-                        img: "./images/duoquad/44.png",
-                        features: ["KNX BUS 4×16A output module", "CNC metal", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C operating range"]
-                    },
-                    "THERMOSTAT": {
-                        title: "THERMOSTAT",
-                        desc: "KNX device – aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
-                        img: "./images/duoquad/45.png",
-                        features: ["KNX device", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
-                    },
-                    "SOCKET": {
-                        title: "SOCKET",
-                        desc: "KNX protocol, aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
-                        img: "./images/duoquad/46.png",
-                        features: ["KNX protocol", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
-                    }
-                }
-            },
-            "DOMOGENIE GLASS LITE SERIES": {
-                title: "Domogenie Glass Lite Series",
-                desc: "Tempered glass switch modules with RGB backlight.",
-                subProducts: {
-                    "2 MODULE": {
-                        title: "2 MODULE",
-                        desc: "86×86×35.7 mm, 230V AC (N+L), 100W fan/dimmer, 30A relay, WiFi/ZigBee, tempered glass + aluminium frame, RGB backlight, black/white/custom options.",
-                        img: "./images/domoglass/31.png",
-                        features: ["86×86×35.7 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom options"]
-                    },
-                    "4 MODULE": {
-                        title: "4 MODULE",
-                        desc: "450×86×38.9 mm, tempered glass + aluminium frame, supports cast options.",
-                        img: "./images/domoglass/32.png",
-                        features: ["450×86×38.9 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
-                    },
-                    "6 MODULE": {
-                        title: "6 MODULE",
-                        desc: "234×86×37.2 mm tempered glass panel.",
-                        img: "./images/domoglass/33.png",
-                        features: ["234×86×37.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
-                    },
-                    "8 MODULE": {
-                        title: "8 MODULE",
-                        desc: "253×86×38.2 mm panel for premium installs.",
-                        img: "./images/domoglass/34.png",
-                        features: ["253×86×38.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
-                    },
-                    "12 MODULE": {
-                        title: "12 MODULE",
-                        desc: "237×152×37.2 mm, multi-module panel.",
-                        img: "./images/domoglass/35.png",
-                        features: ["237×152×37.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
-                    }
-                }
-            },
-            "TREMBLAY SOUNDS": {
-                title: "Tremblay Sounds",
-                desc: "Premium audio solutions.",
-                subProducts: {
-                    "MULTIROOM AUDIO CEILING SPEAKER": {
-                        title: "Multiroom Audio Ceiling Speaker",
-                        desc: "In-ceiling streaming speaker with built-in amplifier.",
-                        img: "./images/tremblay/53.png",
-                        features: ["Built-in amplifier", "Wi-Fi/Bluetooth/Ethernet", "50W×2 output", "6.5\" glass-fibre woofer + 1\" aluminium tweeter", "40–20kHz response", "Supports AirPlay/DLNA/Spotify Connect"]
-                    }
-                }
-            },
-            "Z-WAVE RELAY": {
-                title: "Z-Wave Relay",
-                desc: "Multi-channel relay modules and accessories.",
-                relay: true,
-                img: "./images/relay/47.png"
-            },
-            "CURTAIN MOTORS": {
-                title: "Curtain Motors",
-                desc: "Smart curtain motor systems.",
-                subProducts: {
-                    "N+ KNX SERIES CURTAIN MOTOR": {
-                        title: "N+ KNX SERIES CURTAIN MOTOR",
-                        desc: "Dual KNX + 433MHz control, real-time feedback, works with all KNX devices, KNX 21–30VDC & 100–240V AC motor, 1.5 N·m torque, 50kg load, 13cm/s speed, 0.9–12m width, >4min runtime, <28dB noise, IP20, –10°C to +55°C.",
-                        img: "./images/curtain/51.png",
-                        features: ["Dual KNX + 433MHz control", "Real-time feedback", "Works with all KNX devices", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
-                    },
-                    "LUMI N+ 5 WIRE MOTOR": {
-                        title: "LUMI N+ 5 WIRE MOTOR",
-                        desc: "Dual KNX + RF control, real-time feedback, fully KNX compatible, KNX 21–30VDC & 100–240V AC motor, 1.5 N·m torque, 50kg load, 13cm/s speed, 0.9–12m width, >4min runtime, <28dB noise, IP20, –10°C to +55°C.",
-                        img: "./images/curtain/52.png",
-                        features: ["Dual KNX + RF control", "Real-time feedback", "Fully KNX compatible", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
-                    }
-                }
-            },
-            // Add this in the productData object (you can place it after "CURTAIN MOTORS")
-            "SENSORS": {
-                title: "Sensors",
-                desc: "Advanced detection and monitoring sensors for smart homes.",
-                subProducts: {
-                    "FALL DETECTION SENSOR": {
-                        title: "Fall Detection Sensor",
-                        desc: "Advanced AI-powered fall detection sensor with emergency alert system.",
-                        img: "./images/sensors/56.png",
-                        features: ["AI-powered fall detection", "Emergency alert system", "24/7 monitoring", "Wi-Fi/Bluetooth connectivity", "Long battery life", "Water-resistant design"]
-                    },
-                    "HUMAN PRESENCE SENSOR": {
-                        title: "Human Presence Sensor",
-                        desc: "Microwave-based presence detection with high accuracy and wide coverage.",
-                        img: "./images/sensors/55.png",
-                        features: ["Microwave detection technology", "360° coverage", "Adjustable sensitivity", "Built-in temperature sensor", "Energy saving mode", "Easy installation"]
-                    },
-                    "OCCUPANCY SENSOR": {
-                        title: "Occupancy Sensor",
-                        desc: "Motion-based occupancy detection for lighting and HVAC control.",
-                        img: "./images/sensors/54.png",
-                        features: ["PIR motion detection", "Time-delay adjustment", "Lux level sensing", "Dual-technology option", "Ceiling/wall mount", "Energy compliance certified"]
-                    }
+<script>
+    /* ------------------------- PRODUCT DATA ------------------------- */
+    const productData = {
+        "DOOR LOCK": {
+            title: "Door Lock",
+            desc: "Smart door locks with multiple access methods.",
+            subProducts: {
+                "DS811": {
+                    title: "DS811",
+                    desc: "Smart door lock with multiple access methods",
+                    img: "./images/doorlock/7.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
+                },
+                "DG10S": {
+                    title: "DG10S",
+                    desc: "Advanced smart door lock",
+                    img: "./images/doorlock/8.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
+                },
+                "DMSGSERIES": {
+                    title: "DMSGSERIES",
+                    desc: "Premium smart door lock series",
+                    img: "./images/doorlock/9.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
+                },
+                "DS605": {
+                    title: "DS605",
+                    desc: "Compact smart door lock",
+                    img: "./images/doorlock/10.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
+                },
+                "DS923MAX": {
+                    title: "DS923MAX",
+                    desc: "Maximum security door lock",
+                    img: "./images/doorlock/11.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
+                },
+                "DMFASL53": {
+                    title: "DMFASL53",
+                    desc: "Advanced fingerprint door lock",
+                    img: "./images/doorlock/12.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
+                },
+                "DMSASL54": {
+                    title: "DMSASL54",
+                    desc: "Smart access door lock",
+                    img: "./images/doorlock/13.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
+                },
+                "DS812": {
+                    title: "DS812",
+                    desc: "Multi-access door lock",
+                    img: "./images/doorlock/14.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
+                },
+                "DMSSL56": {
+                    title: "DMSSL56",
+                    desc: "Smart lock with advanced features",
+                    img: "./images/doorlock/15.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
+                },
+                "DMRSL55": {
+                    title: "DMRSL55",
+                    desc: "Reliable smart door lock",
+                    img: "./images/doorlock/16.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
+                },
+                "DMSSL57": {
+                    title: "DMSSL56",
+                    desc: "Smart lock with advanced features",
+                    img: "./images/doorlock/17.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
+                },
+                "DMSSL58": {
+                    title: "DMSSL58",
+                    desc: "Secure smart lock system",
+                    img: "./images/doorlock/18.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
+                },
+                "DMFSL": {
+                    title: "DMFSL",
+                    desc: "Fingerprint smart lock",
+                    img: "./images/doorlock/19.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
+                },
+                "DMRSL59": {
+                    title: "DMRSL59",
+                    desc: "Advanced smart lock",
+                    img: "./images/doorlock/20.png",
+                    features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
                 }
             }
-        };
-
-        const PRODUCT_ORDER = [
-            "DOOR LOCK",
-            "PROCESSOR",
-            "LUMI GLASS SERIES",
-            "ESCULT SERIES",
-            "TACTILE HEXA SERIES",
-            "DUO-QUAD SERIES",
-            "DOMOGENIE GLASS LITE SERIES",
-            "WALL MOUNT DISPLAY",
-            "TREMBLAY SOUNDS",
-            "Z-WAVE RELAY",
-            "CURTAIN MOTORS",
-            "SENSORS"
-        ];
-
-        /* ------------------------- UI BUILD ------------------------- */
-        const productListEl = document.getElementById('productList');
-        const pTitle = document.getElementById('pTitle');
-        const pDesc = document.getElementById('pDesc');
-        const pMeta = document.getElementById('pMeta');
-        const pFeatures = document.getElementById('pFeatures');
-        const featuresSection = document.getElementById('featuresSection');
-        const productImage = document.getElementById('productImage');
-        const productImageOverlay = document.getElementById('productImageOverlay');
-        const previewImage = document.getElementById('previewImage');
-        const imgInner = document.getElementById('imgInner');
-        const imgContainer = document.getElementById('imgContainer');
-        const relayControlsEl = document.getElementById('relayControls');
-        const relayOptionsList = document.getElementById('relayOptionsList');
-        const productModalEl = document.getElementById('productModal');
-        const modalProductTitle = document.getElementById('modalProductTitle');
-        const modalProductDesc = document.getElementById('modalProductDesc');
-        const modalProductImage = document.getElementById('modalProductImage');
-        const modalProductFeatures = document.getElementById('modalProductFeatures');
-        const modalCloseBtn = document.getElementById('modalCloseBtn');
-
-        const relayOptions = [
-            { id: 'relay-1ch', label: '1 Channel Relay' },
-            { id: 'relay-2ch', label: '2 Channel Relay' },
-            { id: 'relay-curtain', label: '1 Channel Curtain Relay' },
-            { id: 'relay-dimmer', label: '0-10V Analog Dimmer' },
-            { id: 'relay-remote', label: 'LS Series Remote' }
-        ];
-
-        const relayOptionImages = {
-            'relay-1ch': './images/relay/48.png',
-            'relay-2ch': './images/relay/49.png',
-            'relay-curtain': './images/relay/47.png',
-            'relay-dimmer': './images/relay/50.png',
-            'relay-remote': './images/relay/48.png'
-        };
-
-        const relayState = relayOptions.reduce((acc, opt) => {
-            acc[opt.id] = { selected: false, quantity: 1 };
-            return acc;
-        }, {});
-        let lastRelaySelectionLabel = '';
-
-        function relaySelectionsFromState() {
-            return relayOptions
-                .filter(opt => relayState[opt.id].selected)
-                .map(opt => ({ name: opt.label, quantity: relayState[opt.id].quantity, id: opt.id }));
-        }
-
-        function updateRelayOverlay() {
-            if (currentProduct !== 'Z-WAVE RELAY') {
-                productImageOverlay.style.display = 'none';
-                productImageOverlay.textContent = '';
-                return;
+        },
+        "PROCESSOR": {
+            title: "Processor",
+            desc: "High-performance automation processors.",
+            subProducts: {
+                "LUMI MINI": {
+                    title: "LUMI MINI",
+                    desc: "Intel N2830 Dual Core, 4GB RAM + 128GB SSD, dual USB 2.0 & 3.0 ports, compact aluminium body, Gigabit Ethernet & Wi-Fi.",
+                    img: "./images/processor/21.png",
+                    features: ["Intel N2830 Dual Core", "4GB RAM + 128GB SSD", "Dual USB 2.0 & 3.0 ports", "Compact aluminium body", "Gigabit Ethernet & Wi-Fi"]
+                },
+                "LUMI PLUS": {
+                    title: "LUMI PLUS",
+                    desc: "Intel N5105 (2.0–2.9 GHz), 8GB RAM + 128GB SSD, dual USB 2.0 & USB 3.0 ports, compact plastic body, Gigabit Ethernet & Wi-Fi.",
+                    img: "./images/processor/22.png",
+                    features: ["Intel N5105 (2.0–2.9 GHz)", "8GB RAM + 128GB SSD", "Dual USB 2.0 & USB 3.0 ports", "Compact plastic body", "Gigabit Ethernet & Wi-Fi"]
+                },
+                "LUMI ULTRA": {
+                    title: "LUMI ULTRA",
+                    desc: "Intel i7 (2.8–4.7 GHz), 16GB RAM + 256GB SSD, aluminium body, dual USB 2.0 & USB 3.0 ports, Gigabit Ethernet & Wi-Fi.",
+                    img: "./images/processor/23.png",
+                    features: ["Intel i7 (2.8–4.7 GHz)", "16GB RAM + 256GB SSD", "Aluminium body", "Dual USB 2.0 & USB 3.0 ports", "Gigabit Ethernet & Wi-Fi"]
+                }
             }
-            const selections = relaySelectionsFromState();
-            productImageOverlay.style.display = 'block';
-            if (selections.length === 0) {
-                productImageOverlay.textContent = 'Select relay modules to highlight them.';
-                resetRelayPreview();
-                return;
+        },
+        "LUMI GLASS SERIES": {
+            title: "LUMI Glass Series",
+            desc: "Modular glass touch panels in multiple model sizes.",
+            subProducts: {
+                "2 MODEL": {
+                    title: "2 MODEL",
+                    desc: "Frame size 85×85×8 mm, fits 2M box, available in black & white glass colours.",
+                    img: "./images/lumiglass/24.png",
+                    features: ["Frame size 85×85×8 mm", "Fits 2M box", "Black & white glass colours"]
+                },
+                "4 MODEL": {
+                    title: "4 MODEL",
+                    desc: "Frame size 150×85×8 mm, 4M variants (2 Quads / 1 Quad + 1 Blank), fits 4M box, available in black & white glass colours.",
+                    img: "./images/lumiglass/25.png",
+                    features: ["Frame size 150×85×8 mm", "4M variants (2 Quads / 1 Quad + 1 Blank)", "Fits 4M box", "Black & white glass colours"]
+                },
+                "6 MODEL": {
+                    title: "6 MODEL",
+                    desc: "Frame size 220×85×8 mm, 6M variants (3 Quads / 2 Quads + 1 Blank / 1 Quad + 2 Blanks), fits 6M box, available in black & white glass colours.",
+                    img: "./images/lumiglass/26.png",
+                    features: ["Frame size 220×85×8 mm", "6M variants", "Fits 6M box", "Black & white glass colours"]
+                },
+                "8 MODEL": {
+                    title: "8 MODEL",
+                    desc: "Frame size 240×90×8 mm, 8M variants (3 Quads / 2 Quads + 1 Blank / 1 Quad + 2 Blanks), fits 8M box, available in black & white glass colours.",
+                    img: "./images/lumiglass/26.png",
+                    features: ["Frame size 240×90×8 mm", "8M variants", "Fits 8M box", "Black & white glass colours"]
+                },
+                "12 MODEL": {
+                    title: "12 MODEL",
+                    desc: "Frame size 220×155×8 mm, 12M variant (3 Quads + 3 Blanks), fits 12M box, available in black & white glass colours.",
+                    img: "./images/lumiglass/27.png",
+                    features: ["Frame size 220×155×8 mm", "12M variant (3 Quads + 3 Blanks)", "Fits 12M box", "Black & white glass colours"]
+                }
             }
-            const preferred = selections.find(sel => sel.name === lastRelaySelectionLabel) || selections[selections.length - 1];
-            productImageOverlay.innerHTML = `<strong>${preferred.name}</strong><br>Qty ${preferred.quantity}`;
-            setRelayPreview(preferred.id);
-        }
-
-        function setRelayPreview(optionId) {
-            const baseImg = productData['Z-WAVE RELAY']?.img || '';
-            const src = relayOptionImages[optionId] || baseImg;
-            if (currentProduct === 'Z-WAVE RELAY' && src) {
-                productImage.src = src;
+        },
+        "ESCULT SERIES": {
+            title: "Escult Series",
+            desc: "Designer sculpted smart touch panels.",
+            subProducts: {
+                "2 MODEL": {
+                    title: "2 MODEL",
+                    desc: "Board size 114×86×9 mm, fits 2M box, available in 9 Colors and 27 Finish",
+                    img: "./images/escultseries/28.png",
+                    features: ["Board size 114×86×9 mm", "Fits 2M box", "9 Colors", "27 Finish"]
+                },
+                "4 MODEL": {
+                    title: "4 MODEL",
+                    desc: "Board size 174×86×9 mm, fits 4M box, available in 9 Colors and 27 Finish",
+                    img: "./images/escultseries/29.png",
+                    features: ["Board size 174×86×9 mm", "Fits 4M box", "9 Colors", "27 Finish"]
+                },
+                "6 MODEL": {
+                    title: "6 MODEL",
+                    desc: "Board size 250×86×9 mm, fits 6M box, available in 9 Colors and 27 Finish",
+                    img: "./images/escultseries/30.png",
+                    features: ["Board size 250×86×9 mm", "Fits 6M box", "9 Colors", "27 Finish"]
+                },
+                "8 MODEL": {
+                    title: "8 MODEL",
+                    desc: "Board size 250×86×9 mm, fits 8M box, available in 9 Colors and 27 Finish",
+                    img: "./images/escultseries/30.png",
+                    features: ["Board size 250×86×9 mm", "Fits 8M box", "9 Colors", "27 Finish"]
+                }
+            }
+        },
+        "WALL MOUNT DISPLAY": {
+            title: "Wall Mount Display",
+            desc: "Android-powered wall mount tablets.",
+            subProducts: {
+                "10\" POE ANDROID WALL MOUNT TABLET": {
+                    title: "10\" POE ANDROID WALL MOUNT TABLET",
+                    desc: "RK3566 Quad-core, Android 11, 4GB RAM + 16GB ROM, 10\" IPS display (800×1280, 500 nits), PoE & 12V power, USB-C & RS485, Wi-Fi/Bluetooth/Ethernet, durable metal body.",
+                    img: "./images/walldisplay/37.png",
+                    features: ["RK3566 Quad-core", "Android 11", "4GB RAM + 16GB ROM", "10\" IPS display (800×1280, 500 nits)", "PoE & 12V power", "USB-C & RS485", "Wi-Fi/Bluetooth/Ethernet", "Durable metal body"]
+                },
+                "4\" POE ANDROID WALL MOUNT TABLET": {
+                    title: "4\" POE ANDROID WALL MOUNT TABLET",
+                    desc: "RK3566 Quad-core, Android 11, 2GB RAM + 16GB ROM, 4\" IPS display (480×480), PoE & AC power, USB-C/RS485/Speaker/Mic, Wi-Fi/Bluetooth/Ethernet, durable in-wall design (White/Black).",
+                    img: "./images/walldisplay/36.png",
+                    features: ["RK3566 Quad-core", "Android 11", "2GB RAM + 16GB ROM", "4\" IPS display (480×480)", "PoE & AC power", "USB-C/RS485/Speaker/Mic", "Wi-Fi/Bluetooth/Ethernet", "Durable in-wall design (White/Black)"]
+                }
+            }
+        },
+        "TACTILE HEXA SERIES": {
+            title: "Tactile Hexa Series",
+            desc: "Premium tactile switches and controls.",
+            subProducts: {
+                "6 BUTTON KNX SWITCH": {
+                    title: "6 BUTTON KNX SWITCH",
+                    desc: "KNX BUS protocol, CNC metal build, 21–30 VDC input, max 90% humidity, 86×86×24 mm size, –5° to +45°C operating range, ETS-configurable backlight LED.",
+                    img: "./images/hexaseries/38.png",
+                    features: ["KNX BUS protocol", "CNC metal build", "21–30 VDC input", "Max 90% humidity", "86×86×24 mm size", "–5° to +45°C operating range", "ETS-configurable backlight LED"]
+                },
+                "MULTI SOCKET + 2 USB": {
+                    title: "MULTI SOCKET + 2 USB",
+                    desc: "CNC metal body, 230V AC input, max 90% humidity, 86×86×24 mm size, –5° to +45°C operating temperature.",
+                    img: "./images/hexaseries/39.png",
+                    features: ["CNC metal body", "230V AC input", "Max 90% humidity", "86×86×24 mm size", "–5° to +45°C operating temperature"]
+                },
+                "DND SWITCH": {
+                    title: "DND SWITCH",
+                    desc: "CNC metal, 230V AC, max 90% humidity, 86×86×24 mm, –5° to +45°C, features: Calling Bell, DND, Clean Room, Wait.",
+                    img: "./images/hexaseries/40.png",
+                    features: ["CNC metal", "230V AC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C", "Calling Bell", "DND", "Clean Room", "Wait"]
+                },
+                "RFIC CARD READER": {
+                    title: "RFIC CARD READER",
+                    desc: "CNC metal, 230V AC, max 90% humidity, 86×86×24 mm, –5° to +45°C, supports 13.56 MHz IC cards.",
+                    img: "./images/hexaseries/41.png",
+                    features: ["CNC metal", "230V AC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C", "Supports 13.56 MHz IC cards"]
+                },
+                "THERMOSTAT": {
+                    title: "THERMOSTAT",
+                    desc: "KNX protocol, aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
+                    img: "./images/hexaseries/42.png",
+                    features: ["KNX protocol", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
+                }
+            }
+        },
+        "DUO-QUAD SERIES": {
+            title: "Duo-Quad Series",
+            desc: "Advanced KNX control devices.",
+            subProducts: {
+                "8 BUTTON KNX SWITCH": {
+                    title: "8 BUTTON KNX SWITCH",
+                    desc: "KNX BUS device, CNC metal body, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to +45°C operating range.",
+                    img: "./images/duoquad/43.png",
+                    features: ["KNX BUS device", "CNC metal body", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C operating range"]
+                },
+                "8 BUTTON KNX SWITCH WITH 4 GANG RELAY": {
+                    title: "8 BUTTON KNX SWITCH WITH 4 GANG RELAY",
+                    desc: "KNX BUS 4×16A output module CNC metal, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to +45°C operating range.",
+                    img: "./images/duoquad/44.png",
+                    features: ["KNX BUS 4×16A output module", "CNC metal", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C operating range"]
+                },
+                "THERMOSTAT": {
+                    title: "THERMOSTAT",
+                    desc: "KNX device – aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
+                    img: "./images/duoquad/45.png",
+                    features: ["KNX device", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
+                },
+                "SOCKET": {
+                    title: "SOCKET",
+                    desc: "KNX protocol, aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
+                    img: "./images/duoquad/46.png",
+                    features: ["KNX protocol", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
+                }
+            }
+        },
+        "DOMOGENIE GLASS LITE SERIES": {
+            title: "Domogenie Glass Lite Series",
+            desc: "Tempered glass switch modules with RGB backlight.",
+            subProducts: {
+                "2 MODULE": {
+                    title: "2 MODULE",
+                    desc: "86×86×35.7 mm, 230V AC (N+L), 100W fan/dimmer, 30A relay, WiFi/ZigBee, tempered glass + aluminium frame, RGB backlight, black/white/custom options.",
+                    img: "./images/domoglass/31.png",
+                    features: ["86×86×35.7 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom options"]
+                },
+                "4 MODULE": {
+                    title: "4 MODULE",
+                    desc: "450×86×38.9 mm, tempered glass + aluminium frame, supports cast options.",
+                    img: "./images/domoglass/32.png",
+                    features: ["450×86×38.9 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
+                },
+                "6 MODULE": {
+                    title: "6 MODULE",
+                    desc: "234×86×37.2 mm tempered glass panel.",
+                    img: "./images/domoglass/33.png",
+                    features: ["234×86×37.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
+                },
+                "8 MODULE": {
+                    title: "8 MODULE",
+                    desc: "253×86×38.2 mm panel for premium installs.",
+                    img: "./images/domoglass/34.png",
+                    features: ["253×86×38.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
+                },
+                "12 MODULE": {
+                    title: "12 MODULE",
+                    desc: "237×152×37.2 mm, multi-module panel.",
+                    img: "./images/domoglass/35.png",
+                    features: ["237×152×37.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
+                }
+            }
+        },
+        "TREMBLAY SOUNDS": {
+            title: "Tremblay Sounds",
+            desc: "Premium audio solutions.",
+            subProducts: {
+                "MULTIROOM AUDIO CEILING SPEAKER": {
+                    title: "Multiroom Audio Ceiling Speaker",
+                    desc: "In-ceiling streaming speaker with built-in amplifier.",
+                    img: "./images/tremblay/53.png",
+                    features: ["Built-in amplifier", "Wi-Fi/Bluetooth/Ethernet", "50W×2 output", "6.5\" glass-fibre woofer + 1\" aluminium tweeter", "40–20kHz response", "Supports AirPlay/DLNA/Spotify Connect"]
+                }
+            }
+        },
+        "Z-WAVE RELAY": {
+            title: "Z-Wave Relay",
+            desc: "Multi-channel relay modules and accessories.",
+            relay: true,
+            img: "./images/relay/47.png"
+        },
+        "CURTAIN MOTORS": {
+            title: "Curtain Motors",
+            desc: "Smart curtain motor systems.",
+            subProducts: {
+                "N+ KNX SERIES CURTAIN MOTOR": {
+                    title: "N+ KNX SERIES CURTAIN MOTOR",
+                    desc: "Dual KNX + 433MHz control, real-time feedback, works with all KNX devices, KNX 21–30VDC & 100–240V AC motor, 1.5 N·m torque, 50kg load, 13cm/s speed, 0.9–12m width, >4min runtime, <28dB noise, IP20, –10°C to +55°C.",
+                    img: "./images/curtain/51.png",
+                    features: ["Dual KNX + 433MHz control", "Real-time feedback", "Works with all KNX devices", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
+                },
+                "LUMI N+ 5 WIRE MOTOR": {
+                    title: "LUMI N+ 5 WIRE MOTOR",
+                    desc: "Dual KNX + RF control, real-time feedback, fully KNX compatible, KNX 21–30VDC & 100–240V AC motor, 1.5 N·m torque, 50kg load, 13cm/s speed, 0.9–12m width, >4min runtime, <28dB noise, IP20, –10°C to +55°C.",
+                    img: "./images/curtain/52.png",
+                    features: ["Dual KNX + RF control", "Real-time feedback", "Fully KNX compatible", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
+                }
+            }
+        },
+        // Add this in the productData object (you can place it after "CURTAIN MOTORS")
+        "SENSORS": {
+            title: "Sensors",
+            desc: "Advanced detection and monitoring sensors for smart homes.",
+            subProducts: {
+                "FALL DETECTION SENSOR": {
+                    title: "Fall Detection Sensor",
+                    desc: "Advanced AI-powered fall detection sensor with emergency alert system.",
+                    img: "./images/sensors/56.png",
+                    features: ["AI-powered fall detection", "Emergency alert system", "24/7 monitoring", "Wi-Fi/Bluetooth connectivity", "Long battery life", "Water-resistant design"]
+                },
+                "HUMAN PRESENCE SENSOR": {
+                    title: "Human Presence Sensor",
+                    desc: "Microwave-based presence detection with high accuracy and wide coverage.",
+                    img: "./images/sensors/55.png",
+                    features: ["Microwave detection technology", "360° coverage", "Adjustable sensitivity", "Built-in temperature sensor", "Energy saving mode", "Easy installation"]
+                },
+                "OCCUPANCY SENSOR": {
+                    title: "Occupancy Sensor",
+                    desc: "Motion-based occupancy detection for lighting and HVAC control.",
+                    img: "./images/sensors/54.png",
+                    features: ["PIR motion detection", "Time-delay adjustment", "Lux level sensing", "Dual-technology option", "Ceiling/wall mount", "Energy compliance certified"]
+                }
             }
         }
+    };
 
-        function resetRelayPreview() {
-            const baseImg = productData['Z-WAVE RELAY']?.img || '';
-            if (currentProduct === 'Z-WAVE RELAY' && baseImg) {
-                productImage.src = baseImg;
-            }
+    const PRODUCT_ORDER = [
+        "DOOR LOCK",
+        "PROCESSOR",
+        "LUMI GLASS SERIES",
+        "ESCULT SERIES",
+        "TACTILE HEXA SERIES",
+        "DUO-QUAD SERIES",
+        "DOMOGENIE GLASS LITE SERIES",
+        "WALL MOUNT DISPLAY",
+        "TREMBLAY SOUNDS",
+        "Z-WAVE RELAY",
+        "CURTAIN MOTORS",
+        "SENSORS"
+    ];
+
+    /* ------------------------- UI BUILD ------------------------- */
+    const productListEl = document.getElementById('productList');
+    const pTitle = document.getElementById('pTitle');
+    const pDesc = document.getElementById('pDesc');
+    const pMeta = document.getElementById('pMeta');
+    const pFeatures = document.getElementById('pFeatures');
+    const featuresSection = document.getElementById('featuresSection');
+    const productImage = document.getElementById('productImage');
+    const productImageOverlay = document.getElementById('productImageOverlay');
+    const previewImage = document.getElementById('previewImage');
+    const imgInner = document.getElementById('imgInner');
+    const imgContainer = document.getElementById('imgContainer');
+    const relayControlsEl = document.getElementById('relayControls');
+    const relayOptionsList = document.getElementById('relayOptionsList');
+    const productModalEl = document.getElementById('productModal');
+    const modalProductTitle = document.getElementById('modalProductTitle');
+    const modalProductDesc = document.getElementById('modalProductDesc');
+    const modalProductImage = document.getElementById('modalProductImage');
+    const modalProductFeatures = document.getElementById('modalProductFeatures');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    const relayOptions = [
+        { id: 'relay-1ch', label: '1 Channel Relay' },
+        { id: 'relay-2ch', label: '2 Channel Relay' },
+        { id: 'relay-curtain', label: '1 Channel Curtain Relay' },
+        { id: 'relay-dimmer', label: '0-10V Analog Dimmer' },
+        { id: 'relay-remote', label: 'LS Series Remote' }
+    ];
+
+    const relayOptionImages = {
+        'relay-1ch': './images/relay/48.png',
+        'relay-2ch': './images/relay/49.png',
+        'relay-curtain': './images/relay/47.png',
+        'relay-dimmer': './images/relay/50.png',
+        'relay-remote': './images/relay/48.png'
+    };
+
+    const relayState = relayOptions.reduce((acc, opt) => {
+        acc[opt.id] = { selected: false, quantity: 1 };
+        return acc;
+    }, {});
+    let lastRelaySelectionLabel = '';
+
+    function relaySelectionsFromState() {
+        return relayOptions
+            .filter(opt => relayState[opt.id].selected)
+            .map(opt => ({ name: opt.label, quantity: relayState[opt.id].quantity, id: opt.id }));
+    }
+
+    function updateRelayOverlay() {
+        if (currentProduct !== 'Z-WAVE RELAY') {
+            productImageOverlay.style.display = 'none';
+            productImageOverlay.textContent = '';
+            return;
         }
-
-        const switchFamilies = new Set([
-            "LUMI GLASS SERIES",
-            "ESCULT SERIES",
-            "TACTILE HEXA SERIES",
-            "DUO-QUAD SERIES",
-            "DOMOGENIE GLASS LITE SERIES"
-        ]);
-
-        const seriesCounters = {};
-
-        function getSeriesCode(productKey) {
-            if (productKey === 'DOOR LOCK') return 'L';
-            if (productKey === 'PROCESSOR') return 'P';
-            if (productKey === 'WALL MOUNT DISPLAY') return 'D';
-            if (productKey === 'CURTAIN MOTORS') return 'C';
-            if (productKey === 'Z-WAVE RELAY') return 'R';
-            if (productKey === 'TREMBLAY SOUNDS') return 'T';
-            if (switchFamilies.has(productKey)) return 'S';
-            return 'S';
+        const selections = relaySelectionsFromState();
+        productImageOverlay.style.display = 'block';
+        if (selections.length === 0) {
+            productImageOverlay.textContent = 'Select relay modules to highlight them.';
+            resetRelayPreview();
+            return;
         }
+        const preferred = selections.find(sel => sel.name === lastRelaySelectionLabel) || selections[selections.length - 1];
+        productImageOverlay.innerHTML = `<strong>${preferred.name}</strong><br>Qty ${preferred.quantity}`;
+        setRelayPreview(preferred.id);
+    }
 
-        function nextSeriesLabel(productKey) {
-            const code = getSeriesCode(productKey);
-            seriesCounters[code] = (seriesCounters[code] || 0) + 1;
-            return { seriesCode: code, label: `${code}${seriesCounters[code]}` };
+    function setRelayPreview(optionId) {
+        const baseImg = productData['Z-WAVE RELAY']?.img || '';
+        const src = relayOptionImages[optionId] || baseImg;
+        if (currentProduct === 'Z-WAVE RELAY' && src) {
+            productImage.src = src;
         }
+    }
 
-        let currentProduct = null;
-        let currentSubProduct = null;
-        let imageScale = 1;
-        const marks = []; // {id, x, y, size, shape, el, productData, tooltip}
-        let selectedMarkId = null;
-        let imageNaturalWidth = 0;
-        let imageNaturalHeight = 0;
-        let imageDisplayWidth = 0;
-        let imageDisplayHeight = 0;
-
-        function orientTooltip(mark) {
-            const tooltip = mark?.tooltip;
-            if (!tooltip || !imageNaturalWidth || !imageNaturalHeight) return;
-            const offset = 12;
-            const centerX = mark.x + (mark.size / 2);
-            const centerY = mark.y + (mark.size / 2);
-            const verticalIsBottom = centerY < (imageNaturalHeight / 2);
-            const horizontalIsRight = centerX < (imageNaturalWidth / 2);
-
-            tooltip.dataset.vertical = verticalIsBottom ? 'bottom' : 'top';
-            tooltip.dataset.horizontal = horizontalIsRight ? 'right' : 'left';
-
-            if (verticalIsBottom) {
-                tooltip.style.top = '100%';
-            } else {
-                tooltip.style.top = '0';
-            }
-
-            if (horizontalIsRight) {
-                tooltip.style.left = '100%';
-            } else {
-                tooltip.style.left = '0';
-            }
-
-            const translateX = horizontalIsRight ? `${offset}px` : `calc(-100% - ${offset}px)`;
-            const translateY = verticalIsBottom ? `${offset}px` : `calc(-100% - ${offset}px)`;
-            tooltip.style.transform = `translate(${translateX}, ${translateY})`;
+    function resetRelayPreview() {
+        const baseImg = productData['Z-WAVE RELAY']?.img || '';
+        if (currentProduct === 'Z-WAVE RELAY' && baseImg) {
+            productImage.src = baseImg;
         }
+    }
 
-        function populateModal(mark) {
-            if (!mark) return;
-            const title = `${mark.categoryName || ''}${mark.modelName ? ' — ' + mark.modelName : ''}`.trim() || 'Product';
-            modalProductTitle.textContent = title;
-            modalProductDesc.textContent = mark.desc || '';
-            const imageSrc = mark.imageSrc || previewImage.src;
-            if (imageSrc) {
-                modalProductImage.src = imageSrc;
-                modalProductImage.style.display = 'block';
-            } else {
-                modalProductImage.style.display = 'none';
-            }
-            modalProductFeatures.innerHTML = '';
-            const featureList = (mark.features && mark.features.length ? mark.features : ['No features provided']).slice(0, 12);
-            featureList.forEach(feature => {
-                const li = document.createElement('li');
-                li.textContent = feature;
-                modalProductFeatures.appendChild(li);
+    const switchFamilies = new Set([
+        "LUMI GLASS SERIES",
+        "ESCULT SERIES",
+        "TACTILE HEXA SERIES",
+        "DUO-QUAD SERIES",
+        "DOMOGENIE GLASS LITE SERIES"
+    ]);
+
+    const seriesCounters = {};
+
+    function getSeriesCode(productKey) {
+        if (productKey === 'DOOR LOCK') return 'L';
+        if (productKey === 'PROCESSOR') return 'P';
+        if (productKey === 'WALL MOUNT DISPLAY') return 'D';
+        if (productKey === 'CURTAIN MOTORS') return 'C';
+        if (productKey === 'Z-WAVE RELAY') return 'R';
+        if (productKey === 'TREMBLAY SOUNDS') return 'T';
+        if (switchFamilies.has(productKey)) return 'S';
+        return 'S';
+    }
+
+    // UPDATED: Function to find next available series label
+    function nextSeriesLabel(productKey) {
+        const code = getSeriesCode(productKey);
+        
+        // Count existing marks of this type
+        const existingMarks = marks.filter(mark => mark.seriesCode === code);
+        
+        // If there are existing marks, find the next available number
+        if (existingMarks.length > 0) {
+            // Get all existing numbers
+            const existingNumbers = existingMarks.map(mark => {
+                const num = parseInt(mark.seriesLabel.substring(1));
+                return isNaN(num) ? 0 : num;
             });
-        }
-
-        function openProductModal(mark) {
-            populateModal(mark);
-            productModalEl.classList.add('show');
-        }
-
-        function closeProductModal() {
-            productModalEl.classList.remove('show');
-        }
-
-        modalCloseBtn.addEventListener('click', closeProductModal);
-        productModalEl.addEventListener('click', (e) => {
-            if (e.target === productModalEl) {
-                closeProductModal();
+            
+            // Find the first available number (starting from 1)
+            let nextNum = 1;
+            while (existingNumbers.includes(nextNum)) {
+                nextNum++;
             }
+            
+            seriesCounters[code] = nextNum;
+            return { seriesCode: code, label: `${code}${nextNum}` };
+        } else {
+            // No existing marks, start from 1
+            seriesCounters[code] = 1;
+            return { seriesCode: code, label: `${code}1` };
+        }
+    }
+
+    let currentProduct = null;
+    let currentSubProduct = null;
+    let imageScale = 1;
+    const marks = []; // {id, x, y, size, shape, el, productData, tooltip}
+    let selectedMarkId = null;
+    let imageNaturalWidth = 0;
+    let imageNaturalHeight = 0;
+    let imageDisplayWidth = 0;
+    let imageDisplayHeight = 0;
+
+    function orientTooltip(mark) {
+        const tooltip = mark?.tooltip;
+        if (!tooltip || !imageNaturalWidth || !imageNaturalHeight) return;
+        const offset = 12;
+        const centerX = mark.x + (mark.size / 2);
+        const centerY = mark.y + (mark.size / 2);
+        const verticalIsBottom = centerY < (imageNaturalHeight / 2);
+        const horizontalIsRight = centerX < (imageNaturalWidth / 2);
+
+        tooltip.dataset.vertical = verticalIsBottom ? 'bottom' : 'top';
+        tooltip.dataset.horizontal = horizontalIsRight ? 'right' : 'left';
+
+        if (verticalIsBottom) {
+            tooltip.style.top = '100%';
+        } else {
+            tooltip.style.top = '0';
+        }
+
+        if (horizontalIsRight) {
+            tooltip.style.left = '100%';
+        } else {
+            tooltip.style.left = '0';
+        }
+
+        const translateX = horizontalIsRight ? `${offset}px` : `calc(-100% - ${offset}px)`;
+        const translateY = verticalIsBottom ? `${offset}px` : `calc(-100% - ${offset}px)`;
+        tooltip.style.transform = `translate(${translateX}, ${translateY})`;
+    }
+
+    function populateModal(mark) {
+        if (!mark) return;
+        const title = `${mark.categoryName || ''}${mark.modelName ? ' — ' + mark.modelName : ''}`.trim() || 'Product';
+        modalProductTitle.textContent = title;
+        modalProductDesc.textContent = mark.desc || '';
+        const imageSrc = mark.imageSrc || previewImage.src;
+        if (imageSrc) {
+            modalProductImage.src = imageSrc;
+            modalProductImage.style.display = 'block';
+        } else {
+            modalProductImage.style.display = 'none';
+        }
+        modalProductFeatures.innerHTML = '';
+        const featureList = (mark.features && mark.features.length ? mark.features : ['No features provided']).slice(0, 12);
+        featureList.forEach(feature => {
+            const li = document.createElement('li');
+            li.textContent = feature;
+            modalProductFeatures.appendChild(li);
+        });
+    }
+
+    function openProductModal(mark) {
+        populateModal(mark);
+        productModalEl.classList.add('show');
+    }
+
+    function closeProductModal() {
+        productModalEl.classList.remove('show');
+    }
+
+    modalCloseBtn.addEventListener('click', closeProductModal);
+    productModalEl.addEventListener('click', (e) => {
+        if (e.target === productModalEl) {
+            closeProductModal();
+        }
+    });
+
+    function buildList() {
+        productListEl.innerHTML = '';
+        const keys = PRODUCT_ORDER.length ? PRODUCT_ORDER.filter(k => productData[k]) : Object.keys(productData);
+        for (const key of keys) {
+            const item = document.createElement('div');
+            item.className = 'tab-btn';
+            item.dataset.name = key;
+
+            const left = document.createElement('div');
+            left.className = 'tab-title';
+            left.textContent = key;
+
+            const right = document.createElement('div');
+            right.className = 'tab-sub';
+
+            if (productData[key].subProducts) {
+                right.innerHTML = '<span class="material-icons" style="font-size:20px;color:var(--muted)">expand_more</span>';
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const existing = item.nextElementSibling;
+                    if (existing && existing.classList.contains('sub-product-list')) {
+                        existing.remove();
+                        item.querySelector('.material-icons').textContent = 'expand_more';
+                    } else {
+                        createSubProducts(item, key);
+                        item.querySelector('.material-icons').textContent = 'expand_less';
+                    }
+                });
+            } else {
+                item.addEventListener('click', () => selectProduct(key));
+            }
+
+            item.appendChild(left);
+            item.appendChild(right);
+            productListEl.appendChild(item);
+        }
+    }
+
+    function createSubProducts(afterItem, productKey) {
+        const wrap = document.createElement('div');
+        wrap.className = 'sub-product-list';
+        wrap.style.marginTop = '8px';
+        wrap.style.marginBottom = '8px';
+        wrap.style.paddingLeft = '8px';
+        wrap.style.borderLeft = '2px solid var(--border)';
+
+        const subProducts = productData[productKey].subProducts;
+        for (const subKey of Object.keys(subProducts)) {
+            const btn = document.createElement('div');
+            btn.className = 'tab-btn';
+            btn.style.background = '#f8f9fa';
+            btn.style.border = '1px solid var(--border)';
+            btn.dataset.name = productKey + '|' + subKey;
+            btn.innerHTML = `<div class="tab-title">${subKey}</div>`;
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectProduct(productKey, subKey);
+            });
+            wrap.appendChild(btn);
+        }
+        afterItem.parentNode.insertBefore(wrap, afterItem.nextSibling);
+    }
+
+    function buildRelayOptions() {
+        relayOptionsList.innerHTML = '';
+        relayOptions.forEach(option => {
+            const row = document.createElement('div');
+            row.className = 'relay-option';
+            row.dataset.optionId = option.id;
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = relayState[option.id].selected;
+            checkbox.addEventListener('change', () => {
+                relayState[option.id].selected = checkbox.checked;
+                if (checkbox.checked) {
+                    lastRelaySelectionLabel = option.label;
+                } else {
+                    if (lastRelaySelectionLabel === option.label) {
+                        lastRelaySelectionLabel = '';
+                    }
+                }
+                updateRelayOverlay();
+            });
+            label.appendChild(checkbox);
+            const span = document.createElement('span');
+            span.textContent = option.label;
+            label.appendChild(span);
+            const qty = document.createElement('input');
+            qty.type = 'number';
+            qty.min = 1;
+            qty.value = relayState[option.id].quantity;
+            qty.addEventListener('input', () => {
+                const val = Math.max(1, parseInt(qty.value || '1', 10));
+                qty.value = val;
+                relayState[option.id].quantity = val;
+                if (checkbox.checked) {
+                    updateRelayOverlay();
+                }
+            });
+            row.appendChild(label);
+            const qtyWrap = document.createElement('div');
+            qtyWrap.className = 'relay-qty-row';
+            const qtyLabel = document.createElement('span');
+            qtyLabel.textContent = 'Quantity';
+            qtyWrap.appendChild(qtyLabel);
+            qtyWrap.appendChild(qty);
+            row.appendChild(qtyWrap);
+            relayOptionsList.appendChild(row);
+        });
+        updateRelayOverlay();
+    }
+
+    function getSelectedRelayItems() {
+        return relaySelectionsFromState();
+    }
+
+    function selectProduct(productKey, subProductKey = null) {
+        currentProduct = productKey;
+        currentSubProduct = subProductKey;
+
+        // Set active class
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            const isActive = (b.dataset.name === productKey) ||
+                (subProductKey && b.dataset.name === (productKey + '|' + subProductKey));
+            b.classList.toggle('active', isActive);
         });
 
-        function buildList() {
-            productListEl.innerHTML = '';
-            const keys = PRODUCT_ORDER.length ? PRODUCT_ORDER.filter(k => productData[k]) : Object.keys(productData);
-            for (const key of keys) {
-                const item = document.createElement('div');
-                item.className = 'tab-btn';
-                item.dataset.name = key;
+        // Get product data
+        let data = productData[productKey];
+        let title = data.title || productKey;
+        let desc = data.desc || '';
+        let img = '';
+        let features = [];
+        const isRelay = productKey === 'Z-WAVE RELAY';
 
-                const left = document.createElement('div');
-                left.className = 'tab-title';
-                left.textContent = key;
+        if (subProductKey && data.subProducts && data.subProducts[subProductKey]) {
+            const subData = data.subProducts[subProductKey];
+            title = subData.title;
+            desc = subData.desc;
+            img = subData.img;
+            features = subData.features || [];
+        } else if (data.subProducts) {
+            // Parent category selected
+            title = data.title;
+            desc = data.desc;
+            img = '';
+            features = [];
+        }
 
-                const right = document.createElement('div');
-                right.className = 'tab-sub';
+        pTitle.textContent = title;
+        pDesc.textContent = desc;
 
-                if (productData[key].subProducts) {
-                    right.innerHTML = '<span class="material-icons" style="font-size:20px;color:var(--muted)">expand_more</span>';
-                    item.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const existing = item.nextElementSibling;
-                        if (existing && existing.classList.contains('sub-product-list')) {
-                            existing.remove();
-                            item.querySelector('.material-icons').textContent = 'expand_more';
-                        } else {
-                            createSubProducts(item, key);
-                            item.querySelector('.material-icons').textContent = 'expand_less';
-                        }
-                    });
-                } else {
-                    item.addEventListener('click', () => selectProduct(key));
-                }
+        // Update product image in middle panel
+        const resolvedImg = img || data.img || '';
+        if (resolvedImg) {
+            productImage.src = resolvedImg;
+            productImage.style.display = 'block';
+        } else {
+            productImage.style.display = 'none';
+        }
 
-                item.appendChild(left);
-                item.appendChild(right);
-                productListEl.appendChild(item);
+        // Update meta
+        pMeta.innerHTML = '';
+        if (subProductKey) {
+            const meta = document.createElement('div');
+            meta.className = 'meta-item';
+            meta.textContent = subProductKey;
+            pMeta.appendChild(meta);
+        }
+
+        // Toggle sections
+        if (isRelay) {
+            featuresSection.style.display = 'none';
+            relayControlsEl.style.display = 'block';
+            buildRelayOptions();
+            productImageOverlay.style.display = 'block';
+            updateRelayOverlay();
+        } else {
+            relayControlsEl.style.display = 'none';
+            featuresSection.style.display = 'block';
+            productImageOverlay.style.display = 'none';
+            productImageOverlay.textContent = '';
+            resetRelayPreview();
+            lastRelaySelectionLabel = '';
+            // Update features
+            pFeatures.innerHTML = '';
+            if (features.length > 0) {
+                features.forEach(feature => {
+                    const li = document.createElement('li');
+                    li.textContent = feature;
+                    pFeatures.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'Select a sub-product to see features';
+                pFeatures.appendChild(li);
             }
         }
 
-        function createSubProducts(afterItem, productKey) {
-            const wrap = document.createElement('div');
-            wrap.className = 'sub-product-list';
-            wrap.style.marginTop = '8px';
-            wrap.style.marginBottom = '8px';
-            wrap.style.paddingLeft = '8px';
-            wrap.style.borderLeft = '2px solid var(--border)';
+        // DO NOT clear marks - allow multiple labels to persist
+    }
 
-            const subProducts = productData[productKey].subProducts;
-            for (const subKey of Object.keys(subProducts)) {
-                const btn = document.createElement('div');
-                btn.className = 'tab-btn';
-                btn.style.background = '#f8f9fa';
-                btn.style.border = '1px solid var(--border)';
-                btn.dataset.name = productKey + '|' + subKey;
-                btn.innerHTML = `<div class="tab-title">${subKey}</div>`;
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    selectProduct(productKey, subKey);
-                });
-                wrap.appendChild(btn);
-            }
-            afterItem.parentNode.insertBefore(wrap, afterItem.nextSibling);
+    /* ------------------------- MARKS & DRAGGING ------------------------- */
+    const marksListEl = document.getElementById('marksList');
+    const addMarkBtn = document.getElementById('addMarkBtn');
+    const markShapeEl = document.getElementById('markShape');
+    const markSizeEl = document.getElementById('markSizeText');
+
+    let markCounter = 0;
+
+    // Update image dimensions when image loads
+    previewImage.addEventListener('load', updateImageDimensions);
+    window.addEventListener('resize', updateImageDimensions);
+
+    function getImageTransform() {
+        const img = previewImage;
+        const containerRect = imgContainer.getBoundingClientRect();
+        const imgInnerRect = imgInner.getBoundingClientRect();
+        const imgRect = img.getBoundingClientRect();
+
+        imageNaturalWidth = img.naturalWidth;
+        imageNaturalHeight = img.naturalHeight;
+
+        if (!imageNaturalWidth || !imageNaturalHeight) return null;
+
+        // Image is centered in imgInner, which is scaled
+        // Calculate image position within imgInner (which is same size as container)
+        const imgAspect = imageNaturalWidth / imageNaturalHeight;
+        const containerAspect = containerRect.width / containerRect.height;
+
+        let displayWidth, displayHeight, imgOffsetX, imgOffsetY;
+
+        if (imgAspect > containerAspect) {
+            // Image is wider - fit to width
+            displayWidth = containerRect.width;
+            displayHeight = containerRect.width / imgAspect;
+            imgOffsetX = 0;
+            imgOffsetY = (containerRect.height - displayHeight) / 2;
+        } else {
+            // Image is taller - fit to height
+            displayHeight = containerRect.height;
+            displayWidth = containerRect.height * imgAspect;
+            imgOffsetX = (containerRect.width - displayWidth) / 2;
+            imgOffsetY = 0;
         }
 
-        function buildRelayOptions() {
-            relayOptionsList.innerHTML = '';
-            relayOptions.forEach(option => {
-                const row = document.createElement('div');
-                row.className = 'relay-option';
-                row.dataset.optionId = option.id;
-                const label = document.createElement('label');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = relayState[option.id].selected;
-                checkbox.addEventListener('change', () => {
-                    relayState[option.id].selected = checkbox.checked;
-                    if (checkbox.checked) {
-                        lastRelaySelectionLabel = option.label;
-                    } else {
-                        if (lastRelaySelectionLabel === option.label) {
-                            lastRelaySelectionLabel = '';
-                        }
-                    }
-                    updateRelayOverlay();
-                });
-                label.appendChild(checkbox);
-                const span = document.createElement('span');
-                span.textContent = option.label;
-                label.appendChild(span);
-                const qty = document.createElement('input');
-                qty.type = 'number';
-                qty.min = 1;
-                qty.value = relayState[option.id].quantity;
-                qty.addEventListener('input', () => {
-                    const val = Math.max(1, parseInt(qty.value || '1', 10));
-                    qty.value = val;
-                    relayState[option.id].quantity = val;
-                    if (checkbox.checked) {
-                        updateRelayOverlay();
-                    }
-                });
-                row.appendChild(label);
-                const qtyWrap = document.createElement('div');
-                qtyWrap.className = 'relay-qty-row';
-                const qtyLabel = document.createElement('span');
-                qtyLabel.textContent = 'Quantity';
-                qtyWrap.appendChild(qtyLabel);
-                qtyWrap.appendChild(qty);
-                row.appendChild(qtyWrap);
-                relayOptionsList.appendChild(row);
+        imageDisplayWidth = displayWidth;
+        imageDisplayHeight = displayHeight;
+
+        return {
+            imgOffsetX,
+            imgOffsetY,
+            scaleX: displayWidth / imageNaturalWidth,
+            scaleY: displayHeight / imageNaturalHeight
+        };
+    }
+
+    function updateImageDimensions() {
+        const transform = getImageTransform();
+        if (transform) {
+            updateAllMarks();
+        }
+    }
+
+    function updateAllMarks() {
+        marks.forEach(mark => {
+            updateMarkPosition(mark);
+        });
+    }
+
+    function updateMarkPosition(mark) {
+        const transform = getImageTransform();
+        if (!transform) return;
+
+        // Convert natural image coordinates to display coordinates within imgInner
+        // Marks are positioned relative to imgInner, accounting for image offset and scale
+        const x = mark.x * transform.scaleX + transform.imgOffsetX;
+        const y = mark.y * transform.scaleY + transform.imgOffsetY;
+        const size = mark.size * transform.scaleX; // Use scaleX to maintain aspect
+
+        mark.el.style.left = x + 'px';
+        mark.el.style.top = y + 'px';
+        mark.el.style.width = size + 'px';
+        mark.el.style.height = size + 'px';
+        orientTooltip(mark);
+    }
+
+    // NEW FUNCTION: Renumber all marks sequentially
+    function renumberAllMarks() {
+        // Group marks by series code
+        const marksByCode = {};
+        marks.forEach(mark => {
+            if (!marksByCode[mark.seriesCode]) {
+                marksByCode[mark.seriesCode] = [];
+            }
+            marksByCode[mark.seriesCode].push(mark);
+        });
+        
+        // Sort each group by creation order (using ID)
+        Object.keys(marksByCode).forEach(code => {
+            // Sort by mark ID to maintain original order as much as possible
+            marksByCode[code].sort((a, b) => {
+                const numA = parseInt(a.id.split('-')[1]);
+                const numB = parseInt(b.id.split('-')[1]);
+                return numA - numB;
             });
+            
+            // Renumber sequentially
+            marksByCode[code].forEach((mark, index) => {
+                const newLabel = `${code}${index + 1}`;
+                
+                // Update the mark's label
+                mark.seriesLabel = newLabel;
+                
+                // Update the badge
+                const badge = mark.el.querySelector('.label-badge');
+                if (badge) {
+                    badge.textContent = newLabel;
+                }
+                
+                // Update tooltip if needed (you can add this if tooltip shows the label)
+                const tooltipTitle = mark.tooltip?.querySelector('.tooltip-title');
+                if (tooltipTitle) {
+                    // Keep the existing tooltip content, just update the series code if displayed
+                    // You can modify this if you want to update tooltip with new label
+                }
+            });
+            
+            // Update the counter for this code
+            seriesCounters[code] = marksByCode[code].length;
+        });
+    }
+
+    addMarkBtn.addEventListener('click', () => {
+        if (!currentProduct) {
+            alert('Please select a product first');
+            return;
+        }
+        if (currentProduct !== 'Z-WAVE RELAY' && productData[currentProduct]?.subProducts && !currentSubProduct) {
+            alert('Please select a model first');
+            return;
+        }
+
+        const shape = markShapeEl.value;
+        let sizePercent = parseFloat(markSizeEl.value) || 4;
+        if (sizePercent <= 0) sizePercent = 4;
+
+        // Convert percentage to pixels based on image natural size
+        if (imageNaturalWidth && imageNaturalHeight) {
+            const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
+            const centerX = imageNaturalWidth / 2;
+            const centerY = imageNaturalHeight / 2;
+
+            createMark({
+                x: centerX - (sizePixels / 2),
+                y: centerY - (sizePixels / 2),
+                size: sizePixels,
+                shape: shape
+            });
+        } else {
+            // Fallback if image not loaded
+            createMark({
+                x: 50,
+                y: 50,
+                size: 50,
+                shape: shape
+            });
+        }
+    });
+
+    function createMark({ x, y, size, shape }) {
+        const id = 'mark-' + (++markCounter);
+
+        // Get current product data for this mark
+        const productDataForMark = currentSubProduct && productData[currentProduct]?.subProducts?.[currentSubProduct]
+            ? productData[currentProduct].subProducts[currentSubProduct]
+            : null;
+
+        if (!currentProduct) {
+            alert('Please select a product first');
+            return;
+        }
+        const needsModel = productData[currentProduct]?.subProducts && currentProduct !== 'Z-WAVE RELAY';
+        if (needsModel && !currentSubProduct) {
+            alert('Select a model before adding a label');
+            return;
+        }
+
+        let relayItems = [];
+        if (currentProduct === 'Z-WAVE RELAY') {
+            relayItems = getSelectedRelayItems();
+            if (relayItems.length === 0) {
+                alert('Select at least one relay module and quantity');
+                return;
+            }
+            lastRelaySelectionLabel = relayItems[relayItems.length - 1].name;
             updateRelayOverlay();
         }
 
-        function getSelectedRelayItems() {
-            return relaySelectionsFromState();
+        // UPDATED: Get series label with proper gap handling
+        const { seriesCode, label } = nextSeriesLabel(currentProduct);
+        
+        const fallbackProduct = productData[currentProduct] || {};
+        const fallbackImg = productDataForMark?.img || fallbackProduct.img || previewImage.src;
+        const categoryName = currentProduct || '';
+        let modelName = '';
+        let featuresList = [];
+        let descText = productDataForMark?.desc || fallbackProduct.desc || '';
+
+        if (currentProduct === 'Z-WAVE RELAY') {
+            modelName = relayItems.length === 1 ? relayItems[0].name : `${relayItems.length} modules selected`;
+            featuresList = relayItems.map(item => `${item.name} — Qty ${item.quantity}`);
+        } else {
+            modelName = productDataForMark?.title || fallbackProduct.title || '';
+            featuresList = (productDataForMark?.features || fallbackProduct.features || []).slice();
         }
 
-        function selectProduct(productKey, subProductKey = null) {
-            currentProduct = productKey;
-            currentSubProduct = subProductKey;
+        const el = document.createElement('div');
+        el.className = 'mark ' + shape;
+        el.dataset.id = id;
+        el.dataset.size = size;
+        el.dataset.shape = shape;
 
-            // Set active class
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                const isActive = (b.dataset.name === productKey) ||
-                    (subProductKey && b.dataset.name === (productKey + '|' + subProductKey));
-                b.classList.toggle('active', isActive);
-            });
+        // Create label badge with S1, S2 format
+        const badge = document.createElement('div');
+        badge.className = 'label-badge';
+        badge.textContent = label;
+        el.appendChild(badge);
 
-            // Get product data
-            let data = productData[productKey];
-            let title = data.title || productKey;
-            let desc = data.desc || '';
-            let img = '';
-            let features = [];
-            const isRelay = productKey === 'Z-WAVE RELAY';
+        // Create simplified tooltip - category + model
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
 
-            if (subProductKey && data.subProducts && data.subProducts[subProductKey]) {
-                const subData = data.subProducts[subProductKey];
-                title = subData.title;
-                desc = subData.desc;
-                img = subData.img;
-                features = subData.features || [];
-            } else if (data.subProducts) {
-                // Parent category selected
-                title = data.title;
-                desc = data.desc;
-                img = '';
-                features = [];
-            }
+        const tooltipContent = document.createElement('div');
+        tooltipContent.className = 'tooltip-content';
 
-            pTitle.textContent = title;
-            pDesc.textContent = desc;
+        const tooltipTitle = document.createElement('div');
+        tooltipTitle.className = 'tooltip-title';
+        tooltipTitle.textContent = categoryName || 'Product';
+        const tooltipModel = document.createElement('div');
+        tooltipModel.className = 'tooltip-model';
+        tooltipModel.textContent = modelName || '—';
 
-            // Update product image in middle panel
-            const resolvedImg = img || data.img || '';
-            if (resolvedImg) {
-                productImage.src = resolvedImg;
-                productImage.style.display = 'block';
-            } else {
-                productImage.style.display = 'none';
-            }
+        tooltipContent.appendChild(tooltipTitle);
+        tooltipContent.appendChild(tooltipModel);
+        tooltip.appendChild(tooltipContent);
+        el.appendChild(tooltip);
 
-            // Update meta
-            pMeta.innerHTML = '';
-            if (subProductKey) {
-                const meta = document.createElement('div');
-                meta.className = 'meta-item';
-                meta.textContent = subProductKey;
-                pMeta.appendChild(meta);
-            }
+        // Add to container - position relative to image
+        imgInner.appendChild(el);
 
-            // Toggle sections
-            if (isRelay) {
-                featuresSection.style.display = 'none';
-                relayControlsEl.style.display = 'block';
-                buildRelayOptions();
-                productImageOverlay.style.display = 'block';
-                updateRelayOverlay();
-            } else {
-                relayControlsEl.style.display = 'none';
-                featuresSection.style.display = 'block';
-                productImageOverlay.style.display = 'none';
-                productImageOverlay.textContent = '';
-                resetRelayPreview();
-                lastRelaySelectionLabel = '';
-                // Update features
-                pFeatures.innerHTML = '';
-                if (features.length > 0) {
-                    features.forEach(feature => {
-                        const li = document.createElement('li');
-                        li.textContent = feature;
-                        pFeatures.appendChild(li);
-                    });
-                } else {
-                    const li = document.createElement('li');
-                    li.textContent = 'Select a sub-product to see features';
-                    pFeatures.appendChild(li);
-                }
-            }
+        const markData = {
+            id,
+            x,
+            y,
+            size,
+            shape,
+            el,
+            productData: productDataForMark,
+            seriesCode,
+            seriesLabel: label,
+            tooltip,
+            categoryName,
+            modelName,
+            desc: descText,
+            features: featuresList,
+            imageSrc: fallbackImg,
+            relayItems
+        };
 
-            // DO NOT clear marks - allow multiple labels to persist
+        marks.push(markData);
+
+        // Dragging functionality
+        let dragging = false;
+        let startX = 0, startY = 0;
+        let startMarkX = 0, startMarkY = 0;
+        let dragStarted = false;
+
+        function onPointerDown(ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+            el.setPointerCapture(ev.pointerId);
+            dragging = true;
+            dragStarted = false;
+            startX = ev.clientX;
+            startY = ev.clientY;
+            startMarkX = markData.x;
+            startMarkY = markData.y;
+            selectedMarkId = id;
+            updateMarkSelection();
+            el.classList.add('selected');
         }
 
-        /* ------------------------- MARKS & DRAGGING ------------------------- */
-        const marksListEl = document.getElementById('marksList');
-        const addMarkBtn = document.getElementById('addMarkBtn');
-        const markShapeEl = document.getElementById('markShape');
-        const markSizeEl = document.getElementById('markSizeText');
+        function onPointerMove(ev) {
+            if (!dragging) return;
 
-        let markCounter = 0;
+            const dx = ev.clientX - startX;
+            const dy = ev.clientY - startY;
 
-        // Update image dimensions when image loads
-        previewImage.addEventListener('load', updateImageDimensions);
-        window.addEventListener('resize', updateImageDimensions);
-
-        function getImageTransform() {
-            const img = previewImage;
-            const containerRect = imgContainer.getBoundingClientRect();
-            const imgInnerRect = imgInner.getBoundingClientRect();
-            const imgRect = img.getBoundingClientRect();
-
-            imageNaturalWidth = img.naturalWidth;
-            imageNaturalHeight = img.naturalHeight;
-
-            if (!imageNaturalWidth || !imageNaturalHeight) return null;
-
-            // Image is centered in imgInner, which is scaled
-            // Calculate image position within imgInner (which is same size as container)
-            const imgAspect = imageNaturalWidth / imageNaturalHeight;
-            const containerAspect = containerRect.width / containerRect.height;
-
-            let displayWidth, displayHeight, imgOffsetX, imgOffsetY;
-
-            if (imgAspect > containerAspect) {
-                // Image is wider - fit to width
-                displayWidth = containerRect.width;
-                displayHeight = containerRect.width / imgAspect;
-                imgOffsetX = 0;
-                imgOffsetY = (containerRect.height - displayHeight) / 2;
-            } else {
-                // Image is taller - fit to height
-                displayHeight = containerRect.height;
-                displayWidth = containerRect.height * imgAspect;
-                imgOffsetX = (containerRect.width - displayWidth) / 2;
-                imgOffsetY = 0;
+            // Only start dragging if moved more than 3px to avoid accidental drags
+            if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+                dragStarted = true;
             }
 
-            imageDisplayWidth = displayWidth;
-            imageDisplayHeight = displayHeight;
+            if (!dragStarted) return;
 
-            return {
-                imgOffsetX,
-                imgOffsetY,
-                scaleX: displayWidth / imageNaturalWidth,
-                scaleY: displayHeight / imageNaturalHeight
-            };
-        }
+            ev.preventDefault();
+            ev.stopPropagation();
 
-        function updateImageDimensions() {
             const transform = getImageTransform();
-            if (transform) {
-                updateAllMarks();
-            }
-        }
+            if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
 
-        function updateAllMarks() {
-            marks.forEach(mark => {
-                updateMarkPosition(mark);
-            });
-        }
+            // Get the actual image element's bounding rect
+            const imgRect = previewImage.getBoundingClientRect();
 
-        function updateMarkPosition(mark) {
-            const transform = getImageTransform();
-            if (!transform) return;
+            // Calculate the ratio between natural and displayed image size
+            const scaleX = imageNaturalWidth / imgRect.width;
+            const scaleY = imageNaturalHeight / imgRect.height;
 
-            // Convert natural image coordinates to display coordinates within imgInner
-            // Marks are positioned relative to imgInner, accounting for image offset and scale
-            const x = mark.x * transform.scaleX + transform.imgOffsetX;
-            const y = mark.y * transform.scaleY + transform.imgOffsetY;
-            const size = mark.size * transform.scaleX; // Use scaleX to maintain aspect
+            // Convert screen movement (in pixels) to natural image coordinates
+            const imageDx = dx * scaleX;
+            const imageDy = dy * scaleY;
 
-            mark.el.style.left = x + 'px';
-            mark.el.style.top = y + 'px';
-            mark.el.style.width = size + 'px';
-            mark.el.style.height = size + 'px';
-            orientTooltip(mark);
-        }
+            let newX = startMarkX + imageDx;
+            let newY = startMarkY + imageDy;
 
-        addMarkBtn.addEventListener('click', () => {
-            if (!currentProduct) {
-                alert('Please select a product first');
-                return;
-            }
-            if (currentProduct !== 'Z-WAVE RELAY' && productData[currentProduct]?.subProducts && !currentSubProduct) {
-                alert('Please select a model first');
-                return;
-            }
+            // Constrain to image boundaries
+            newX = Math.max(0, Math.min(imageNaturalWidth - markData.size, newX));
+            newY = Math.max(0, Math.min(imageNaturalHeight - markData.size, newY));
 
-            const shape = markShapeEl.value;
-            let sizePercent = parseFloat(markSizeEl.value) || 4;
-            if (sizePercent <= 0) sizePercent = 4;
-
-            // Convert percentage to pixels based on image natural size
-            if (imageNaturalWidth && imageNaturalHeight) {
-                const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
-                const centerX = imageNaturalWidth / 2;
-                const centerY = imageNaturalHeight / 2;
-
-                createMark({
-                    x: centerX - (sizePixels / 2),
-                    y: centerY - (sizePixels / 2),
-                    size: sizePixels,
-                    shape: shape
-                });
-            } else {
-                // Fallback if image not loaded
-                createMark({
-                    x: 50,
-                    y: 50,
-                    size: 50,
-                    shape: shape
-                });
-            }
-        });
-
-        function createMark({ x, y, size, shape }) {
-            const id = 'mark-' + (++markCounter);
-
-            // Get current product data for this mark
-            const productDataForMark = currentSubProduct && productData[currentProduct]?.subProducts?.[currentSubProduct]
-                ? productData[currentProduct].subProducts[currentSubProduct]
-                : null;
-
-            if (!currentProduct) {
-                alert('Please select a product first');
-                return;
-            }
-            const needsModel = productData[currentProduct]?.subProducts && currentProduct !== 'Z-WAVE RELAY';
-            if (needsModel && !currentSubProduct) {
-                alert('Select a model before adding a label');
-                return;
-            }
-
-            let relayItems = [];
-            if (currentProduct === 'Z-WAVE RELAY') {
-                relayItems = getSelectedRelayItems();
-                if (relayItems.length === 0) {
-                    alert('Select at least one relay module and quantity');
-                    return;
-                }
-                lastRelaySelectionLabel = relayItems[relayItems.length - 1].name;
-                updateRelayOverlay();
-            }
-
-            const { seriesCode, label } = nextSeriesLabel(currentProduct);
-            const fallbackProduct = productData[currentProduct] || {};
-            const fallbackImg = productDataForMark?.img || fallbackProduct.img || previewImage.src;
-            const categoryName = currentProduct || '';
-            let modelName = '';
-            let featuresList = [];
-            let descText = productDataForMark?.desc || fallbackProduct.desc || '';
-
-            if (currentProduct === 'Z-WAVE RELAY') {
-                modelName = relayItems.length === 1 ? relayItems[0].name : `${relayItems.length} modules selected`;
-                featuresList = relayItems.map(item => `${item.name} — Qty ${item.quantity}`);
-            } else {
-                modelName = productDataForMark?.title || fallbackProduct.title || '';
-                featuresList = (productDataForMark?.features || fallbackProduct.features || []).slice();
-            }
-
-            const el = document.createElement('div');
-            el.className = 'mark ' + shape;
-            el.dataset.id = id;
-            el.dataset.size = size;
-            el.dataset.shape = shape;
-
-            // Create label badge with S1, S2 format
-            const badge = document.createElement('div');
-            badge.className = 'label-badge';
-            badge.textContent = label;
-            el.appendChild(badge);
-
-            // Create simplified tooltip - category + model
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip';
-
-            const tooltipContent = document.createElement('div');
-            tooltipContent.className = 'tooltip-content';
-
-            const tooltipTitle = document.createElement('div');
-            tooltipTitle.className = 'tooltip-title';
-            tooltipTitle.textContent = categoryName || 'Product';
-            const tooltipModel = document.createElement('div');
-            tooltipModel.className = 'tooltip-model';
-            tooltipModel.textContent = modelName || '—';
-
-            tooltipContent.appendChild(tooltipTitle);
-            tooltipContent.appendChild(tooltipModel);
-            tooltip.appendChild(tooltipContent);
-            el.appendChild(tooltip);
-
-            // Add to container - position relative to image
-            imgInner.appendChild(el);
-
-            const markData = {
-                id,
-                x,
-                y,
-                size,
-                shape,
-                el,
-                productData: productDataForMark,
-                seriesCode,
-                seriesLabel: label,
-                tooltip,
-                categoryName,
-                modelName,
-                desc: descText,
-                features: featuresList,
-                imageSrc: fallbackImg,
-                relayItems
-            };
-
-            marks.push(markData);
-
-            // Dragging functionality
-            let dragging = false;
-            let startX = 0, startY = 0;
-            let startMarkX = 0, startMarkY = 0;
-            let dragStarted = false;
-
-            function onPointerDown(ev) {
-                ev.stopPropagation();
-                ev.preventDefault();
-                el.setPointerCapture(ev.pointerId);
-                dragging = true;
-                dragStarted = false;
-                startX = ev.clientX;
-                startY = ev.clientY;
-                startMarkX = markData.x;
-                startMarkY = markData.y;
-                selectedMarkId = id;
-                updateMarkSelection();
-                el.classList.add('selected');
-            }
-
-            function onPointerMove(ev) {
-                if (!dragging) return;
-
-                const dx = ev.clientX - startX;
-                const dy = ev.clientY - startY;
-
-                // Only start dragging if moved more than 3px to avoid accidental drags
-                if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
-                    dragStarted = true;
-                }
-
-                if (!dragStarted) return;
-
-                ev.preventDefault();
-                ev.stopPropagation();
-
-                const transform = getImageTransform();
-                if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
-
-                // Get the actual image element's bounding rect
-                const imgRect = previewImage.getBoundingClientRect();
-
-                // Calculate the ratio between natural and displayed image size
-                const scaleX = imageNaturalWidth / imgRect.width;
-                const scaleY = imageNaturalHeight / imgRect.height;
-
-                // Convert screen movement (in pixels) to natural image coordinates
-                const imageDx = dx * scaleX;
-                const imageDy = dy * scaleY;
-
-                let newX = startMarkX + imageDx;
-                let newY = startMarkY + imageDy;
-
-                // Constrain to image boundaries
-                newX = Math.max(0, Math.min(imageNaturalWidth - markData.size, newX));
-                newY = Math.max(0, Math.min(imageNaturalHeight - markData.size, newY));
-
-                markData.x = newX;
-                markData.y = newY;
-
-                updateMarkPosition(markData);
-            }
-
-            function onPointerUp(ev) {
-                if (dragging) {
-                    dragging = false;
-                    dragStarted = false;
-                    try {
-                        el.releasePointerCapture(ev.pointerId);
-                    } catch (e) { }
-                    el.classList.remove('selected');
-
-                    // If it was a click (not drag), select the mark
-                    if (!dragStarted) {
-                        selectedMarkId = id;
-                        updateMarkSelection();
-                        openProductModal(markData);
-                    }
-                }
-            }
-
-            el.addEventListener('pointerdown', onPointerDown);
-            el.addEventListener('mouseenter', () => orientTooltip(markData));
-            document.addEventListener('pointermove', onPointerMove);
-            document.addEventListener('pointerup', onPointerUp);
+            markData.x = newX;
+            markData.y = newY;
 
             updateMarkPosition(markData);
-            updateMarkSelection();
         }
 
-        function updateMarkSelection() {
-            marks.forEach(m => {
-                m.el.classList.toggle('selected', m.id === selectedMarkId);
-            });
-            renderMarksList();
-        }
-
-        function renderMarksList() {
-            marksListEl.innerHTML = '';
-            if (marks.length === 0) {
-                const empty = document.createElement('div');
-                empty.style.color = 'var(--muted)';
-                empty.style.fontSize = '12px';
-                empty.style.padding = '8px';
-                empty.textContent = 'No marks added yet';
-                marksListEl.appendChild(empty);
-                return;
-            }
-
-            marks.forEach(m => {
-                const item = document.createElement('div');
-                item.className = 'mark-item';
-                item.classList.toggle('active', m.id === selectedMarkId);
-
-                const label = document.createElement('span');
-                label.textContent = m.seriesLabel;
-                item.appendChild(label);
-
-                // Add delete button
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn';
-                deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
-                deleteBtn.style.marginLeft = '8px';
-                deleteBtn.style.padding = '4px 6px';
-                deleteBtn.style.minHeight = 'auto';
-                deleteBtn.style.fontSize = '12px';
-                deleteBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeMark(m.id);
-                });
-                item.appendChild(deleteBtn);
-
-                item.addEventListener('click', (e) => {
-                    if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
-                        selectedMarkId = m.id;
-                        updateMarkSelection();
-                        openProductModal(m);
-                    }
-                });
-                marksListEl.appendChild(item);
-            });
-        }
-
-        function removeMark(id) {
-            const idx = marks.findIndex(x => x.id === id);
-            if (idx === -1) return;
-            const m = marks[idx];
-            if (m.el && m.el.parentNode) {
-                m.el.parentNode.removeChild(m.el);
-            }
-            marks.splice(idx, 1);
-            if (selectedMarkId === id) {
-                selectedMarkId = null;
-            }
-            updateMarkSelection();
-        }
-
-        /* ------------------------- ZOOMING ------------------------- */
-        function setScale(scale) {
-            imageScale = Math.max(0.3, Math.min(3, scale));
-
-            // Calculate scaled dimensions
-            const img = previewImage;
-            const containerRect = imgContainer.getBoundingClientRect();
-            const imgAspect = img.naturalWidth / img.naturalHeight;
-            const containerAspect = containerRect.width / containerRect.height;
-
-            let displayWidth, displayHeight;
-            if (imgAspect > containerAspect) {
-                displayWidth = containerRect.width;
-                displayHeight = containerRect.width / imgAspect;
-            } else {
-                displayHeight = containerRect.height;
-                displayWidth = containerRect.height * imgAspect;
-            }
-
-            imageDisplayWidth = displayWidth * imageScale;
-            imageDisplayHeight = displayHeight * imageScale;
-
-            imgInner.style.transform = `scale(${imageScale})`;
-
-            // Update all marks after zoom
-            requestAnimationFrame(() => {
-                updateImageDimensions();
-            });
-        }
-
-        imgContainer.addEventListener('wheel', (e) => {
-            if (!e.ctrlKey) return;
-            e.preventDefault();
-            const delta = -e.deltaY / 500;
-            setScale(imageScale + delta);
-        });
-
-        let pinchStartDist = 0, pinchStartScale = 1;
-        imgContainer.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                e.preventDefault();
-                pinchStartDist = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-                pinchStartScale = imageScale;
-            }
-        });
-
-        imgContainer.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2) {
-                e.preventDefault();
-                const d = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-                const ratio = d / pinchStartDist;
-                setScale(pinchStartScale * ratio);
-            }
-        });
-
-        document.getElementById('zoomReset').addEventListener('click', () => {
-            setScale(1);
-        });
-
-        // Click outside marks to deselect
-        imgContainer.addEventListener('click', (e) => {
-            if (!e.target.closest('.mark')) {
-                selectedMarkId = null;
-                updateMarkSelection();
-            }
-        });
-
-        /* ------------------------- INIT ------------------------- */
-        buildList();
-
-        // Wait for image to load before initializing
-        if (previewImage.complete) {
-            updateImageDimensions();
-        } else {
-            previewImage.addEventListener('load', updateImageDimensions);
-        }
-
-        // Select first product
-        const firstKey = PRODUCT_ORDER[0] || Object.keys(productData)[0];
-        selectProduct(firstKey);
-        /* ------------------------- PDF EXPORT FUNCTIONALITY ------------------------- */
-
-        // Add brand information to product data
-        function enhanceProductDataWithBrands() {
-            const brands = {
-                "DOOR LOCK": "LocPro",
-                "PROCESSOR": "LUMI",
-                "LUMI GLASS SERIES": "LUMI",
-                "ESCULT SERIES": "Escult",
-                "WALL MOUNT DISPLAY": "LUMI",
-                "TACTILE HEXA SERIES": "LUMI",
-                "DUO-QUAD SERIES": "LUMI",
-                "DOMOGENIE GLASS LITE SERIES": "Domogenie",
-                "TREMBLAY SOUNDS": "Tremblay",
-                "Z-WAVE RELAY": "LUMI",
-                "CURTAIN MOTORS": "LUMI",
-                "SENSORS": "Big Sense"
-            };
-
-            // Add brand to all products
-            for (const [category, brand] of Object.entries(brands)) {
-                if (productData[category]) {
-                    productData[category].brand = brand;
-                    if (productData[category].subProducts) {
-                        for (const subProduct of Object.values(productData[category].subProducts)) {
-                            subProduct.brand = brand;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Initialize brand data
-        enhanceProductDataWithBrands();
-
-        // PDF Download functionality
-        document.getElementById('downloadPdfBtn').addEventListener('click', generateConfiguratorPDF);
-
-        async function generateConfiguratorPDF() {
-            try {
-                // Show loading state
-                const btn = document.getElementById('downloadPdfBtn');
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">hourglass_empty</span> Generating PDF...';
-                btn.disabled = true;
-
-                // Create PDF with proper configuration
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-
-                // Set document properties
-                doc.setProperties({
-                    title: 'Home Automation Configuration',
-                    subject: 'Product Configuration Summary',
-                    creator: 'Automation Configurator'
-                });
-
-                // PAGE 1: FLOOR PLAN
-                // Add title
-                doc.setFontSize(20);
-                doc.setTextColor(40, 40, 40);
-                doc.text('Floor Plan Configuration', 105, 20, { align: 'center' });
-
-                // Add date
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 28, { align: 'center' });
-
-                let yPosition = 40;
-
-                // Capture floor plan screenshot with error handling
+        function onPointerUp(ev) {
+            if (dragging) {
+                dragging = false;
+                dragStarted = false;
                 try {
-                    const screenshot = await captureFloorPlanScreenshot();
-                    if (screenshot && screenshot !== 'data:,') { // Check for empty data URL
-                        // Calculate dimensions to fit within page width
-                        const pageWidth = doc.internal.pageSize.getWidth();
-                        const margin = 20;
-                        const imgWidth = pageWidth - (2 * margin);
-                        const imgHeight = imgWidth * 0.75; // 4:3 aspect ratio
+                    el.releasePointerCapture(ev.pointerId);
+                } catch (e) { }
+                el.classList.remove('selected');
 
-                        // Add screenshot to PDF centered
-                        doc.addImage(screenshot, 'PNG', margin, yPosition, imgWidth, imgHeight);
-
-                        // Add caption
-                        doc.setFontSize(9);
-                        doc.setTextColor(100, 100, 100);
-                        doc.text('Floor Plan Layout', 105, yPosition + imgHeight + 5, { align: 'center' });
-                    }
-                } catch (imgError) {
-                    console.warn('Could not add floor plan image:', imgError);
-                    // Add placeholder text
-                    doc.setFontSize(12);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text('Floor plan image not available', 105, 80, { align: 'center' });
+                // If it was a click (not drag), select the mark
+                if (!dragStarted) {
+                    selectedMarkId = id;
+                    updateMarkSelection();
+                    openProductModal(markData);
                 }
+            }
+        }
 
-                // Add page number for page 1
-                doc.setFontSize(8);
-                doc.setTextColor(150, 150, 150);
-                doc.text('Page 1 of 2', doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+        el.addEventListener('pointerdown', onPointerDown);
+        el.addEventListener('mouseenter', () => orientTooltip(markData));
+        document.addEventListener('pointermove', onPointerMove);
+        document.addEventListener('pointerup', onPointerUp);
 
-                // PAGE 2: PRODUCT SUMMARY
-                doc.addPage();
+        updateMarkPosition(markData);
+        updateMarkSelection();
+    }
 
-                // Reset yPosition for new page
-                yPosition = 30;
+    function updateMarkSelection() {
+        marks.forEach(m => {
+            m.el.classList.toggle('selected', m.id === selectedMarkId);
+        });
+        renderMarksList();
+    }
 
-                // Add title for product summary
-                doc.setFontSize(20);
-                doc.setTextColor(40, 40, 40);
-                doc.text('Product Configuration Summary', 105, yPosition, { align: 'center' });
-                yPosition += 10;
+    // UPDATED: Remove mark function with renumbering
+    function removeMark(id) {
+        const idx = marks.findIndex(x => x.id === id);
+        if (idx === -1) return;
+        const m = marks[idx];
+        if (m.el && m.el.parentNode) {
+            m.el.parentNode.removeChild(m.el);
+        }
+        marks.splice(idx, 1);
+        if (selectedMarkId === id) {
+            selectedMarkId = null;
+        }
+        
+        // Renumber all marks after removal
+        renumberAllMarks();
+        updateMarkSelection();
+    }
 
-                // Add subtitle
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, yPosition, { align: 'center' });
-                yPosition += 10;
+    function renderMarksList() {
+        marksListEl.innerHTML = '';
+        if (marks.length === 0) {
+            const empty = document.createElement('div');
+            empty.style.color = 'var(--muted)';
+            empty.style.fontSize = '12px';
+            empty.style.padding = '8px';
+            empty.textContent = 'No marks added yet';
+            marksListEl.appendChild(empty);
+            return;
+        }
 
-                // Generate product table
-                const productTable = generateProductTable();
+        marks.forEach(m => {
+            const item = document.createElement('div');
+            item.className = 'mark-item';
+            item.classList.toggle('active', m.id === selectedMarkId);
 
-                if (productTable.length > 0) {
-                    // Add summary statistics
-                    const totalProducts = productTable.reduce((sum, item) => sum + item.quantity, 0);
-                    const uniqueProducts = productTable.length;
+            const label = document.createElement('span');
+            label.textContent = m.seriesLabel;
+            item.appendChild(label);
 
-                    doc.setFontSize(11);
-                    doc.setTextColor(26, 115, 232);
-                    doc.text(`Total Items: ${totalProducts} | Unique Products: ${uniqueProducts}`, 105, yPosition, { align: 'center' });
-                    yPosition += 15;
+            // Add delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn';
+            deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
+            deleteBtn.style.marginLeft = '8px';
+            deleteBtn.style.padding = '4px 6px';
+            deleteBtn.style.minHeight = 'auto';
+            deleteBtn.style.fontSize = '12px';
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeMark(m.id);
+            });
+            item.appendChild(deleteBtn);
 
-                    // Prepare table data
-                    const tableData = productTable.map(item => [
-                        item.label,
-                        item.category,
-                        item.brand,
-                        item.model,
-                        item.quantity.toString()
-                    ]);
+            item.addEventListener('click', (e) => {
+                if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
+                    selectedMarkId = m.id;
+                    updateMarkSelection();
+                    openProductModal(m);
+                }
+            });
+            marksListEl.appendChild(item);
+        });
+    }
 
-                    // Calculate table width for centering
-                    const columnWidths = [15, 25, 20, 70, 15]; // Column widths in mm
-                    const totalTableWidth = columnWidths.reduce((sum, width) => sum + width, 0) + 10; // Add padding
+    /* ------------------------- ZOOMING ------------------------- */
+    function setScale(scale) {
+        imageScale = Math.max(0.3, Math.min(3, scale));
+
+        // Calculate scaled dimensions
+        const img = previewImage;
+        const containerRect = imgContainer.getBoundingClientRect();
+        const imgAspect = img.naturalWidth / img.naturalHeight;
+        const containerAspect = containerRect.width / containerRect.height;
+
+        let displayWidth, displayHeight;
+        if (imgAspect > containerAspect) {
+            displayWidth = containerRect.width;
+            displayHeight = containerRect.width / imgAspect;
+        } else {
+            displayHeight = containerRect.height;
+            displayWidth = containerRect.height * imgAspect;
+        }
+
+        imageDisplayWidth = displayWidth * imageScale;
+        imageDisplayHeight = displayHeight * imageScale;
+
+        imgInner.style.transform = `scale(${imageScale})`;
+
+        // Update all marks after zoom
+        requestAnimationFrame(() => {
+            updateImageDimensions();
+        });
+    }
+
+    imgContainer.addEventListener('wheel', (e) => {
+        if (!e.ctrlKey) return;
+        e.preventDefault();
+        const delta = -e.deltaY / 500;
+        setScale(imageScale + delta);
+    });
+
+    let pinchStartDist = 0, pinchStartScale = 1;
+    imgContainer.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            pinchStartDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            pinchStartScale = imageScale;
+        }
+    });
+
+    imgContainer.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            const d = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            const ratio = d / pinchStartDist;
+            setScale(pinchStartScale * ratio);
+        }
+    });
+
+    document.getElementById('zoomReset').addEventListener('click', () => {
+        setScale(1);
+    });
+
+    // Click outside marks to deselect
+    imgContainer.addEventListener('click', (e) => {
+        if (!e.target.closest('.mark')) {
+            selectedMarkId = null;
+            updateMarkSelection();
+        }
+    });
+
+    /* ------------------------- INIT ------------------------- */
+    buildList();
+
+    // Wait for image to load before initializing
+    if (previewImage.complete) {
+        updateImageDimensions();
+    } else {
+        previewImage.addEventListener('load', updateImageDimensions);
+    }
+
+    // Select first product
+    const firstKey = PRODUCT_ORDER[0] || Object.keys(productData)[0];
+    selectProduct(firstKey);
+    
+    /* ------------------------- PDF EXPORT FUNCTIONALITY ------------------------- */
+
+    // Add brand information to product data
+    function enhanceProductDataWithBrands() {
+        const brands = {
+            "DOOR LOCK": "LocPro",
+            "PROCESSOR": "LUMI",
+            "LUMI GLASS SERIES": "LUMI",
+            "ESCULT SERIES": "Escult",
+            "WALL MOUNT DISPLAY": "LUMI",
+            "TACTILE HEXA SERIES": "LUMI",
+            "DUO-QUAD SERIES": "LUMI",
+            "DOMOGENIE GLASS LITE SERIES": "Domogenie",
+            "TREMBLAY SOUNDS": "Tremblay",
+            "Z-WAVE RELAY": "LUMI",
+            "CURTAIN MOTORS": "LUMI",
+            "SENSORS": "Big Sense"
+        };
+
+        // Add brand to all products
+        for (const [category, brand] of Object.entries(brands)) {
+            if (productData[category]) {
+                productData[category].brand = brand;
+                if (productData[category].subProducts) {
+                    for (const subProduct of Object.values(productData[category].subProducts)) {
+                        subProduct.brand = brand;
+                    }
+                }
+            }
+        }
+    }
+
+    // Initialize brand data
+    enhanceProductDataWithBrands();
+
+    // PDF Download functionality
+    document.getElementById('downloadPdfBtn').addEventListener('click', generateConfiguratorPDF);
+
+    async function generateConfiguratorPDF() {
+        try {
+            // Show loading state
+            const btn = document.getElementById('downloadPdfBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">hourglass_empty</span> Generating PDF...';
+            btn.disabled = true;
+
+            // Create PDF with proper configuration
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Set document properties
+            doc.setProperties({
+                title: 'Home Automation Configuration',
+                subject: 'Product Configuration Summary',
+                creator: 'Automation Configurator'
+            });
+
+            // PAGE 1: FLOOR PLAN
+            // Add title
+            doc.setFontSize(20);
+            doc.setTextColor(40, 40, 40);
+            doc.text('Floor Plan Configuration', 105, 20, { align: 'center' });
+
+            // Add date
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 28, { align: 'center' });
+
+            let yPosition = 40;
+
+            // Capture floor plan screenshot with error handling
+            try {
+                const screenshot = await captureFloorPlanScreenshot();
+                if (screenshot && screenshot !== 'data:,') { // Check for empty data URL
+                    // Calculate dimensions to fit within page width
                     const pageWidth = doc.internal.pageSize.getWidth();
-                    const tableLeftMargin = (pageWidth - totalTableWidth) / 2;
+                    const margin = 20;
+                    const imgWidth = pageWidth - (2 * margin);
+                    const imgHeight = imgWidth * 0.75; // 4:3 aspect ratio
 
-                    // Add centered table
-                    doc.autoTable({
-                        startY: yPosition,
-                        head: [['Label', 'Category', 'Brand', 'Model', 'Qty']],
-                        body: tableData,
-                        theme: 'grid',
-                        headStyles: {
-                            fillColor: [26, 115, 232],
-                            textColor: 255,
-                            fontStyle: 'bold',
-                            halign: 'center'
-                        },
-                        styles: {
-                            fontSize: 8,
-                            cellPadding: 3,
-                            overflow: 'linebreak',
-                            halign: 'center',
-                            minCellHeight: 6
-                        },
-                        columnStyles: {
-                            0: { cellWidth: 15, halign: 'center' },
-                            1: { cellWidth: 25, halign: 'center' },
-                            2: { cellWidth: 20, halign: 'center' },
-                            3: { cellWidth: 70, halign: 'left' }, // Keep model left-aligned for readability
-                            4: { cellWidth: 15, halign: 'center' }
-                        },
-                        margin: { left: tableLeftMargin },
-                        tableWidth: totalTableWidth,
-                        didDrawPage: function (data) {
-                            // Add page number
-                            doc.setFontSize(8);
-                            doc.setTextColor(150, 150, 150);
-                            doc.text(`Page ${data.pageNumber} of ${doc.internal.getNumberOfPages()}`,
-                                doc.internal.pageSize.getWidth() / 2,
-                                doc.internal.pageSize.getHeight() - 10,
-                                { align: 'center' });
-                        }
-                    });
+                    // Add screenshot to PDF centered
+                    doc.addImage(screenshot, 'PNG', margin, yPosition, imgWidth, imgHeight);
 
-                    // Add footer note if there's space
-                    const finalY = doc.lastAutoTable.finalY || yPosition;
-                    if (finalY < doc.internal.pageSize.getHeight() - 30) {
+                    // Add caption
+                    doc.setFontSize(9);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text('Floor Plan Layout', 105, yPosition + imgHeight + 5, { align: 'center' });
+                }
+            } catch (imgError) {
+                console.warn('Could not add floor plan image:', imgError);
+                // Add placeholder text
+                doc.setFontSize(12);
+                doc.setTextColor(150, 150, 150);
+                doc.text('Floor plan image not available', 105, 80, { align: 'center' });
+            }
+
+            // Add page number for page 1
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text('Page 1 of 2', doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+
+            // PAGE 2: PRODUCT SUMMARY
+            doc.addPage();
+
+            // Reset yPosition for new page
+            yPosition = 30;
+
+            // Add title for product summary
+            doc.setFontSize(20);
+            doc.setTextColor(40, 40, 40);
+            doc.text('Product Configuration Summary', 105, yPosition, { align: 'center' });
+            yPosition += 10;
+
+            // Add subtitle
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, yPosition, { align: 'center' });
+            yPosition += 10;
+
+            // Generate product table
+            const productTable = generateProductTable();
+
+            if (productTable.length > 0) {
+                // Add summary statistics
+                const totalProducts = productTable.reduce((sum, item) => sum + item.quantity, 0);
+                const uniqueProducts = productTable.length;
+
+                doc.setFontSize(11);
+                doc.setTextColor(26, 115, 232);
+                doc.text(`Total Items: ${totalProducts} | Unique Products: ${uniqueProducts}`, 105, yPosition, { align: 'center' });
+                yPosition += 15;
+
+                // Prepare table data
+                const tableData = productTable.map(item => [
+                    item.label,
+                    item.category,
+                    item.brand,
+                    item.model,
+                    item.quantity.toString()
+                ]);
+
+                // Calculate table width for centering
+                const columnWidths = [15, 25, 20, 70, 15]; // Column widths in mm
+                const totalTableWidth = columnWidths.reduce((sum, width) => sum + width, 0) + 10; // Add padding
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const tableLeftMargin = (pageWidth - totalTableWidth) / 2;
+
+                // Add centered table
+                doc.autoTable({
+                    startY: yPosition,
+                    head: [['Label', 'Category', 'Brand', 'Model', 'Qty']],
+                    body: tableData,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [26, 115, 232],
+                        textColor: 255,
+                        fontStyle: 'bold',
+                        halign: 'center'
+                    },
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 3,
+                        overflow: 'linebreak',
+                        halign: 'center',
+                        minCellHeight: 6
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 15, halign: 'center' },
+                        1: { cellWidth: 25, halign: 'center' },
+                        2: { cellWidth: 20, halign: 'center' },
+                        3: { cellWidth: 70, halign: 'left' }, // Keep model left-aligned for readability
+                        4: { cellWidth: 15, halign: 'center' }
+                    },
+                    margin: { left: tableLeftMargin },
+                    tableWidth: totalTableWidth,
+                    didDrawPage: function (data) {
+                        // Add page number
                         doc.setFontSize(8);
                         doc.setTextColor(150, 150, 150);
-                        doc.text('* This is an automated configuration summary. All specifications are subject to change.',
-                            105, finalY + 10, { align: 'center' });
+                        doc.text(`Page ${data.pageNumber} of ${doc.internal.getNumberOfPages()}`,
+                            doc.internal.pageSize.getWidth() / 2,
+                            doc.internal.pageSize.getHeight() - 10,
+                            { align: 'center' });
                     }
-                } else {
-                    // No products message
-                    doc.setFontSize(16);
-                    doc.setTextColor(100, 100, 100);
-                    doc.text('No Products Configured', 105, 80, { align: 'center' });
-                    doc.setFontSize(12);
-                    doc.text('Add products to the floor plan to generate a summary.', 105, 95, { align: 'center' });
-
-                    // Add page number
-                    doc.setFontSize(8);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text('Page 2 of 2', 105, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
-                }
-
-                // Save PDF
-                doc.save(`home-automation-configuration-${new Date().toISOString().split('T')[0]}.pdf`);
-
-                // Show success notification
-                showNotification('PDF generated successfully!', 'success');
-
-            } catch (error) {
-                console.error('PDF generation error:', error);
-                showNotification('Error generating PDF: ' + error.message, 'error');
-            } finally {
-                // Always reset button state
-                const btn = document.getElementById('downloadPdfBtn');
-                btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">download</span> DOWNLOAD CONFIGURATOR PDF';
-                btn.disabled = false;
-            }
-        }
-        async function captureFloorPlanScreenshot() {
-            try {
-                const imageContainer = document.getElementById('imgContainer');
-
-                // Use html2canvas directly on the container
-                const canvas = await html2canvas(imageContainer, {
-                    backgroundColor: '#ffffff',
-                    scale: 1, // Reduce scale for better compatibility
-                    useCORS: true,
-                    logging: false,
-                    removeContainer: true // Clean up cloned elements
                 });
 
-                return canvas.toDataURL('image/png');
-            } catch (error) {
-                console.error('Screenshot capture error:', error);
-
-                // Fallback: return a blank image or handle gracefully
-                const canvas = document.createElement('canvas');
-                canvas.width = 800;
-                canvas.height = 600;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#f8f9fa';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#5f6368';
-                ctx.font = '16px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('Floor Plan Image', canvas.width / 2, canvas.height / 2);
-
-                return canvas.toDataURL('image/png');
-            }
-        }
-        function generateProductTable() {
-            if (marks.length === 0) return [];
-
-            // Group marks by series label and count quantities
-            const productMap = new Map();
-
-            marks.forEach(mark => {
-                const key = mark.seriesLabel;
-                if (!productMap.has(key)) {
-                    // Get product details
-                    let category = mark.categoryName || 'Unknown';
-                    let model = mark.modelName || 'Unknown';
-                    let brand = 'LUMI'; // Default brand
-
-                    // Try to get brand from product data
-                    if (mark.categoryName && productData[mark.categoryName]) {
-                        brand = productData[mark.categoryName].brand || brand;
-
-                        // Try to get model-specific brand
-                        if (mark.modelName && productData[mark.categoryName].subProducts) {
-                            const subProduct = productData[mark.categoryName].subProducts[mark.modelName];
-                            if (subProduct && subProduct.brand) {
-                                brand = subProduct.brand;
-                            }
-                        }
-                    }
-
-                    // Handle relay items specially
-                    if (mark.categoryName === 'Z-WAVE RELAY' && mark.relayItems && mark.relayItems.length > 0) {
-                        // For relays, we'll create separate entries for each relay type
-                        mark.relayItems.forEach(relayItem => {
-                            const relayKey = `${key}-${relayItem.name}`;
-                            if (!productMap.has(relayKey)) {
-                                productMap.set(relayKey, {
-                                    label: key,
-                                    category: 'Relay Module',
-                                    brand: 'LUMI',
-                                    model: relayItem.name,
-                                    quantity: relayItem.quantity
-                                });
-                            } else {
-                                productMap.get(relayKey).quantity += relayItem.quantity;
-                            }
-                        });
-                        return; // Skip the main mark for relays
-                    }
-
-                    productMap.set(key, {
-                        label: key,
-                        category: category,
-                        brand: brand,
-                        model: model,
-                        quantity: 1
-                    });
-                } else {
-                    // Increment quantity for existing product
-                    const existing = productMap.get(key);
-                    existing.quantity += 1;
+                // Add footer note if there's space
+                const finalY = doc.lastAutoTable.finalY || yPosition;
+                if (finalY < doc.internal.pageSize.getHeight() - 30) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('* This is an automated configuration summary. All specifications are subject to change.',
+                        105, finalY + 10, { align: 'center' });
                 }
+            } else {
+                // No products message
+                doc.setFontSize(16);
+                doc.setTextColor(100, 100, 100);
+                doc.text('No Products Configured', 105, 80, { align: 'center' });
+                doc.setFontSize(12);
+                doc.text('Add products to the floor plan to generate a summary.', 105, 95, { align: 'center' });
+
+                // Add page number
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('Page 2 of 2', 105, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+            }
+
+            // Save PDF
+            doc.save(`home-automation-configuration-${new Date().toISOString().split('T')[0]}.pdf`);
+
+            // Show success notification
+            showNotification('PDF generated successfully!', 'success');
+
+        } catch (error) {
+            console.error('PDF generation error:', error);
+            showNotification('Error generating PDF: ' + error.message, 'error');
+        } finally {
+            // Always reset button state
+            const btn = document.getElementById('downloadPdfBtn');
+            btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">download</span> DOWNLOAD CONFIGURATOR PDF';
+            btn.disabled = false;
+        }
+    }
+
+    async function captureFloorPlanScreenshot() {
+        try {
+            const imageContainer = document.getElementById('imgContainer');
+
+            // Use html2canvas directly on the container
+            const canvas = await html2canvas(imageContainer, {
+                backgroundColor: '#ffffff',
+                scale: 1, // Reduce scale for better compatibility
+                useCORS: true,
+                logging: false,
+                removeContainer: true // Clean up cloned elements
             });
 
-            // Convert map to array and sort by label
-            return Array.from(productMap.values())
-                .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
+            return canvas.toDataURL('image/png');
+        } catch (error) {
+            console.error('Screenshot capture error:', error);
+
+            // Fallback: return a blank image or handle gracefully
+            const canvas = document.createElement('canvas');
+            canvas.width = 800;
+            canvas.height = 600;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#5f6368';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Floor Plan Image', canvas.width / 2, canvas.height / 2);
+
+            return canvas.toDataURL('image/png');
         }
-
-        // Notification function
-        function showNotification(message, type = 'info') {
-            // Remove existing notification
-            const existingNotification = document.querySelector('.pdf-notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-
-            const notification = document.createElement('div');
-            notification.className = `pdf-notification pdf-notification-${type}`;
-            notification.innerHTML = `
-        <span class="pdf-notification-icon">${type === 'success' ? '✓' : '⚠'}</span>
-        <span class="pdf-notification-text">${message}</span>
-    `;
-
-            // Add styles
-            notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 14px;
-        font-weight: 500;
-        animation: slideInRight 0.3s ease;
-    `;
-
-            document.body.appendChild(notification);
-
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.animation = 'slideOutRight 0.3s ease';
-                    setTimeout(() => notification.remove(), 300);
-                }
-            }, 5000);
-        }
-
-        // Add CSS animations for notifications
-        const style = document.createElement('style');
-        style.textContent = `
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
     }
-    
-    @keyframes slideOutRight {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    
-    .pdf-notification-icon {
-        font-weight: bold;
-        font-size: 16px;
-    }
-`;
-        document.head.appendChild(style);
-        /* ------------------------- IMPORT FLOOR PLAN FROM PLANNER ------------------------- */
 
-        function importFloorPlanFromPlanner() {
-            try {
-                const exportedPlan = sessionStorage.getItem('exportedPlan');
-                const exportedPlanBounds = sessionStorage.getItem('exportedPlanBounds');
-                const exportedPlanData = sessionStorage.getItem('exportedPlanData');
+    function generateProductTable() {
+        if (marks.length === 0) return [];
 
-                if (exportedPlan) {
-                    // Replace the preview image with the exported floor plan
-                    previewImage.src = exportedPlan;
+        // Group marks by series label and count quantities
+        const productMap = new Map();
 
-                    // Update image dimensions after load
-                    previewImage.onload = function () {
-                        updateImageDimensions();
+        marks.forEach(mark => {
+            const key = mark.seriesLabel;
+            if (!productMap.has(key)) {
+                // Get product details
+                let category = mark.categoryName || 'Unknown';
+                let model = mark.modelName || 'Unknown';
+                let brand = 'LUMI'; // Default brand
 
-                        // Show success notification
-                        showNotification('Floor plan imported successfully!', 'success');
+                // Try to get brand from product data
+                if (mark.categoryName && productData[mark.categoryName]) {
+                    brand = productData[mark.categoryName].brand || brand;
 
-                        // Clear the stored data (optional - comment out if you want to keep it)
-                        // sessionStorage.removeItem('exportedPlan');
-                        // sessionStorage.removeItem('exportedPlanBounds');
-                        // sessionStorage.removeItem('exportedPlanData');
-                    };
-
-                    // Add imported plan info to the UI
-                    addImportedPlanInfo(exportedPlanData);
-                }
-            } catch (error) {
-                console.error('Import error:', error);
-                showNotification('Error importing floor plan', 'error');
-            }
-        }
-
-        function addImportedPlanInfo(planData) {
-            try {
-                if (planData) {
-                    const data = JSON.parse(planData);
-                    const exportTime = new Date(data.exportTime).toLocaleString();
-                    const wallCount = data.walls ? data.walls.length : 0;
-                    const furnitureCount = data.furniture ? data.furniture.length : 0;
-
-                    // Create info overlay
-                    const infoOverlay = document.createElement('div');
-                    infoOverlay.id = 'imported-plan-info';
-                    infoOverlay.style.cssText = `
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                background: rgba(26, 115, 232, 0.9);
-                color: white;
-                padding: 8px 12px;
-                border-radius: 6px;
-                font-size: 12px;
-                z-index: 100;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255,255,255,0.2);
-            `;
-
-                    infoOverlay.innerHTML = `
-                <div style="font-weight: bold; margin-bottom: 4px;">Imported Floor Plan</div>
-                <div>Walls: ${wallCount} | Furniture: ${furnitureCount}</div>
-                <div style="font-size: 10px; opacity: 0.8;">Exported: ${exportTime}</div>
-            `;
-
-                    // Remove existing info if any
-                    const existingInfo = document.getElementById('imported-plan-info');
-                    if (existingInfo) {
-                        existingInfo.remove();
-                    }
-
-                    document.querySelector('.right-panel').appendChild(infoOverlay);
-
-                    // Auto-remove after 10 seconds
-                    setTimeout(() => {
-                        if (infoOverlay.parentNode) {
-                            infoOverlay.style.opacity = '0';
-                            infoOverlay.style.transition = 'opacity 0.5s';
-                            setTimeout(() => infoOverlay.remove(), 500);
+                    // Try to get model-specific brand
+                    if (mark.modelName && productData[mark.categoryName].subProducts) {
+                        const subProduct = productData[mark.categoryName].subProducts[mark.modelName];
+                        if (subProduct && subProduct.brand) {
+                            brand = subProduct.brand;
                         }
-                    }, 10000);
+                    }
                 }
-            } catch (error) {
-                console.error('Error adding plan info:', error);
-            }
-        }
 
-        // Check for exported plan on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            // Small delay to ensure everything is loaded
-            setTimeout(() => {
-                importFloorPlanFromPlanner();
-            }, 500);
+                // Handle relay items specially
+                if (mark.categoryName === 'Z-WAVE RELAY' && mark.relayItems && mark.relayItems.length > 0) {
+                    // For relays, we'll create separate entries for each relay type
+                    mark.relayItems.forEach(relayItem => {
+                        const relayKey = `${key}-${relayItem.name}`;
+                        if (!productMap.has(relayKey)) {
+                            productMap.set(relayKey, {
+                                label: key,
+                                category: 'Relay Module',
+                                brand: 'LUMI',
+                                model: relayItem.name,
+                                quantity: relayItem.quantity
+                            });
+                        } else {
+                            productMap.get(relayKey).quantity += relayItem.quantity;
+                        }
+                    });
+                    return; // Skip the main mark for relays
+                }
+
+                productMap.set(key, {
+                    label: key,
+                    category: category,
+                    brand: brand,
+                    model: model,
+                    quantity: 1
+                });
+            } else {
+                // Increment quantity for existing product
+                const existing = productMap.get(key);
+                existing.quantity += 1;
+            }
         });
 
-        // Add this to panel.html script section, after the DOMContentLoaded event
-        function checkForUploadedPlan() {
-            const uploadedPlan = sessionStorage.getItem('uploadedFloorPlan');
-            if (uploadedPlan) {
-                // Replace the default preview image with the uploaded one
-                previewImage.src = uploadedPlan;
+        // Convert map to array and sort by label
+        return Array.from(productMap.values())
+            .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
+    }
 
-                // Clear the stored image after use (optional)
-                sessionStorage.removeItem('uploadedFloorPlan');
-
-                // Show success notification
-                showNotification('Floor plan uploaded successfully!', 'success');
-            }
+    // Notification function
+    function showNotification(message, type = 'info') {
+        // Remove existing notification
+        const existingNotification = document.querySelector('.pdf-notification');
+        if (existingNotification) {
+            existingNotification.remove();
         }
 
-        // Call this function when panel.html loads
-        document.addEventListener('DOMContentLoaded', function () {
-            // ... existing code ...
+        const notification = document.createElement('div');
+        notification.className = `pdf-notification pdf-notification-${type}`;
+        notification.innerHTML = `
+            <span class="pdf-notification-icon">${type === 'success' ? '✓' : '⚠'}</span>
+            <span class="pdf-notification-text">${message}</span>
+        `;
 
-            // Check for uploaded floor plan
-            checkForUploadedPlan();
-        });
-    </script>
+        // Add styles
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideInRight 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, 5000);
+    }
+
+    // Add CSS animations for notifications
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        .pdf-notification-icon {
+            font-weight: bold;
+            font-size: 16px;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    /* ------------------------- IMPORT FLOOR PLAN FROM PLANNER ------------------------- */
+
+    function importFloorPlanFromPlanner() {
+        try {
+            const exportedPlan = sessionStorage.getItem('exportedPlan');
+            const exportedPlanBounds = sessionStorage.getItem('exportedPlanBounds');
+            const exportedPlanData = sessionStorage.getItem('exportedPlanData');
+
+            if (exportedPlan) {
+                // Replace the preview image with the exported floor plan
+                previewImage.src = exportedPlan;
+
+                // Update image dimensions after load
+                previewImage.onload = function () {
+                    updateImageDimensions();
+
+                    // Show success notification
+                    showNotification('Floor plan imported successfully!', 'success');
+
+                    // Clear the stored data (optional - comment out if you want to keep it)
+                    // sessionStorage.removeItem('exportedPlan');
+                    // sessionStorage.removeItem('exportedPlanBounds');
+                    // sessionStorage.removeItem('exportedPlanData');
+                };
+
+                // Add imported plan info to the UI
+                addImportedPlanInfo(exportedPlanData);
+            }
+        } catch (error) {
+            console.error('Import error:', error);
+            showNotification('Error importing floor plan', 'error');
+        }
+    }
+
+    function addImportedPlanInfo(planData) {
+        try {
+            if (planData) {
+                const data = JSON.parse(planData);
+                const exportTime = new Date(data.exportTime).toLocaleString();
+                const wallCount = data.walls ? data.walls.length : 0;
+                const furnitureCount = data.furniture ? data.furniture.length : 0;
+
+                // Create info overlay
+                const infoOverlay = document.createElement('div');
+                infoOverlay.id = 'imported-plan-info';
+                infoOverlay.style.cssText = `
+                    position: absolute;
+                    top: 10px;
+                    left: 10px;
+                    background: rgba(26, 115, 232, 0.9);
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    z-index: 100;
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255,255,255,0.2);
+                `;
+
+                infoOverlay.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 4px;">Imported Floor Plan</div>
+                    <div>Walls: ${wallCount} | Furniture: ${furnitureCount}</div>
+                    <div style="font-size: 10px; opacity: 0.8;">Exported: ${exportTime}</div>
+                `;
+
+                // Remove existing info if any
+                const existingInfo = document.getElementById('imported-plan-info');
+                if (existingInfo) {
+                    existingInfo.remove();
+                }
+
+                document.querySelector('.right-panel').appendChild(infoOverlay);
+
+                // Auto-remove after 10 seconds
+                setTimeout(() => {
+                    if (infoOverlay.parentNode) {
+                        infoOverlay.style.opacity = '0';
+                        infoOverlay.style.transition = 'opacity 0.5s';
+                        setTimeout(() => infoOverlay.remove(), 500);
+                    }
+                }, 10000);
+            }
+        } catch (error) {
+            console.error('Error adding plan info:', error);
+        }
+    }
+
+    // Check for exported plan on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        // Small delay to ensure everything is loaded
+        setTimeout(() => {
+            importFloorPlanFromPlanner();
+        }, 500);
+    });
+
+    // Add this to panel.html script section, after the DOMContentLoaded event
+    function checkForUploadedPlan() {
+        const uploadedPlan = sessionStorage.getItem('uploadedFloorPlan');
+        if (uploadedPlan) {
+            // Replace the default preview image with the uploaded one
+            previewImage.src = uploadedPlan;
+
+            // Clear the stored image after use (optional)
+            sessionStorage.removeItem('uploadedFloorPlan');
+
+            // Show success notification
+            showNotification('Floor plan uploaded successfully!', 'success');
+        }
+    }
+
+    // Call this function when panel.html loads
+    document.addEventListener('DOMContentLoaded', function () {
+        // ... existing code ...
+
+        // Check for uploaded floor plan
+        checkForUploadedPlan();
+    });
+</script>
 
 </body>
 
