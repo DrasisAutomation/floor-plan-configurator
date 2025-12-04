@@ -3242,3 +3242,520 @@ function generateProductTable() {
         dbBoxes: dbBoxesTable.sort((a, b) => a.label.localeCompare(b.label))
     };
 }
+/* ------------------------- PROJECT SAVE/LOAD FUNCTIONS ------------------------- */
+
+// Add event listeners for save/load buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners for project management buttons
+    const saveProjectBtn = document.getElementById('saveProjectBtn');
+    const loadProjectBtn = document.getElementById('loadProjectBtn');
+    const newProjectBtn = document.getElementById('newProjectBtn');
+    const projectFileInput = document.getElementById('projectFileInput');
+
+    if (saveProjectBtn) {
+        saveProjectBtn.addEventListener('click', saveProject);
+    }
+
+    if (loadProjectBtn) {
+        loadProjectBtn.addEventListener('click', () => {
+            projectFileInput.click();
+        });
+    }
+
+    if (newProjectBtn) {
+        newProjectBtn.addEventListener('click', createNewProject);
+    }
+
+    if (projectFileInput) {
+        projectFileInput.addEventListener('change', loadProjectFromFile);
+    }
+});
+
+// Save current project to a JSON file
+function saveProject() {
+    try {
+        const btn = document.getElementById('saveProjectBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">hourglass_empty</span> Saving...';
+        btn.disabled = true;
+
+        // Build project data object
+        const projectData = {
+            version: '2.0',
+            timestamp: new Date().toISOString(),
+            floorPlanImage: previewImage.src,
+            marks: marks.map(mark => ({
+                x: mark.x,
+                y: mark.y,
+                size: mark.size,
+                shape: mark.shape,
+                seriesCode: mark.seriesCode,
+                seriesLabel: mark.seriesLabel,
+                categoryName: mark.categoryName,
+                modelName: mark.modelName,
+                desc: mark.desc,
+                features: mark.features,
+                imageSrc: mark.imageSrc,
+                relayItems: mark.relayItems,
+                isDBBox: mark.isDBBox,
+                brand: mark.brand,
+                sizeFt: mark.sizeFt,
+                // Include product reference data
+                productKey: currentProduct,
+                subProductKey: currentSubProduct
+            })),
+            wires: wires.map(wire => ({
+                id: wire.id,
+                startMarkLabel: wire.startMark.seriesLabel,
+                endMarkLabel: wire.endMark.seriesLabel,
+                wireType: wire.wireType,
+                mode: wire.mode,
+                curveValue: wire.curveValue,
+                points: wire.points.map(p => ({ x: p.x, y: p.y })),
+                color: wire.color
+            })),
+            relayState: relayState,
+            lastRelaySelectionLabel: lastRelaySelectionLabel,
+            currentProduct: currentProduct,
+            currentSubProduct: currentSubProduct,
+            seriesCounters: seriesCounters,
+            markCounter: markCounter,
+            imageScale: imageScale,
+            // Save DB box specifications from productData
+            dbBoxSpecs: Object.keys(productData)
+                .filter(key => productData[key].isDBBox)
+                .reduce((specs, key) => {
+                    specs[key] = {
+                        brand: productData[key].brand || '',
+                        size: productData[key].size || ''
+                    };
+                    return specs;
+                }, {})
+        };
+
+        // Convert to JSON string
+        const jsonString = JSON.stringify(projectData, null, 2);
+        
+        // Create blob and download
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `floor-plan-configuration-${new Date().toISOString().split('T')[0]}.dmp`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showNotification('Project saved successfully!', 'success');
+
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 1000);
+
+    } catch (error) {
+        console.error('Save error:', error);
+        showNotification('Error saving project: ' + error.message, 'error');
+        
+        const btn = document.getElementById('saveProjectBtn');
+        btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">save</span> SAVE PROJECT';
+        btn.disabled = false;
+    }
+}
+
+// Load project from file
+function loadProjectFromFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const projectData = JSON.parse(e.target.result);
+            loadProject(projectData);
+            showNotification('Project loaded successfully!', 'success');
+        } catch (error) {
+            console.error('Load error:', error);
+            showNotification('Error loading project: Invalid file format', 'error');
+        }
+        
+        // Reset file input
+        event.target.value = '';
+    };
+    
+    reader.readAsText(file);
+}
+
+// Load project from data object
+function loadProject(projectData) {
+    // Validate project data
+    if (!projectData.version || !projectData.marks || !projectData.wires) {
+        showNotification('Invalid project file format', 'error');
+        return;
+    }
+
+    // Clear current project
+    clearAllMarksAndWires();
+    
+    // Reset counters
+    markCounter = 0;
+    Object.keys(seriesCounters).forEach(key => delete seriesCounters[key]);
+
+    // Load floor plan image
+    if (projectData.floorPlanImage) {
+        previewImage.src = projectData.floorPlanImage;
+        previewImage.onload = function() {
+            // Load the rest after image loads
+            loadProjectData(projectData);
+        };
+    } else {
+        loadProjectData(projectData);
+    }
+}
+
+// Load project data after image is ready
+function loadProjectData(projectData) {
+    // Restore image scale
+    if (projectData.imageScale) {
+        setScale(projectData.imageScale);
+    }
+
+    // Restore DB box specifications
+    if (projectData.dbBoxSpecs) {
+        Object.keys(projectData.dbBoxSpecs).forEach(key => {
+            if (productData[key]) {
+                productData[key].brand = projectData.dbBoxSpecs[key].brand;
+                productData[key].size = projectData.dbBoxSpecs[key].size;
+            }
+        });
+    }
+
+    // Create a mapping from seriesLabel to mark object for wire restoration
+    const markMap = new Map();
+    
+    // Restore marks
+    projectData.marks.forEach(savedMark => {
+        // Find the actual product data
+        let productDataForMark;
+        if (savedMark.productKey && productData[savedMark.productKey]) {
+            if (savedMark.subProductKey && productData[savedMark.productKey].subProducts) {
+                productDataForMark = productData[savedMark.productKey].subProducts[savedMark.subProductKey];
+            } else {
+                productDataForMark = productData[savedMark.productKey];
+            }
+        }
+
+        // Create mark object
+        const mark = {
+            id: 'mark-' + (++markCounter),
+            x: savedMark.x,
+            y: savedMark.y,
+            size: savedMark.size,
+            shape: savedMark.shape || 'circle',
+            seriesCode: savedMark.seriesCode,
+            seriesLabel: savedMark.seriesLabel,
+            categoryName: savedMark.categoryName,
+            modelName: savedMark.modelName,
+            desc: savedMark.desc,
+            features: savedMark.features || [],
+            imageSrc: savedMark.imageSrc,
+            relayItems: savedMark.relayItems || [],
+            isDBBox: savedMark.isDBBox || false,
+            brand: savedMark.brand || '',
+            sizeFt: savedMark.sizeFt || ''
+        };
+
+        // Update series counter
+        if (!seriesCounters[mark.seriesCode]) {
+            seriesCounters[mark.seriesCode] = 0;
+        }
+        const num = parseInt(mark.seriesLabel.substring(mark.seriesCode.length)) || 0;
+        seriesCounters[mark.seriesCode] = Math.max(seriesCounters[mark.seriesCode], num);
+
+        // Create DOM element
+        const el = document.createElement('div');
+        el.className = 'mark ' + mark.shape;
+        el.dataset.id = mark.id;
+        el.dataset.size = mark.size;
+        el.dataset.shape = mark.shape;
+
+        const badge = document.createElement('div');
+        badge.className = 'label-badge';
+        badge.textContent = mark.seriesLabel;
+        el.appendChild(badge);
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+
+        const tooltipContent = document.createElement('div');
+        tooltipContent.className = 'tooltip-content';
+
+        const tooltipTitle = document.createElement('div');
+        tooltipTitle.className = 'tooltip-title';
+        tooltipTitle.textContent = mark.categoryName || 'Product';
+
+        const tooltipModel = document.createElement('div');
+        tooltipModel.className = 'tooltip-model';
+        tooltipModel.textContent = mark.modelName || '—';
+
+        tooltipContent.appendChild(tooltipTitle);
+        tooltipContent.appendChild(tooltipModel);
+        tooltip.appendChild(tooltipContent);
+        el.appendChild(tooltip);
+
+        imgInner.appendChild(el);
+
+        // Add event listeners for dragging
+        let dragging = false;
+        let startX = 0, startY = 0;
+        let startMarkX = 0, startMarkY = 0;
+        let dragStarted = false;
+
+        function onPointerDown(ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+            el.setPointerCapture(ev.pointerId);
+            dragging = true;
+            dragStarted = false;
+            startX = ev.clientX;
+            startY = ev.clientY;
+            startMarkX = mark.x;
+            startMarkY = mark.y;
+            selectedMarkId = mark.id;
+            updateMarkSelection();
+            el.classList.add('selected');
+        }
+
+        function onPointerMove(ev) {
+            if (!dragging) return;
+
+            const dx = ev.clientX - startX;
+            const dy = ev.clientY - startY;
+
+            if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+                dragStarted = true;
+            }
+
+            if (!dragStarted) return;
+
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            const transform = getImageTransform();
+            if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
+
+            const imgRect = previewImage.getBoundingClientRect();
+            const scaleX = imageNaturalWidth / imgRect.width;
+            const scaleY = imageNaturalHeight / imgRect.height;
+
+            const imageDx = dx * scaleX;
+            const imageDy = dy * scaleY;
+
+            let newX = startMarkX + imageDx;
+            let newY = startMarkY + imageDy;
+
+            newX = Math.max(0, Math.min(imageNaturalWidth - mark.size, newX));
+            newY = Math.max(0, Math.min(imageNaturalHeight - mark.size, newY));
+
+            mark.x = newX;
+            mark.y = newY;
+
+            updateMarkPosition(mark);
+            updateAllWires();
+        }
+
+        function onPointerUp(ev) {
+            if (dragging) {
+                dragging = false;
+                dragStarted = false;
+                try {
+                    el.releasePointerCapture(ev.pointerId);
+                } catch (e) {}
+                el.classList.remove('selected');
+
+                if (!dragStarted) {
+                    selectedMarkId = mark.id;
+                    updateMarkSelection();
+                    openProductModal(mark);
+                }
+            }
+        }
+
+        el.addEventListener('pointerdown', onPointerDown);
+        el.addEventListener('mouseenter', () => orientTooltip(mark));
+        document.addEventListener('pointermove', onPointerMove);
+        document.addEventListener('pointerup', onPointerUp);
+
+        // Click to open modal
+        el.addEventListener('click', function(e) {
+            if (!dragStarted && !isWireMode) {
+                selectedMarkId = mark.id;
+                updateMarkSelection();
+                openProductModal(mark);
+            }
+        });
+
+        // Store reference
+        mark.el = el;
+        mark.tooltip = tooltip;
+        marks.push(mark);
+        markMap.set(mark.seriesLabel, mark);
+    });
+
+    // Update marks display
+    updateAllMarks();
+    renderMarksList();
+
+    // Restore wires
+    projectData.wires.forEach(savedWire => {
+        const startMark = markMap.get(savedWire.startMarkLabel);
+        const endMark = markMap.get(savedWire.endMarkLabel);
+
+        if (!startMark || !endMark) {
+            console.warn('Could not find marks for wire:', savedWire.startMarkLabel, savedWire.endMarkLabel);
+            return;
+        }
+
+        // Set current wire type for creation
+        const originalWireType = currentWireType;
+        currentWireType = savedWire.wireType;
+
+        let wireElement;
+        if (savedWire.mode === 'curve') {
+            wireElement = createWireElement(startMark, endMark, savedWire.curveValue, false);
+        } else {
+            // For points mode, create wire with points
+            wireElement = createWireElementWithPoints(startMark, endMark, savedWire.points, false);
+        }
+
+        // Restore original wire type
+        currentWireType = originalWireType;
+
+        if (!wireElement) return;
+
+        const wire = {
+            id: savedWire.id || `wire-${Date.now()}`,
+            startMark: startMark,
+            endMark: endMark,
+            element: wireElement,
+            mode: savedWire.mode,
+            curveValue: savedWire.curveValue,
+            points: savedWire.points || [],
+            wireType: savedWire.wireType,
+            color: savedWire.color || getWireTypeInfo(savedWire.wireType).color
+        };
+
+        wires.push(wire);
+    });
+
+    // Restore relay state
+    if (projectData.relayState) {
+        Object.assign(relayState, projectData.relayState);
+        lastRelaySelectionLabel = projectData.lastRelaySelectionLabel || '';
+    }
+
+    // Restore current product selection
+    if (projectData.currentProduct) {
+        setTimeout(() => {
+            selectProduct(projectData.currentProduct, projectData.currentSubProduct);
+            if (projectData.currentProduct === 'Z-WAVE RELAY') {
+                updateRelayOverlay();
+            }
+        }, 100);
+    }
+
+    // Update wires list if wire controls are visible
+    if (currentWireType) {
+        updateWiresList();
+    }
+
+    showNotification(`Project loaded: ${projectData.marks.length} marks, ${projectData.wires.length} wires`, 'success');
+}
+
+
+// Helper function to create wire element with points
+function createWireElementWithPoints(startMark, endMark, points, isPreview = false) {
+    const transform = getImageTransform();
+    if (!transform) return null;
+
+    const startX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
+    const startY = startMark.y * transform.scaleY + transform.imgOffsetY + (startMark.size * transform.scaleY / 2);
+    const endX = endMark.x * transform.scaleX + transform.imgOffsetX + (endMark.size * transform.scaleX / 2);
+    const endY = endMark.y * transform.scaleY + transform.imgOffsetY + (endMark.size * transform.scaleY / 2);
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("class", isPreview ? "wire-preview" : "wire");
+    svg.setAttribute("data-wire-type", currentWireType);
+    svg.style.position = "absolute";
+    svg.style.top = "0";
+    svg.style.left = "0";
+    svg.style.width = "100%";
+    svg.style.height = "100%";
+    svg.style.pointerEvents = isPreview ? "none" : "auto";
+    svg.style.zIndex = isPreview ? "5" : "9";
+
+    const wireTypeInfo = getWireTypeInfo(currentWireType);
+    const wireColor = wireTypeInfo.color;
+
+    let pathData = `M ${startX} ${startY}`;
+
+    points.forEach(point => {
+        const pointX = point.x * transform.scaleX + transform.imgOffsetX;
+        const pointY = point.y * transform.scaleY + transform.imgOffsetY;
+        pathData += ` L ${pointX} ${pointY}`;
+    });
+
+    pathData += ` L ${endX} ${endY}`;
+
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", pathData);
+    path.setAttribute("stroke", isPreview ? wireColor + "80" : wireColor);
+    path.setAttribute("stroke-width", isPreview ? "3" : "4");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke-dasharray", isPreview ? "5,5" : "none");
+
+    if (!isPreview) {
+        path.style.cursor = "pointer";
+        path.addEventListener('click', function(e) {
+            e.stopPropagation();
+            selectWire(startMark, endMark, currentWireType);
+        });
+
+        makeWireDraggable(path, startMark, endMark);
+    }
+
+    svg.appendChild(path);
+
+    const startCircle = document.createElementNS(svgNS, "circle");
+    startCircle.setAttribute("cx", startX);
+    startCircle.setAttribute("cy", startY);
+    startCircle.setAttribute("r", "6");
+    startCircle.setAttribute("fill", wireColor);
+    startCircle.setAttribute("stroke", "#fff");
+    startCircle.setAttribute("stroke-width", "2");
+
+    const endCircle = document.createElementNS(svgNS, "circle");
+    endCircle.setAttribute("cx", endX);
+    endCircle.setAttribute("cy", endY);
+    endCircle.setAttribute("r", "6");
+    endCircle.setAttribute("fill", wireColor);
+    endCircle.setAttribute("stroke", "#fff");
+    endCircle.setAttribute("stroke-width", "2");
+
+    svg.appendChild(startCircle);
+    svg.appendChild(endCircle);
+
+    imgInner.appendChild(svg);
+
+    return {
+        svg,
+        path,
+        startCircle,
+        endCircle,
+        startX, startY, endX, endY
+    };
+}

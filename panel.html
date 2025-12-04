@@ -839,6 +839,33 @@
                 display: flex !important;
             }
         }
+
+        /* Project management buttons styling */
+        #saveProjectBtn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-color: #4CAF50;
+        }
+
+        #saveProjectBtn:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            border-color: #45a049;
+        }
+
+        #loadProjectBtn {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            border-color: #2196F3;
+            color: white;
+        }
+
+        #loadProjectBtn:hover {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            border-color: #1976D2;
+        }
+
+        #newProjectBtn:hover {
+            background: #ffebee;
+            border-color: #f44336;
+        }
     </style>
 </head>
 
@@ -939,9 +966,29 @@
                         Generates PDF with floor plan and product summary
                     </div>
                 </div>
+                <!-- Add this right after the Export Configuration section -->
+                <div class="mark-controls-box" style="margin-top: 20px;">
+                    <h3>Project Management</h3>
+                    <div class="form-group">
+                        <button id="saveProjectBtn" class="btn primary full-width">
+                            <span class="material-icons" style="font-size: 16px; margin-right: 8px;">save</span>
+                            SAVE PROJECT
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <button id="loadProjectBtn" class="btn full-width">
+                            <span class="material-icons" style="font-size: 16px; margin-right: 8px;">folder_open</span>
+                            LOAD PROJECT
+                        </button>
+                    </div>
+                    <div style="margin-top: 12px; color: var(--muted); font-size: 11px; text-align: center;">
+                        Save your complete floor plan configuration for later editing
+                    </div>
+                </div>
             </div>
         </div>
-
+        <!-- Hidden file input for loading projects -->
+        <input type="file" id="projectFileInput" accept=".json,.dmp" style="display: none;">
         <!-- RIGHT: Full Image Container (60%) -->
         <div class="right-panel">
             <div class="image-wrap">
