@@ -950,9 +950,7 @@
             <div class="image-wrap">
                 <div class="img-container" id="imgContainer">
                     <div class="img-inner" id="imgInner">
-                        <img id="previewImage"
-                            src="https://virtualtourslasvegas.com/wp-content/uploads/2023/01/1701-N-Green-Valley-Pkwy-8A.jpg"
-                            alt="preview">
+                        <img id="previewImage" src="" alt="Floor plan preview">
                     </div>
                 </div>
             </div>
@@ -977,7 +975,6 @@
             </div>
         </div>
     </div>
-
 <script>
     /* ------------------------- PRODUCT DATA ------------------------- */
     const productData = {
@@ -1079,19 +1076,19 @@
                     title: "LUMI MINI",
                     desc: "Intel N2830 Dual Core, 4GB RAM + 128GB SSD, dual USB 2.0 & 3.0 ports, compact aluminium body, Gigabit Ethernet & Wi-Fi.",
                     img: "./images/processor/21.png",
-                    features: ["Intel N2830 Dual Core", "4GB RAM + 128GB SSD", "Dual USB 2.0 & 3.0 ports", "Compact aluminium body", "Gigabit Ethernet & Wi-Fi"]
+                    features: ["Intel N2830 Dual Core", "4GB RAM + 128GB SSD", "Dual USB 2.0 & 3.0 ports", "Compact aluminium body", "Gigabit Ethereum & Wi-Fi"]
                 },
                 "LUMI PLUS": {
                     title: "LUMI PLUS",
                     desc: "Intel N5105 (2.0–2.9 GHz), 8GB RAM + 128GB SSD, dual USB 2.0 & USB 3.0 ports, compact plastic body, Gigabit Ethernet & Wi-Fi.",
                     img: "./images/processor/22.png",
-                    features: ["Intel N5105 (2.0–2.9 GHz)", "8GB RAM + 128GB SSD", "Dual USB 2.0 & USB 3.0 ports", "Compact plastic body", "Gigabit Ethernet & Wi-Fi"]
+                    features: ["Intel N5105 (2.0–2.9 GHz)", "8GB RAM + 128GB SSD", "Dual USB 2.0 & USB 3.0 ports", "Compact plastic body", "Gigabit Ethereum & Wi-Fi"]
                 },
                 "LUMI ULTRA": {
                     title: "LUMI ULTRA",
-                    desc: "Intel i7 (2.8–4.7 GHz), 16GB RAM + 256GB SSD, aluminium body, dual USB 2.0 & USB 3.0 ports, Gigabit Ethernet & Wi-Fi.",
+                    desc: "Intel i7 (2.8–4.7 GHz), 16GB RAM + 256GB SSD, aluminium body, dual USB 2.0 & USB 3.0 ports, Gigabit Ethereum & Wi-Fi.",
                     img: "./images/processor/23.png",
-                    features: ["Intel i7 (2.8–4.7 GHz)", "16GB RAM + 256GB SSD", "Aluminium body", "Dual USB 2.0 & USB 3.0 ports", "Gigabit Ethernet & Wi-Fi"]
+                    features: ["Intel i7 (2.8–4.7 GHz)", "16GB RAM + 256GB SSD", "Aluminium body", "Dual USB 2.0 & USB 3.0 ports", "Gigabit Ethereum & Wi-Fi"]
                 }
             }
         },
@@ -1317,7 +1314,6 @@
                 }
             }
         },
-        // Add this in the productData object (you can place it after "CURTAIN MOTORS")
         "SENSORS": {
             title: "Sensors",
             desc: "Advanced detection and monitoring sensors for smart homes.",
@@ -1462,22 +1458,115 @@
         return 'S';
     }
 
-    // UPDATED: Function to find next available series label
+    /* ------------------------- LOAD FLOOR PLAN IMAGE ------------------------- */
+    function loadFloorPlanImage() {
+        const previewImage = document.getElementById('previewImage');
+        
+        // Check for NEW uploaded image first (has priority)
+        const uploadedFloorPlan = sessionStorage.getItem('uploadedFloorPlan');
+        const exportedPlan = sessionStorage.getItem('exportedPlan');
+        
+        // Clear any existing image source to force reload
+        previewImage.src = '';
+        
+        if (uploadedFloorPlan) {
+            // User uploaded a new image from index.html
+            console.log('📤 Loading uploaded floor plan from index.html');
+            previewImage.src = uploadedFloorPlan;
+            
+            // Clear ONLY the uploadedFloorPlan, keep exportedPlan for backup
+            sessionStorage.removeItem('uploadedFloorPlan');
+            
+        } else if (exportedPlan) {
+            // User exported from floor planner
+            console.log('🏠 Loading exported floor plan from floor planner');
+            previewImage.src = exportedPlan;
+            
+            // Keep exportedPlan in storage for refreshes
+            
+        } else {
+            // No stored images, use default
+            console.log('🏢 Using default floor plan image');
+            previewImage.src = 'https://virtualtourslasvegas.com/wp-content/uploads/2023/01/1701-N-Green-Valley-Pkwy-8A.jpg';
+        }
+        
+        // Update image dimensions when loaded
+        previewImage.onload = function() {
+            console.log('✅ Floor plan image loaded successfully');
+            updateImageDimensions();
+            
+            // Clear any previous marks and wires when new image loads
+            clearAllMarksAndWires();
+        };
+        
+        // Handle image load errors
+        previewImage.onerror = function() {
+            console.error('❌ Failed to load floor plan image');
+            
+            // Try fallback in this order:
+            // 1. Check if there's an exported plan
+            const exportedFallback = sessionStorage.getItem('exportedPlan');
+            if (exportedFallback && previewImage.src !== exportedFallback) {
+                console.log('🔄 Trying exported plan as fallback');
+                previewImage.src = exportedFallback;
+                return;
+            }
+            
+            // 2. Use default image
+            console.log('🔄 Using default image as fallback');
+            previewImage.src = 'https://virtualtourslasvegas.com/wp-content/uploads/2023/01/1701-N-Green-Valley-Pkwy-8A.jpg';
+        };
+    }
+
+    // Clear all marks and wires when new image loads
+    function clearAllMarksAndWires() {
+        // Remove all marks
+        marks.forEach(mark => {
+            if (mark.el && mark.el.parentNode) {
+                mark.el.parentNode.removeChild(mark.el);
+            }
+        });
+        marks.length = 0;
+        
+        // Remove all wires
+        wires.forEach(wire => {
+            if (wire.element && wire.element.svg) {
+                wire.element.svg.remove();
+            }
+        });
+        wires.length = 0;
+        
+        // Reset counters
+        markCounter = 0;
+        selectedMarkId = null;
+        
+        // Reset wire mode
+        isWireMode = false;
+        currentWireType = null;
+        wireStartMark = null;
+        wireEndMark = null;
+        selectedWire = null;
+        wirePoints = [];
+        
+        // Update UI
+        renderMarksList();
+        updateWiresList();
+        hideWireControls();
+        
+        console.log('🧹 Cleared all marks and wires for new image');
+    }
+
     function nextSeriesLabel(productKey) {
         const code = getSeriesCode(productKey);
         
-        // Count existing marks of this type
         const existingMarks = marks.filter(mark => mark.seriesCode === code);
         
-        // If there are existing marks, find the next available number
         if (existingMarks.length > 0) {
-            // Get all existing numbers
             const existingNumbers = existingMarks.map(mark => {
                 const num = parseInt(mark.seriesLabel.substring(1));
                 return isNaN(num) ? 0 : num;
             });
             
-            // Find the first available number (starting from 1)
             let nextNum = 1;
             while (existingNumbers.includes(nextNum)) {
                 nextNum++;
@@ -1486,7 +1575,6 @@
             seriesCounters[code] = nextNum;
             return { seriesCode: code, label: `${code}${nextNum}` };
         } else {
-            // No existing marks, start from 1
             seriesCounters[code] = 1;
             return { seriesCode: code, label: `${code}1` };
         }
@@ -1506,9 +1594,42 @@
     const wires = []; // Array to store all wire connections
     let isWireMode = false; // Whether we're in wire connection mode
     let currentWireType = null; // 'knx', 'phase', 'neutral'
+    let currentWireMode = 'curve'; // 'curve' or 'points'
     let wireStartMark = null; // First selected mark for wiring
     let wireEndMark = null; // Second selected mark for wiring
     let selectedWire = null; // Currently selected wire
+    let wirePoints = []; // Array of points for point-based wires
+
+    // Wire Types configuration
+    const wireTypes = [
+        {
+            id: 'knx',
+            name: 'KNX_WIRE',
+            title: 'KNX Bus Wire',
+            color: '#4CAF50',
+            icon: 'electric_bolt',
+            bgColor: '#f0f9f0',
+            borderColor: '#c8e6c9'
+        },
+        {
+            id: 'phase',
+            name: 'PHASE_WIRE',
+            title: 'Phase Wire (Live)',
+            color: '#f44336',
+            icon: 'flash_on',
+            bgColor: '#ffebee',
+            borderColor: '#ffcdd2'
+        },
+        {
+            id: 'neutral',
+            name: 'NEUTRAL_WIRE',
+            title: 'Neutral Wire',
+            color: '#000000',
+            icon: 'power',
+            bgColor: '#f5f5f5',
+            borderColor: '#e0e0e0'
+        }
+    ];
 
     function orientTooltip(mark) {
         const tooltip = mark?.tooltip;
@@ -1580,30 +1701,6 @@
         productListEl.innerHTML = '';
         
         // Add Wire Mapping options at the top
-        const wireTypes = [
-            {
-                id: 'knx',
-                name: 'KNX_WIRE',
-                title: 'KNX Bus Wire',
-                color: '#4CAF50',
-                icon: 'electric_bolt'
-            },
-            {
-                id: 'phase',
-                name: 'PHASE_WIRE',
-                title: 'Phase Wire (Live)',
-                color: '#f44336',
-                icon: 'flash_on'
-            },
-            {
-                id: 'neutral',
-                name: 'NEUTRAL_WIRE',
-                title: 'Neutral Wire',
-                color: '#000000',
-                icon: 'power'
-            }
-        ];
-        
         wireTypes.forEach(wireType => {
             const wireItem = document.createElement('div');
             wireItem.className = 'tab-btn';
@@ -1843,15 +1940,16 @@
         // DO NOT clear marks - allow multiple labels to persist
     }
 
-/* ------------------------- WIRE MAPPING ------------------------- */
+    /* ------------------------- WIRE MAPPING FUNCTIONS ------------------------- */
+    function getWireTypeInfo(type) {
+        return wireTypes.find(wt => wt.id === type) || wireTypes[0];
+    }
+
 function showWireControls() {
-    // Get wire type info
     const wireTypeInfo = getWireTypeInfo(currentWireType);
     
-    // Remove existing wire controls
     hideWireControls();
     
-    // Create wire controls in middle panel
     const wireControlsHTML = `
         <div class="mark-controls-box" id="wireControls" style="margin-top: 20px; border-color: ${wireTypeInfo.color};">
             <h3 style="color: ${wireTypeInfo.color};">
@@ -1873,7 +1971,22 @@ function showWireControls() {
                 </div>
             </div>
 
-            <div class="form-group" id="wireCurveControl" style="display: none;">
+            <div class="form-group">
+                <label style="color: ${wireTypeInfo.color};">Wire Mode</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <button id="curveModeBtn" class="btn" style="flex: 1; border-color: ${currentWireMode === 'curve' ? wireTypeInfo.color : '#ccc'}; color: ${currentWireMode === 'curve' ? wireTypeInfo.color : '#666'};">
+                        <span class="material-icons" style="font-size: 16px; margin-right: 4px;">timeline</span>
+                        Curve Mode
+                    </button>
+                    <button id="pointsModeBtn" class="btn" style="flex: 1; border-color: ${currentWireMode === 'points' ? wireTypeInfo.color : '#ccc'}; color: ${currentWireMode === 'points' ? wireTypeInfo.color : '#666'};">
+                        <span class="material-icons" style="font-size: 16px; margin-right: 4px;">control_point</span>
+                        Points Mode
+                    </button>
+                </div>
+            </div>
+
+            <!-- Curve Mode Controls -->
+            <div id="curveControls" class="form-group" style="${currentWireMode === 'curve' ? '' : 'display: none;'}">
                 <label style="color: ${wireTypeInfo.color};">Wire Curve Level</label>
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 11px; color: #666;">-100</span>
@@ -1881,10 +1994,29 @@ function showWireControls() {
                     <span style="font-size: 11px; color: #666;">100</span>
                     <span id="curveValue" style="font-size: 12px; font-weight: bold; color: ${wireTypeInfo.color}; min-width: 30px; text-align: center;">0</span>
                 </div>
-                <!-- REMOVED: The descriptive text below -->
             </div>
 
-            <div class="form-group" id="wireActionButtons" style="display: none;">
+            <!-- Points Mode Controls -->
+            <div id="pointsControls" class="form-group" style="${currentWireMode === 'points' ? '' : 'display: none;'}">
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 12px; color: ${wireTypeInfo.color};">Control Points (${wirePoints.length})</span>
+                        <button id="addPointBtn" class="btn" style="padding: 4px 8px; font-size: 11px;">
+                            <span class="material-icons" style="font-size: 14px; margin-right: 2px;">add</span>
+                            Add Point
+                        </button>
+                    </div>
+                    <div id="pointsList" style="max-height: 80px; overflow-y: auto; padding: 8px; background: #f8f9fa; border-radius: 6px; border: 1px solid var(--border); font-size: 11px;">
+                        <div style="color: var(--muted); text-align: center; padding: 4px;">No points added yet</div>
+                    </div>
+                </div>
+                <div style="color: #666; font-size: 10px; padding: 6px; background: #f8f9fa; border-radius: 4px;">
+                    <span class="material-icons" style="font-size: 10px; vertical-align: middle; margin-right: 2px;">info</span>
+                    Click "Add Point" to add control points • Points are visible only during creation
+                </div>
+            </div>
+
+            <div class="form-group" id="wireActionButtons" style="display: ${wireStartMark && wireEndMark ? 'block' : 'none'};">
                 <button id="createWireBtn" class="btn primary full-width" style="background: ${wireTypeInfo.color}; border-color: ${wireTypeInfo.color};">
                     <span class="material-icons" style="font-size: 16px; margin-right: 8px;">add_link</span>
                     Create ${wireTypeInfo.title}
@@ -1908,57 +2040,99 @@ function showWireControls() {
         </div>
     `;
     
-    // Insert after mark controls box
     const markControlsBox = document.querySelector('.mark-controls-box');
-    markControlsBox.insertAdjacentHTML('afterend', wireControlsHTML);
-    
-    // Add event listeners
-    document.getElementById('wireCurveSlider').addEventListener('input', function() {
-        document.getElementById('curveValue').textContent = this.value;
-        updateWirePreview();
-    });
-    
-    document.getElementById('createWireBtn').addEventListener('click', createWire);
-    document.getElementById('cancelWireBtn').addEventListener('click', cancelWire);
-    
-    // Update wire selection labels
-    updateWireSelectionLabels();
-    // Update wires list for current type
-    updateWiresList();
-}
-
-    function getWireTypeInfo(type) {
-        const wireTypes = {
-            'knx': {
-                title: 'KNX Bus Wire',
-                color: '#4CAF50',
-                icon: 'electric_bolt',
-                bgColor: '#f0f9f0',
-                borderColor: '#c8e6c9'
-            },
-            'phase': {
-                title: 'Phase Wire',
-                color: '#f44336',
-                icon: 'flash_on',
-                bgColor: '#ffebee',
-                borderColor: '#ffcdd2'
-            },
-            'neutral': {
-                title: 'Neutral Wire',
-                color: '#000000',
-                icon: 'power',
-                bgColor: '#f5f5f5',
-                borderColor: '#e0e0e0'
-            }
-        };
-        return wireTypes[type] || wireTypes['knx'];
+    if (markControlsBox) {
+        markControlsBox.insertAdjacentHTML('afterend', wireControlsHTML);
+        
+        // Re-attach event listeners
+        attachWireControlsEvents();
     }
-
+}
+function attachWireControlsEvents() {
+    const curveBtn = document.getElementById('curveModeBtn');
+    const pointsBtn = document.getElementById('pointsModeBtn');
+    const addPointBtn = document.getElementById('addPointBtn');
+    const createWireBtn = document.getElementById('createWireBtn');
+    const cancelWireBtn = document.getElementById('cancelWireBtn');
+    
+    if (curveBtn) {
+        curveBtn.addEventListener('click', () => setWireMode('curve'));
+    }
+    
+    if (pointsBtn) {
+        pointsBtn.addEventListener('click', () => setWireMode('points'));
+    }
+    
+    if (addPointBtn) {
+        addPointBtn.addEventListener('click', addControlPoint);
+    }
+    
+    if (createWireBtn) {
+        createWireBtn.addEventListener('click', createWire);
+    }
+    
+    if (cancelWireBtn) {
+        cancelWireBtn.addEventListener('click', cancelWire);
+    }
+    
+    const wireCurveSlider = document.getElementById('wireCurveSlider');
+    if (wireCurveSlider) {
+        wireCurveSlider.addEventListener('input', function() {
+            const curveValue = document.getElementById('curveValue');
+            if (curveValue) {
+                curveValue.textContent = this.value;
+                updateWirePreview();
+            }
+        });
+    }
+}
     function hideWireControls() {
         const wireControls = document.getElementById('wireControls');
         if (wireControls) {
             wireControls.remove();
         }
+    }
+
+    function setWireMode(mode) {
+        currentWireMode = mode;
+        wirePoints = [];
+        
+        // Remove all point elements
+        document.querySelectorAll('.draggable-point').forEach(el => el.remove());
+        
+        // Update button states
+        const curveBtn = document.getElementById('curveModeBtn');
+        const pointsBtn = document.getElementById('pointsModeBtn');
+        const wireTypeInfo = getWireTypeInfo(currentWireType);
+        
+        if (curveBtn) {
+            curveBtn.style.borderColor = mode === 'curve' ? wireTypeInfo.color : '#ccc';
+            curveBtn.style.color = mode === 'curve' ? wireTypeInfo.color : '#666';
+        }
+        if (pointsBtn) {
+            pointsBtn.style.borderColor = mode === 'points' ? wireTypeInfo.color : '#ccc';
+            pointsBtn.style.color = mode === 'points' ? wireTypeInfo.color : '#666';
+        }
+        
+        // Show/hide controls
+        const curveControls = document.getElementById('curveControls');
+        const pointsControls = document.getElementById('pointsControls');
+        
+        if (curveControls) curveControls.style.display = mode === 'curve' ? 'block' : 'none';
+        if (pointsControls) pointsControls.style.display = mode === 'points' ? 'block' : 'none';
+        
+        // Clear preview
+        const tempWire = document.querySelector('.wire-preview');
+        if (tempWire) {
+            tempWire.remove();
+        }
+        
+        // Update preview if we have both marks
+        if (wireStartMark && wireEndMark) {
+            updateWirePreview();
+        }
+        
+        updatePointsList();
     }
 
     function updateWireSelectionLabels() {
@@ -1969,16 +2143,12 @@ function showWireControls() {
             startLabel.innerHTML = `Start: <strong>${wireStartMark ? wireStartMark.seriesLabel : 'None'}</strong>`;
             endLabel.innerHTML = `End: <strong>${wireEndMark ? wireEndMark.seriesLabel : 'None'}</strong>`;
             
-            // Show/hide controls based on selection
-            const wireCurveControl = document.getElementById('wireCurveControl');
             const wireActionButtons = document.getElementById('wireActionButtons');
             
             if (wireStartMark && wireEndMark) {
-                if (wireCurveControl) wireCurveControl.style.display = 'block';
                 if (wireActionButtons) wireActionButtons.style.display = 'block';
                 updateWirePreview();
             } else {
-                if (wireCurveControl) wireCurveControl.style.display = 'none';
                 if (wireActionButtons) wireActionButtons.style.display = 'none';
             }
         }
@@ -1987,6 +2157,11 @@ function showWireControls() {
     function resetWireSelection() {
         wireStartMark = null;
         wireEndMark = null;
+        
+        // Remove all point elements
+        document.querySelectorAll('.draggable-point').forEach(el => el.remove());
+        wirePoints = [];
+        
         updateWireSelectionLabels();
         
         // Remove any temporary preview
@@ -1994,149 +2169,605 @@ function showWireControls() {
         if (tempWire) {
             tempWire.remove();
         }
+        
+        updatePointsList();
     }
 
-function updateWirePreview() {
-    if (!wireStartMark || !wireEndMark || !currentWireType) return;
-    
-    // Remove existing preview
-    const existingPreview = document.querySelector('.wire-preview');
-    if (existingPreview) {
-        existingPreview.remove();
-    }
-    
-    // Get curve value
-    const curveSlider = document.getElementById('wireCurveSlider');
-    const curveValue = curveSlider ? parseInt(curveSlider.value) : 0;
-    
-    // Create preview wire (only curve, no sharp corners)
-    createWireElement(wireStartMark, wireEndMark, currentWireType, curveValue, true);
-}
-    function createWireElement(startMark, endMark, wireType, curveValue = 0, isPreview = false) {
-    const transform = getImageTransform();
-    if (!transform) return null;
-    
-    // Calculate center points of marks in display coordinates
-    const startX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
-    const startY = startMark.y * transform.scaleY + transform.imgOffsetY + (startMark.size * transform.scaleY / 2);
-    const endX = endMark.x * transform.scaleX + transform.imgOffsetX + (endMark.size * transform.scaleX / 2);
-    const endY = endMark.y * transform.scaleY + transform.imgOffsetY + (endMark.size * transform.scaleY / 2);
-    
-    // Create SVG path for wire
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("class", isPreview ? "wire-preview" : "wire");
-    svg.setAttribute("data-wire-type", wireType);
-    svg.style.position = "absolute";
-    svg.style.top = "0";
-    svg.style.left = "0";
-    svg.style.width = "100%";
-    svg.style.height = "100%";
-    svg.style.pointerEvents = isPreview ? "none" : "auto";
-    svg.style.zIndex = isPreview ? "5" : "9";
-    
-    // Get wire color
-    const wireTypeInfo = getWireTypeInfo(wireType);
-    const wireColor = wireTypeInfo.color;
-    
-    // Calculate control points for Bezier curve based on curveValue
-    const dx = endX - startX;
-    const dy = endY - startY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    
-    let pathData;
-    
-    if (curveValue === 0) {
-        // Straight line
-        pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
-    } else {
-        // Curved line with Bezier (always curved, no sharp corners)
-        const curveFactor = Math.abs(curveValue) / 100;
-        const controlDistance = distance * 0.5 * curveFactor;
+    function addControlPoint() {
+        if (!wireStartMark || !wireEndMark) {
+            showNotification('Please select start and end marks first', 'error');
+            return;
+        }
         
-        if (curveValue > 0) {
-            // Positive curve - bend upward/right
-            const angle = Math.atan2(dy, dx);
-            const perpendicular = angle + Math.PI / 2;
+        const transform = getImageTransform();
+        if (!transform) return;
+        
+        let newX, newY;
+        
+        if (wirePoints.length === 0) {
+            // First point at midpoint between marks
+            const startX = wireStartMark.x + (wireStartMark.size / 2);
+            const startY = wireStartMark.y + (wireStartMark.size / 2);
+            const endX = wireEndMark.x + (wireEndMark.size / 2);
+            const endY = wireEndMark.y + (wireEndMark.size / 2);
             
-            const controlX1 = startX + Math.cos(perpendicular) * controlDistance;
-            const controlY1 = startY + Math.sin(perpendicular) * controlDistance;
-            const controlX2 = endX + Math.cos(perpendicular) * controlDistance;
-            const controlY2 = endY + Math.sin(perpendicular) * controlDistance;
-            
-            pathData = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
+            newX = (startX + endX) / 2;
+            newY = (startY + endY) / 2;
         } else {
-            // Negative curve - bend downward/left
-            const angle = Math.atan2(dy, dx);
-            const perpendicular = angle - Math.PI / 2;
+            // Add point at midpoint between last point and end mark
+            const lastPoint = wirePoints[wirePoints.length - 1];
+            const endX = wireEndMark.x + (wireEndMark.size / 2);
+            const endY = wireEndMark.y + (wireEndMark.size / 2);
             
-            const controlX1 = startX + Math.cos(perpendicular) * controlDistance;
-            const controlY1 = startY + Math.sin(perpendicular) * controlDistance;
-            const controlX2 = endX + Math.cos(perpendicular) * controlDistance;
-            const controlY2 = endY + Math.sin(perpendicular) * controlDistance;
+            newX = (lastPoint.x + endX) / 2;
+            newY = (lastPoint.y + endY) / 2;
+        }
+        
+        const point = {
+            id: `point-${Date.now()}`,
+            x: newX,
+            y: newY,
+            element: null
+        };
+        
+        wirePoints.push(point);
+        updatePointsList();
+        updateWirePreview();
+        
+        showNotification(`Point added at position X: ${Math.round(newX)}, Y: ${Math.round(newY)}`, 'info');
+    }
+
+    function updatePointsList() {
+        const pointsList = document.getElementById('pointsList');
+        if (!pointsList) return;
+        
+        pointsList.innerHTML = '';
+        
+        if (wirePoints.length === 0) {
+            pointsList.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 4px;">No points added yet</div>';
+            return;
+        }
+        
+        wirePoints.forEach((point, index) => {
+            const pointItem = document.createElement('div');
+            pointItem.className = 'mark-item';
+            pointItem.style.marginBottom = '4px';
+            pointItem.style.padding = '6px 8px';
+            pointItem.style.fontSize = '11px';
             
-            pathData = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
+            pointItem.innerHTML = `
+                <span style="flex: 1;">
+                    Point ${index + 1}: X ${Math.round(point.x)}, Y ${Math.round(point.y)}
+                </span>
+                <button class="btn delete-point-btn" data-point-id="${point.id}" style="padding: 2px 4px; min-height: 20px; font-size: 10px;">
+                    <span class="material-icons" style="font-size: 12px;">delete</span>
+                </button>
+            `;
+            
+            const deleteBtn = pointItem.querySelector('.delete-point-btn');
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeControlPoint(point.id);
+            });
+            
+            pointsList.appendChild(pointItem);
+        });
+    }
+
+    function removeControlPoint(pointId) {
+        const index = wirePoints.findIndex(p => p.id === pointId);
+        if (index > -1) {
+            if (wirePoints[index].element && wirePoints[index].element.parentNode) {
+                wirePoints[index].element.parentNode.removeChild(wirePoints[index].element);
+            }
+            wirePoints.splice(index, 1);
+            updatePointsList();
+            updateWirePreview();
         }
     }
-    
-    // Create path
-    const path = document.createElementNS(svgNS, "path");
-    path.setAttribute("d", pathData);
-    path.setAttribute("stroke", isPreview ? wireColor + "80" : wireColor); // 80 = 50% opacity for preview
-    path.setAttribute("stroke-width", isPreview ? "3" : "4");
-    path.setAttribute("stroke-linecap", "round");
-    path.setAttribute("stroke-linejoin", "round");
-    path.setAttribute("fill", "none");
-    path.setAttribute("stroke-dasharray", isPreview ? "5,5" : "none");
-    
-    if (!isPreview) {
-        // Add interaction for real wires
-        path.style.cursor = "pointer";
-        path.addEventListener('click', function(e) {
-            e.stopPropagation();
-            selectWire(startMark, endMark, wireType);
+
+    function updateWirePreview() {
+        if (!wireStartMark || !wireEndMark || !currentWireType) return;
+        
+        // Remove existing preview
+        const existingPreview = document.querySelector('.wire-preview');
+        if (existingPreview) {
+            existingPreview.remove();
+        }
+        
+        // Remove existing point elements
+        document.querySelectorAll('.draggable-point').forEach(el => el.remove());
+        
+        if (currentWireMode === 'curve') {
+            const curveSlider = document.getElementById('wireCurveSlider');
+            const curveValue = curveSlider ? parseInt(curveSlider.value) : 0;
+            createCurveWirePreview(wireStartMark, wireEndMark, curveValue);
+        } else {
+            createPointsWirePreview(wireStartMark, wireEndMark, wirePoints);
+            createDraggablePoints();
+        }
+    }
+
+    function createCurveWirePreview(startMark, endMark, curveValue = 0) {
+        const transform = getImageTransform();
+        if (!transform) return;
+        
+        const startX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
+        const startY = startMark.y * transform.scaleY + transform.imgOffsetY + (startMark.size * transform.scaleY / 2);
+        const endX = endMark.x * transform.scaleX + transform.imgOffsetX + (endMark.size * transform.scaleX / 2);
+        const endY = endMark.y * transform.scaleY + transform.imgOffsetY + (endMark.size * transform.scaleY / 2);
+        
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("class", "wire-preview");
+        svg.setAttribute("data-wire-type", currentWireType);
+        svg.style.position = "absolute";
+        svg.style.top = "0";
+        svg.style.left = "0";
+        svg.style.width = "100%";
+        svg.style.height = "100%";
+        svg.style.pointerEvents = "none";
+        svg.style.zIndex = "5";
+        
+        const wireTypeInfo = getWireTypeInfo(currentWireType);
+        const wireColor = wireTypeInfo.color;
+        
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        let pathData;
+        
+        if (curveValue === 0) {
+            pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
+        } else {
+            const curveFactor = Math.abs(curveValue) / 100;
+            const controlDistance = distance * 0.5 * curveFactor;
+            
+            if (curveValue > 0) {
+                const angle = Math.atan2(dy, dx);
+                const perpendicular = angle + Math.PI / 2;
+                
+                const controlX1 = startX + Math.cos(perpendicular) * controlDistance;
+                const controlY1 = startY + Math.sin(perpendicular) * controlDistance;
+                const controlX2 = endX + Math.cos(perpendicular) * controlDistance;
+                const controlY2 = endY + Math.sin(perpendicular) * controlDistance;
+                
+                pathData = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
+            } else {
+                const angle = Math.atan2(dy, dx);
+                const perpendicular = angle - Math.PI / 2;
+                
+                const controlX1 = startX + Math.cos(perpendicular) * controlDistance;
+                const controlY1 = startY + Math.sin(perpendicular) * controlDistance;
+                const controlX2 = endX + Math.cos(perpendicular) * controlDistance;
+                const controlY2 = endY + Math.sin(perpendicular) * controlDistance;
+                
+                pathData = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
+            }
+        }
+        
+        const path = document.createElementNS(svgNS, "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("stroke", wireColor + "80");
+        path.setAttribute("stroke-width", "3");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-dasharray", "5,5");
+        
+        svg.appendChild(path);
+        imgInner.appendChild(svg);
+    }
+
+    function createPointsWirePreview(startMark, endMark, points) {
+        const transform = getImageTransform();
+        if (!transform) return;
+        
+        const startX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
+        const startY = startMark.y * transform.scaleY + transform.imgOffsetY + (startMark.size * transform.scaleY / 2);
+        const endX = endMark.x * transform.scaleX + transform.imgOffsetX + (endMark.size * transform.scaleX / 2);
+        const endY = endMark.y * transform.scaleY + transform.imgOffsetY + (endMark.size * transform.scaleY / 2);
+        
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("class", "wire-preview");
+        svg.setAttribute("data-wire-type", currentWireType);
+        svg.style.position = "absolute";
+        svg.style.top = "0";
+        svg.style.left = "0";
+        svg.style.width = "100%";
+        svg.style.height = "100%";
+        svg.style.pointerEvents = "none";
+        svg.style.zIndex = "5";
+        
+        const wireTypeInfo = getWireTypeInfo(currentWireType);
+        const wireColor = wireTypeInfo.color;
+        
+        let pathData = `M ${startX} ${startY}`;
+        
+        points.forEach(point => {
+            const pointX = point.x * transform.scaleX + transform.imgOffsetX;
+            const pointY = point.y * transform.scaleY + transform.imgOffsetY;
+            pathData += ` L ${pointX} ${pointY}`;
         });
         
-        // Make wire draggable
-        makeWireDraggable(path, startMark, endMark, wireType, curveValue);
+        pathData += ` L ${endX} ${endY}`;
+        
+        const path = document.createElementNS(svgNS, "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("stroke", wireColor + "80");
+        path.setAttribute("stroke-width", "3");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-dasharray", "5,5");
+        
+        svg.appendChild(path);
+        imgInner.appendChild(svg);
     }
-    
-    svg.appendChild(path);
-    
-    // Add connection points (circles at ends)
-    const startCircle = document.createElementNS(svgNS, "circle");
-    startCircle.setAttribute("cx", startX);
-    startCircle.setAttribute("cy", startY);
-    startCircle.setAttribute("r", "6");
-    startCircle.setAttribute("fill", wireColor);
-    startCircle.setAttribute("stroke", "#fff");
-    startCircle.setAttribute("stroke-width", "2");
-    
-    const endCircle = document.createElementNS(svgNS, "circle");
-    endCircle.setAttribute("cx", endX);
-    endCircle.setAttribute("cy", endY);
-    endCircle.setAttribute("r", "6");
-    endCircle.setAttribute("fill", wireColor);
-    endCircle.setAttribute("stroke", "#fff");
-    endCircle.setAttribute("stroke-width", "2");
-    
-    svg.appendChild(startCircle);
-    svg.appendChild(endCircle);
-    
-    // Add to image container
-    imgInner.appendChild(svg);
-    
-    return {
-        svg,
-        path,
-        startCircle,
-        endCircle,
-        startX, startY, endX, endY,
-        curveValue,
-        wireType
-    };
-}  
-function makeWireDraggable(pathElement, startMark, endMark, wireType, curveValue) {
+
+    function createDraggablePoints() {
+        const transform = getImageTransform();
+        if (!transform) return;
+        
+        const wireTypeInfo = getWireTypeInfo(currentWireType);
+        
+        wirePoints.forEach((point, index) => {
+            if (point.element && point.element.parentNode) {
+                point.element.parentNode.removeChild(point.element);
+            }
+            
+            const pointEl = document.createElement('div');
+            pointEl.className = 'draggable-point';
+            pointEl.dataset.pointId = point.id;
+            pointEl.dataset.pointIndex = index;
+            pointEl.style.position = 'absolute';
+            pointEl.style.width = '16px';
+            pointEl.style.height = '16px';
+            pointEl.style.background = wireTypeInfo.color;
+            pointEl.style.border = '2px solid white';
+            pointEl.style.borderRadius = '50%';
+            pointEl.style.cursor = 'move';
+            pointEl.style.zIndex = '10';
+            pointEl.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+            pointEl.style.transition = 'all 0.2s ease';
+            
+            const x = point.x * transform.scaleX + transform.imgOffsetX - 8;
+            const y = point.y * transform.scaleY + transform.imgOffsetY - 8;
+            pointEl.style.left = x + 'px';
+            pointEl.style.top = y + 'px';
+            
+            point.element = pointEl;
+            setupPointDragging(point, pointEl, index);
+            
+            pointEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            imgInner.appendChild(pointEl);
+        });
+    }
+
+    function setupPointDragging(point, pointEl, index) {
+        let isDragging = false;
+        let dragStartX = 0, dragStartY = 0;
+        let pointStartX = 0, pointStartY = 0;
+        
+        pointEl.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            isDragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            pointStartX = point.x;
+            pointStartY = point.y;
+            pointEl.style.cursor = 'grabbing';
+            pointEl.style.zIndex = '11';
+            pointEl.classList.add('dragging');
+            pointEl.style.transform = 'scale(1.4)';
+            pointEl.style.boxShadow = '0 6px 12px rgba(0,0,0,0.5)';
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            
+            const transform = getImageTransform();
+            if (!transform) return;
+            
+            const imgRect = previewImage.getBoundingClientRect();
+            const scaleX = imageNaturalWidth / imgRect.width;
+            const scaleY = imageNaturalHeight / imgRect.height;
+            
+            const imageDx = dx * scaleX;
+            const imageDy = dy * scaleY;
+            
+            point.x = pointStartX + imageDx;
+            point.y = pointStartY + imageDy;
+            
+            point.x = Math.max(0, Math.min(imageNaturalWidth, point.x));
+            point.y = Math.max(0, Math.min(imageNaturalHeight, point.y));
+            
+            const newX = point.x * transform.scaleX + transform.imgOffsetX - 8;
+            const newY = point.y * transform.scaleY + transform.imgOffsetY - 8;
+            pointEl.style.left = newX + 'px';
+            pointEl.style.top = newY + 'px';
+            
+            updateWirePreview();
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                pointEl.style.cursor = 'move';
+                pointEl.style.zIndex = '10';
+                pointEl.classList.remove('dragging');
+                pointEl.style.transform = 'scale(1.2)';
+                pointEl.style.boxShadow = '0 4px 8px rgba(0,0,0,0.4)';
+                updatePointsList();
+            }
+        });
+    }
+
+    function createWire() {
+        if (!wireStartMark || !wireEndMark || !currentWireType) {
+            alert('Please select two marks to connect');
+            return;
+        }
+        
+        if (wireStartMark === wireEndMark) {
+            alert('Cannot connect a mark to itself');
+            return;
+        }
+        
+        const wireElement = currentWireMode === 'curve' 
+            ? createCurveWire(wireStartMark, wireEndMark)
+            : createPointsWire(wireStartMark, wireEndMark, wirePoints);
+        
+        if (!wireElement) return;
+        
+        const wire = {
+            id: `wire-${Date.now()}`,
+            startMark: wireStartMark,
+            endMark: wireEndMark,
+            element: wireElement,
+            mode: currentWireMode,
+            curveValue: currentWireMode === 'curve' ? parseInt(document.getElementById('wireCurveSlider').value) : 0,
+            points: currentWireMode === 'points' ? wirePoints.map(p => ({ x: p.x, y: p.y })) : [],
+            wireType: currentWireType,
+            color: getWireTypeInfo(currentWireType).color
+        };
+        
+        wires.push(wire);
+        
+        // IMPORTANT: Remove all point elements after wire creation
+        document.querySelectorAll('.draggable-point').forEach(el => el.remove());
+        wirePoints = [];
+        
+        updateWiresList();
+        resetWireSelection();
+        
+        const wireTypeInfo = getWireTypeInfo(currentWireType);
+        showNotification(`${wireTypeInfo.title} created between ${wireStartMark.seriesLabel} and ${wireEndMark.seriesLabel}`, 'success');
+    }
+
+    function createCurveWire(startMark, endMark) {
+        const transform = getImageTransform();
+        if (!transform) return null;
+        
+        const curveSlider = document.getElementById('wireCurveSlider');
+        const curveValue = curveSlider ? parseInt(curveSlider.value) : 0;
+        
+        return createWireElement(startMark, endMark, curveValue, false);
+    }
+
+    function createPointsWire(startMark, endMark, points) {
+        const transform = getImageTransform();
+        if (!transform) return null;
+        
+        return createWireElementWithPoints(startMark, endMark, points, false);
+    }
+
+    function createWireElementWithPoints(startMark, endMark, points, isPreview = false) {
+        const transform = getImageTransform();
+        if (!transform) return null;
+        
+        const startX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
+        const startY = startMark.y * transform.scaleY + transform.imgOffsetY + (startMark.size * transform.scaleY / 2);
+        const endX = endMark.x * transform.scaleX + transform.imgOffsetX + (endMark.size * transform.scaleX / 2);
+        const endY = endMark.y * transform.scaleY + transform.imgOffsetY + (endMark.size * transform.scaleY / 2);
+        
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("class", isPreview ? "wire-preview" : "wire");
+        svg.setAttribute("data-wire-type", currentWireType);
+        svg.style.position = "absolute";
+        svg.style.top = "0";
+        svg.style.left = "0";
+        svg.style.width = "100%";
+        svg.style.height = "100%";
+        svg.style.pointerEvents = isPreview ? "none" : "auto";
+        svg.style.zIndex = isPreview ? "5" : "9";
+        
+        const wireTypeInfo = getWireTypeInfo(currentWireType);
+        const wireColor = wireTypeInfo.color;
+        
+        let pathData = `M ${startX} ${startY}`;
+        
+        points.forEach(point => {
+            const pointX = point.x * transform.scaleX + transform.imgOffsetX;
+            const pointY = point.y * transform.scaleY + transform.imgOffsetY;
+            pathData += ` L ${pointX} ${pointY}`;
+        });
+        
+        pathData += ` L ${endX} ${endY}`;
+        
+        const path = document.createElementNS(svgNS, "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("stroke", isPreview ? wireColor + "80" : wireColor);
+        path.setAttribute("stroke-width", isPreview ? "3" : "4");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-dasharray", isPreview ? "5,5" : "none");
+        
+        if (!isPreview) {
+            path.style.cursor = "pointer";
+            path.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectWire(startMark, endMark, currentWireType);
+            });
+            
+            makeWireDraggable(path, startMark, endMark);
+        }
+        
+        svg.appendChild(path);
+        
+        const startCircle = document.createElementNS(svgNS, "circle");
+        startCircle.setAttribute("cx", startX);
+        startCircle.setAttribute("cy", startY);
+        startCircle.setAttribute("r", "6");
+        startCircle.setAttribute("fill", wireColor);
+        startCircle.setAttribute("stroke", "#fff");
+        startCircle.setAttribute("stroke-width", "2");
+        
+        const endCircle = document.createElementNS(svgNS, "circle");
+        endCircle.setAttribute("cx", endX);
+        endCircle.setAttribute("cy", endY);
+        endCircle.setAttribute("r", "6");
+        endCircle.setAttribute("fill", wireColor);
+        endCircle.setAttribute("stroke", "#fff");
+        endCircle.setAttribute("stroke-width", "2");
+        
+        svg.appendChild(startCircle);
+        svg.appendChild(endCircle);
+        
+        imgInner.appendChild(svg);
+        
+        return {
+            svg,
+            path,
+            startCircle,
+            endCircle,
+            startX, startY, endX, endY
+        };
+    }
+
+    function createWireElement(startMark, endMark, curveValue = 0, isPreview = false) {
+        const transform = getImageTransform();
+        if (!transform) return null;
+        
+        const startX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
+        const startY = startMark.y * transform.scaleY + transform.imgOffsetY + (startMark.size * transform.scaleY / 2);
+        const endX = endMark.x * transform.scaleX + transform.imgOffsetX + (endMark.size * transform.scaleX / 2);
+        const endY = endMark.y * transform.scaleY + transform.imgOffsetY + (endMark.size * transform.scaleY / 2);
+        
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("class", isPreview ? "wire-preview" : "wire");
+        svg.setAttribute("data-wire-type", currentWireType);
+        svg.style.position = "absolute";
+        svg.style.top = "0";
+        svg.style.left = "0";
+        svg.style.width = "100%";
+        svg.style.height = "100%";
+        svg.style.pointerEvents = isPreview ? "none" : "auto";
+        svg.style.zIndex = isPreview ? "5" : "9";
+        
+        const wireTypeInfo = getWireTypeInfo(currentWireType);
+        const wireColor = wireTypeInfo.color;
+        
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        let pathData;
+        
+        if (curveValue === 0) {
+            pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
+        } else {
+            const curveFactor = Math.abs(curveValue) / 100;
+            const controlDistance = distance * 0.5 * curveFactor;
+            
+            if (curveValue > 0) {
+                const angle = Math.atan2(dy, dx);
+                const perpendicular = angle + Math.PI / 2;
+                
+                const controlX1 = startX + Math.cos(perpendicular) * controlDistance;
+                const controlY1 = startY + Math.sin(perpendicular) * controlDistance;
+                const controlX2 = endX + Math.cos(perpendicular) * controlDistance;
+                const controlY2 = endY + Math.sin(perpendicular) * controlDistance;
+                
+                pathData = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
+            } else {
+                const angle = Math.atan2(dy, dx);
+                const perpendicular = angle - Math.PI / 2;
+                
+                const controlX1 = startX + Math.cos(perpendicular) * controlDistance;
+                const controlY1 = startY + Math.sin(perpendicular) * controlDistance;
+                const controlX2 = endX + Math.cos(perpendicular) * controlDistance;
+                const controlY2 = endY + Math.sin(perpendicular) * controlDistance;
+                
+                pathData = `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`;
+            }
+        }
+        
+        const path = document.createElementNS(svgNS, "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("stroke", isPreview ? wireColor + "80" : wireColor);
+        path.setAttribute("stroke-width", isPreview ? "3" : "4");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke-dasharray", isPreview ? "5,5" : "none");
+        
+        if (!isPreview) {
+            path.style.cursor = "pointer";
+            path.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectWire(startMark, endMark, currentWireType);
+            });
+            
+            makeWireDraggable(path, startMark, endMark);
+        }
+        
+        svg.appendChild(path);
+        
+        const startCircle = document.createElementNS(svgNS, "circle");
+        startCircle.setAttribute("cx", startX);
+        startCircle.setAttribute("cy", startY);
+        startCircle.setAttribute("r", "6");
+        startCircle.setAttribute("fill", wireColor);
+        startCircle.setAttribute("stroke", "#fff");
+        startCircle.setAttribute("stroke-width", "2");
+        
+        const endCircle = document.createElementNS(svgNS, "circle");
+        endCircle.setAttribute("cx", endX);
+        endCircle.setAttribute("cy", endY);
+        endCircle.setAttribute("r", "6");
+        endCircle.setAttribute("fill", wireColor);
+        endCircle.setAttribute("stroke", "#fff");
+        endCircle.setAttribute("stroke-width", "2");
+        
+        svg.appendChild(startCircle);
+        svg.appendChild(endCircle);
+        
+        imgInner.appendChild(svg);
+        
+        return {
+            svg,
+            path,
+            startCircle,
+            endCircle,
+            startX, startY, endX, endY,
+            curveValue
+        };
+    }
+
+    function makeWireDraggable(pathElement, startMark, endMark) {
         let isDragging = false;
         let startDragX = 0, startDragY = 0;
         let originalStartX = 0, originalStartY = 0, originalEndX = 0, originalEndY = 0;
@@ -2146,7 +2777,6 @@ function makeWireDraggable(pathElement, startMark, endMark, wireType, curveValue
             startDragX = e.clientX;
             startDragY = e.clientY;
             
-            // Store original positions
             const transform = getImageTransform();
             if (transform) {
                 originalStartX = startMark.x * transform.scaleX + transform.imgOffsetX + (startMark.size * transform.scaleX / 2);
@@ -2164,36 +2794,29 @@ function makeWireDraggable(pathElement, startMark, endMark, wireType, curveValue
             const dx = e.clientX - startDragX;
             const dy = e.clientY - startDragY;
             
-            // Calculate new positions
             const newStartX = originalStartX + dx;
             const newStartY = originalStartY + dy;
             const newEndX = originalEndX + dx;
             const newEndY = originalEndY + dy;
             
-            // Update wire position
             const transform = getImageTransform();
             if (!transform) return;
             
-            // Convert back to natural coordinates for marks
             const scaleX = transform.scaleX;
             const scaleY = transform.scaleY;
             const imgOffsetX = transform.imgOffsetX;
             const imgOffsetY = transform.imgOffsetY;
             
-            // Update start mark position
             startMark.x = (newStartX - imgOffsetX - (startMark.size * scaleX / 2)) / scaleX;
             startMark.y = (newStartY - imgOffsetY - (startMark.size * scaleY / 2)) / scaleY;
             
-            // Update end mark position
             endMark.x = (newEndX - imgOffsetX - (endMark.size * scaleX / 2)) / scaleX;
             endMark.y = (newEndY - imgOffsetY - (endMark.size * scaleY / 2)) / scaleY;
             
-            // Update marks positions
             updateMarkPosition(startMark);
             updateMarkPosition(endMark);
             
-            // Update all wires of this type
-            updateAllWires(wireType);
+            updateAllWires(currentWireType);
             
             e.preventDefault();
         });
@@ -2203,50 +2826,6 @@ function makeWireDraggable(pathElement, startMark, endMark, wireType, curveValue
         });
     }
 
-    function createWire() {
-        if (!wireStartMark || !wireEndMark || !currentWireType) {
-            alert('Please select two marks to connect');
-            return;
-        }
-        
-        if (wireStartMark === wireEndMark) {
-            alert('Cannot connect a mark to itself');
-            return;
-        }
-        
-        // Get curve value
-        const curveSlider = document.getElementById('wireCurveSlider');
-        const curveValue = curveSlider ? parseInt(curveSlider.value) : 0;
-        
-        // Create wire element
-        const wireElement = createWireElement(wireStartMark, wireEndMark, currentWireType, curveValue, false);
-        
-        if (!wireElement) return;
-        
-        // Store wire data
-        const wire = {
-            id: `wire-${Date.now()}`,
-            startMark: wireStartMark,
-            endMark: wireEndMark,
-            element: wireElement,
-            curveValue: curveValue,
-            wireType: currentWireType,
-            color: getWireTypeInfo(currentWireType).color
-        };
-        
-        wires.push(wire);
-        
-        // Update wires list
-        updateWiresList();
-        
-        // Reset selection
-        resetWireSelection();
-        
-        // Show success message
-        const wireTypeInfo = getWireTypeInfo(currentWireType);
-        showNotification(`${wireTypeInfo.title} created between ${wireStartMark.seriesLabel} and ${wireEndMark.seriesLabel}`, 'success');
-    }
-
     function cancelWire() {
         resetWireSelection();
     }
@@ -2254,158 +2833,136 @@ function makeWireDraggable(pathElement, startMark, endMark, wireType, curveValue
     function selectWire(startMark, endMark, wireType) {
         selectedWire = { startMark, endMark, wireType };
         
-        // Highlight the selected wire
         wires.forEach(wire => {
             if ((wire.startMark === startMark && wire.endMark === endMark && wire.wireType === wireType) ||
                 (wire.startMark === endMark && wire.endMark === startMark && wire.wireType === wireType)) {
                 wire.element.path.setAttribute('stroke-width', '6');
-                wire.element.path.setAttribute('stroke', getWireTypeInfo(wireType).color);
             } else {
                 wire.element.path.setAttribute('stroke-width', '4');
             }
         });
         
-        // Show edit options
         showWireEditOptions(startMark, endMark, wireType);
     }
 
-function showWireEditOptions(startMark, endMark, wireType) {
-    // Remove existing edit controls
-    const existingEdit = document.querySelector('.wire-edit-controls');
-    if (existingEdit) {
-        existingEdit.remove();
-    }
-    
-    // Find the wire
-    const wire = wires.find(w => 
-        ((w.startMark === startMark && w.endMark === endMark) ||
-         (w.startMark === endMark && w.endMark === startMark)) &&
-        w.wireType === wireType
-    );
-    
-    if (!wire) return;
-    
-    const wireTypeInfo = getWireTypeInfo(wireType);
-    
-    // Create edit controls
-    const editHTML = `
-        <div class="mark-controls-box wire-edit-controls" style="margin-top: 20px; border-color: ${wireTypeInfo.color};">
-            <h3 style="color: ${wireTypeInfo.color};">
-                <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">edit</span>
-                Edit ${wireTypeInfo.title}
-            </h3>
-            
-            <div class="form-group">
-                <div style="background: ${wireTypeInfo.bgColor}; padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid ${wireTypeInfo.borderColor};">
-                    <div style="font-size: 12px; color: ${wireTypeInfo.color}; margin-bottom: 8px;">
-                        <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">link</span>
-                        ${wireTypeInfo.title} between <strong>${startMark.seriesLabel}</strong> and <strong>${endMark.seriesLabel}</strong>
+    function showWireEditOptions(startMark, endMark, wireType) {
+        const existingEdit = document.querySelector('.wire-edit-controls');
+        if (existingEdit) {
+            existingEdit.remove();
+        }
+        
+        const wire = wires.find(w => 
+            ((w.startMark === startMark && w.endMark === endMark) ||
+             (w.startMark === endMark && w.endMark === startMark)) &&
+            w.wireType === wireType
+        );
+        
+        if (!wire) return;
+        
+        const wireTypeInfo = getWireTypeInfo(wireType);
+        
+        const editHTML = `
+            <div class="mark-controls-box wire-edit-controls" style="margin-top: 20px; border-color: ${wireTypeInfo.color};">
+                <h3 style="color: ${wireTypeInfo.color};">
+                    <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">edit</span>
+                    Edit ${wireTypeInfo.title}
+                </h3>
+                
+                <div class="form-group">
+                    <div style="background: ${wireTypeInfo.bgColor}; padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid ${wireTypeInfo.borderColor};">
+                        <div style="font-size: 12px; color: ${wireTypeInfo.color}; margin-bottom: 8px;">
+                            <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">link</span>
+                            ${wireTypeInfo.title} between <strong>${startMark.seriesLabel}</strong> and <strong>${endMark.seriesLabel}</strong>
+                        </div>
+                        <div style="font-size: 11px; color: #555;">
+                            Mode: ${wire.mode === 'curve' ? 'Curve' : 'Points'} 
+                            ${wire.mode === 'curve' ? `• Curve level: ${wire.curveValue}` : `• Points: ${wire.points.length}`}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label style="color: ${wireTypeInfo.color};">Wire Curve Level</label>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 11px; color: #666;">-100</span>
-                    <input type="range" id="editWireCurveSlider" min="-100" max="100" value="${wire.curveValue}" style="flex: 1;">
-                    <span style="font-size: 11px; color: #666;">100</span>
-                    <span id="editCurveValue" style="font-size: 12px; font-weight: bold; color: ${wireTypeInfo.color}; min-width: 30px; text-align: center;">${wire.curveValue}</span>
+                <div class="form-group">
+                    <button id="deleteWireBtn" class="btn full-width" style="border-color: #f44336; color: #f44336;">
+                        <span class="material-icons" style="font-size: 16px; margin-right: 8px;">delete</span>
+                        Delete Wire
+                    </button>
+                    <button id="closeEditBtn" class="btn full-width" style="margin-top: 8px;">
+                        <span class="material-icons" style="font-size: 16px; margin-right: 8px;">close</span>
+                        Close
+                    </button>
                 </div>
-                <!-- REMOVED: The descriptive text below -->
             </div>
-
-            <div class="form-group">
-                <button id="updateWireBtn" class="btn primary full-width" style="background: ${wireTypeInfo.color}; border-color: ${wireTypeInfo.color};">
-                    <span class="material-icons" style="font-size: 16px; margin-right: 8px;">update</span>
-                    Update Wire
-                </button>
-                <button id="deleteWireBtn" class="btn full-width" style="margin-top: 8px; border-color: #f44336; color: #f44336;">
-                    <span class="material-icons" style="font-size: 16px; margin-right: 8px;">delete</span>
-                    Delete Wire
-                </button>
-                <button id="closeEditBtn" class="btn full-width" style="margin-top: 8px;">
-                    Close
-                </button>
-            </div>
-        </div>
-    `;
-    
-    // Insert after wire controls
-    const wireControls = document.getElementById('wireControls');
-    if (wireControls) {
-        wireControls.insertAdjacentHTML('afterend', editHTML);
+        `;
         
-        // Add event listeners
-        document.getElementById('editWireCurveSlider').addEventListener('input', function() {
-            document.getElementById('editCurveValue').textContent = this.value;
-            updateWireDisplay(wire, parseInt(this.value));
-        });
-        
-        document.getElementById('updateWireBtn').addEventListener('click', function() {
-            updateWire(wire);
-        });
-        
-        document.getElementById('deleteWireBtn').addEventListener('click', function() {
-            deleteWire(wire);
-        });
-        
-        document.getElementById('closeEditBtn').addEventListener('click', function() {
-            const editControls = document.querySelector('.wire-edit-controls');
-            if (editControls) {
-                editControls.remove();
-            }
+        const wireControls = document.getElementById('wireControls');
+        if (wireControls) {
+            wireControls.insertAdjacentHTML('afterend', editHTML);
             
-            // Reset wire highlighting
-            wires.forEach(wire => {
-                wire.element.path.setAttribute('stroke-width', '4');
+            document.getElementById('deleteWireBtn').addEventListener('click', function() {
+                deleteWire(wire);
             });
             
-            selectedWire = null;
-        });
+            document.getElementById('closeEditBtn').addEventListener('click', function() {
+                const editControls = document.querySelector('.wire-edit-controls');
+                if (editControls) {
+                    editControls.remove();
+                }
+                
+                wires.forEach(wire => {
+                    wire.element.path.setAttribute('stroke-width', '4');
+                });
+                
+                selectedWire = null;
+            });
+        }
     }
-}
-    function updateWireDisplay(wire, newCurveValue) {
-        // Remove old wire element
+
+    function updateWireDisplay(wire) {
         if (wire.element && wire.element.svg) {
             wire.element.svg.remove();
         }
         
-        // Create new wire element with updated curve
-        const newElement = createWireElement(wire.startMark, wire.endMark, wire.wireType, newCurveValue, false);
+        let newElement;
+        if (wire.mode === 'curve') {
+            const curveSlider = document.getElementById('editWireCurveSlider');
+            const newCurveValue = curveSlider ? parseInt(curveSlider.value) : wire.curveValue;
+            wire.curveValue = newCurveValue;
+            newElement = createWireElement(wire.startMark, wire.endMark, newCurveValue, false);
+        } else {
+            newElement = createWireElementWithPoints(wire.startMark, wire.endMark, wire.points, false);
+        }
+        
         wire.element = newElement;
-        wire.curveValue = newCurveValue;
     }
 
     function updateWire(wire) {
-        const slider = document.getElementById('editWireCurveSlider');
-        const newCurveValue = slider ? parseInt(slider.value) : wire.curveValue;
+        if (wire.mode === 'curve') {
+            const slider = document.getElementById('editWireCurveSlider');
+            const newCurveValue = slider ? parseInt(slider.value) : wire.curveValue;
+            wire.curveValue = newCurveValue;
+        }
         
-        updateWireDisplay(wire, newCurveValue);
+        updateWireDisplay(wire);
         
         const wireTypeInfo = getWireTypeInfo(wire.wireType);
         showNotification(`${wireTypeInfo.title} updated successfully`, 'success');
     }
 
     function deleteWire(wire) {
-        // Remove wire element
         if (wire.element && wire.element.svg) {
             wire.element.svg.remove();
         }
         
-        // Remove from wires array
         const index = wires.indexOf(wire);
         if (index > -1) {
             wires.splice(index, 1);
         }
         
-        // Remove edit controls
         const editControls = document.querySelector('.wire-edit-controls');
         if (editControls) {
             editControls.remove();
         }
         
-        // Update wires list
         updateWiresList();
         
         const wireTypeInfo = getWireTypeInfo(wire.wireType);
@@ -2416,13 +2973,16 @@ function showWireEditOptions(startMark, endMark, wireType) {
     function updateAllWires(wireType = null) {
         wires.forEach(wire => {
             if (!wireType || wire.wireType === wireType) {
-                // Remove old wire element
                 if (wire.element && wire.element.svg) {
                     wire.element.svg.remove();
                 }
                 
-                // Create new wire element at updated positions
-                const newElement = createWireElement(wire.startMark, wire.endMark, wire.wireType, wire.curveValue, false);
+                let newElement;
+                if (wire.mode === 'curve') {
+                    newElement = createWireElement(wire.startMark, wire.endMark, wire.curveValue, false);
+                } else {
+                    newElement = createWireElementWithPoints(wire.startMark, wire.endMark, wire.points, false);
+                }
                 wire.element = newElement;
             }
         });
@@ -2434,7 +2994,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
         
         wiresList.innerHTML = '';
         
-        // Filter wires by current type
         const typeWires = wires.filter(wire => wire.wireType === currentWireType);
         
         if (typeWires.length === 0) {
@@ -2447,28 +3006,26 @@ function showWireEditOptions(startMark, endMark, wireType) {
             const wireItem = document.createElement('div');
             wireItem.className = 'mark-item';
             wireItem.style.borderColor = wire.color;
-            wireItem.style.background = wire.color + '10'; // 10% opacity
+            wireItem.style.background = wire.color + '10';
             
             wireItem.innerHTML = `
                 <span style="flex: 1; font-size: 12px;">
                     <span style="font-weight: bold; color: ${wire.color};">${wire.startMark.seriesLabel}</span>
                     <span class="material-icons" style="font-size: 12px; vertical-align: middle; margin: 0 4px; color: ${wire.color};">arrow_forward</span>
                     <span style="font-weight: bold; color: ${wire.color};">${wire.endMark.seriesLabel}</span>
-                    <span style="font-size: 10px; color: #666; margin-left: 8px;">Curve: ${wire.curveValue}</span>
+                    <span style="font-size: 10px; color: #666; margin-left: 8px;">${wire.mode === 'curve' ? 'Curve: ' + wire.curveValue : 'Points: ' + wire.points.length}</span>
                 </span>
                 <button class="btn" style="padding: 4px 6px; min-height: 24px; font-size: 11px; opacity: 0.7;">
                     <span class="material-icons" style="font-size: 14px;">delete</span>
                 </button>
             `;
             
-            // Add click event to select wire
             wireItem.addEventListener('click', function(e) {
                 if (!e.target.closest('button')) {
                     selectWire(wire.startMark, wire.endMark, wire.wireType);
                 }
             });
             
-            // Add delete button event
             const deleteBtn = wireItem.querySelector('button');
             deleteBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -2487,14 +3044,12 @@ function showWireEditOptions(startMark, endMark, wireType) {
 
     let markCounter = 0;
 
-    // Update image dimensions when image loads
     previewImage.addEventListener('load', updateImageDimensions);
     window.addEventListener('resize', updateImageDimensions);
 
     function getImageTransform() {
         const img = previewImage;
         const containerRect = imgContainer.getBoundingClientRect();
-        const imgInnerRect = imgInner.getBoundingClientRect();
         const imgRect = img.getBoundingClientRect();
 
         imageNaturalWidth = img.naturalWidth;
@@ -2502,21 +3057,17 @@ function showWireEditOptions(startMark, endMark, wireType) {
 
         if (!imageNaturalWidth || !imageNaturalHeight) return null;
 
-        // Image is centered in imgInner, which is scaled
-        // Calculate image position within imgInner (which is same size as container)
         const imgAspect = imageNaturalWidth / imageNaturalHeight;
         const containerAspect = containerRect.width / containerRect.height;
 
         let displayWidth, displayHeight, imgOffsetX, imgOffsetY;
 
         if (imgAspect > containerAspect) {
-            // Image is wider - fit to width
             displayWidth = containerRect.width;
             displayHeight = containerRect.width / imgAspect;
             imgOffsetX = 0;
             imgOffsetY = (containerRect.height - displayHeight) / 2;
         } else {
-            // Image is taller - fit to height
             displayHeight = containerRect.height;
             displayWidth = containerRect.height * imgAspect;
             imgOffsetX = (containerRect.width - displayWidth) / 2;
@@ -2552,11 +3103,9 @@ function showWireEditOptions(startMark, endMark, wireType) {
         const transform = getImageTransform();
         if (!transform) return;
 
-        // Convert natural image coordinates to display coordinates within imgInner
-        // Marks are positioned relative to imgInner, accounting for image offset and scale
         const x = mark.x * transform.scaleX + transform.imgOffsetX;
         const y = mark.y * transform.scaleY + transform.imgOffsetY;
-        const size = mark.size * transform.scaleX; // Use scaleX to maintain aspect
+        const size = mark.size * transform.scaleX;
 
         mark.el.style.left = x + 'px';
         mark.el.style.top = y + 'px';
@@ -2565,9 +3114,7 @@ function showWireEditOptions(startMark, endMark, wireType) {
         orientTooltip(mark);
     }
 
-    // NEW FUNCTION: Renumber all marks sequentially
     function renumberAllMarks() {
-        // Group marks by series code
         const marksByCode = {};
         marks.forEach(mark => {
             if (!marksByCode[mark.seriesCode]) {
@@ -2576,37 +3123,24 @@ function showWireEditOptions(startMark, endMark, wireType) {
             marksByCode[mark.seriesCode].push(mark);
         });
         
-        // Sort each group by creation order (using ID)
         Object.keys(marksByCode).forEach(code => {
-            // Sort by mark ID to maintain original order as much as possible
             marksByCode[code].sort((a, b) => {
                 const numA = parseInt(a.id.split('-')[1]);
                 const numB = parseInt(b.id.split('-')[1]);
                 return numA - numB;
             });
             
-            // Renumber sequentially
             marksByCode[code].forEach((mark, index) => {
                 const newLabel = `${code}${index + 1}`;
                 
-                // Update the mark's label
                 mark.seriesLabel = newLabel;
                 
-                // Update the badge
                 const badge = mark.el.querySelector('.label-badge');
                 if (badge) {
                     badge.textContent = newLabel;
                 }
-                
-                // Update tooltip if needed (you can add this if tooltip shows the label)
-                const tooltipTitle = mark.tooltip?.querySelector('.tooltip-title');
-                if (tooltipTitle) {
-                    // Keep the existing tooltip content, just update the series code if displayed
-                    // You can modify this if you want to update tooltip with new label
-                }
             });
             
-            // Update the counter for this code
             seriesCounters[code] = marksByCode[code].length;
         });
     }
@@ -2625,7 +3159,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
         let sizePercent = parseFloat(markSizeEl.value) || 4;
         if (sizePercent <= 0) sizePercent = 4;
 
-        // Convert percentage to pixels based on image natural size
         if (imageNaturalWidth && imageNaturalHeight) {
             const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
             const centerX = imageNaturalWidth / 2;
@@ -2638,7 +3171,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
                 shape: shape
             });
         } else {
-            // Fallback if image not loaded
             createMark({
                 x: 50,
                 y: 50,
@@ -2651,7 +3183,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
     function createMark({ x, y, size, shape }) {
         const id = 'mark-' + (++markCounter);
 
-        // Get current product data for this mark
         const productDataForMark = currentSubProduct && productData[currentProduct]?.subProducts?.[currentSubProduct]
             ? productData[currentProduct].subProducts[currentSubProduct]
             : null;
@@ -2677,7 +3208,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
             updateRelayOverlay();
         }
 
-        // UPDATED: Get series label with proper gap handling
         const { seriesCode, label } = nextSeriesLabel(currentProduct);
         
         const fallbackProduct = productData[currentProduct] || {};
@@ -2701,13 +3231,11 @@ function showWireEditOptions(startMark, endMark, wireType) {
         el.dataset.size = size;
         el.dataset.shape = shape;
 
-        // Create label badge with S1, S2 format
         const badge = document.createElement('div');
         badge.className = 'label-badge';
         badge.textContent = label;
         el.appendChild(badge);
 
-        // Create simplified tooltip - category + model
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
 
@@ -2726,7 +3254,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
         tooltip.appendChild(tooltipContent);
         el.appendChild(tooltip);
 
-        // Add to container - position relative to image
         imgInner.appendChild(el);
 
         const markData = {
@@ -2750,7 +3277,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
 
         marks.push(markData);
 
-        // Add click event for wire mode
         el.addEventListener('click', function(e) {
             if (isWireMode && currentWireType && !e.defaultPrevented) {
                 if (!wireStartMark) {
@@ -2759,24 +3285,24 @@ function showWireEditOptions(startMark, endMark, wireType) {
                 } else if (!wireEndMark && wireStartMark !== markData) {
                     wireEndMark = markData;
                     const wireTypeInfo = getWireTypeInfo(currentWireType);
-                    showNotification(`Second mark selected: ${label}. Adjust curve and click "Create ${wireTypeInfo.title}".`, 'info');
+                    showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
                 } else if (wireStartMark === markData) {
-                    // Reset first selection
                     wireStartMark = null;
                     wireEndMark = null;
+                    wirePoints = [];
                     showNotification('First mark selection cleared.', 'info');
                 } else if (wireEndMark === markData) {
-                    // Reset second selection
                     wireEndMark = null;
+                    wirePoints = [];
                     showNotification('Second mark selection cleared.', 'info');
                 }
                 updateWireSelectionLabels();
+                updatePointsList();
                 e.preventDefault();
                 e.stopPropagation();
             }
         });
 
-        // Dragging functionality
         let dragging = false;
         let startX = 0, startY = 0;
         let startMarkX = 0, startMarkY = 0;
@@ -2803,7 +3329,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
             const dx = ev.clientX - startX;
             const dy = ev.clientY - startY;
 
-            // Only start dragging if moved more than 3px to avoid accidental drags
             if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
                 dragStarted = true;
             }
@@ -2816,21 +3341,17 @@ function showWireEditOptions(startMark, endMark, wireType) {
             const transform = getImageTransform();
             if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
 
-            // Get the actual image element's bounding rect
             const imgRect = previewImage.getBoundingClientRect();
 
-            // Calculate the ratio between natural and displayed image size
             const scaleX = imageNaturalWidth / imgRect.width;
             const scaleY = imageNaturalHeight / imgRect.height;
 
-            // Convert screen movement (in pixels) to natural image coordinates
             const imageDx = dx * scaleX;
             const imageDy = dy * scaleY;
 
             let newX = startMarkX + imageDx;
             let newY = startMarkY + imageDy;
 
-            // Constrain to image boundaries
             newX = Math.max(0, Math.min(imageNaturalWidth - markData.size, newX));
             newY = Math.max(0, Math.min(imageNaturalHeight - markData.size, newY));
 
@@ -2850,7 +3371,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
                 } catch (e) { }
                 el.classList.remove('selected');
 
-                // If it was a click (not drag), select the mark
                 if (!dragStarted && !isWireMode) {
                     selectedMarkId = id;
                     updateMarkSelection();
@@ -2875,20 +3395,16 @@ function showWireEditOptions(startMark, endMark, wireType) {
         renderMarksList();
     }
 
-    // UPDATED: Remove mark function with renumbering
     function removeMark(id) {
         const idx = marks.findIndex(x => x.id === id);
         if (idx === -1) return;
         const m = marks[idx];
         
-        // Remove any wires connected to this mark
         const connectedWires = wires.filter(w => w.startMark === m || w.endMark === m);
         connectedWires.forEach(wire => {
-            // Remove wire element
             if (wire.element && wire.element.svg) {
                 wire.element.svg.remove();
             }
-            // Remove from wires array
             const wireIndex = wires.indexOf(wire);
             if (wireIndex > -1) {
                 wires.splice(wireIndex, 1);
@@ -2903,10 +3419,7 @@ function showWireEditOptions(startMark, endMark, wireType) {
             selectedMarkId = null;
         }
         
-        // Update wires list
         updateWiresList();
-        
-        // Renumber all marks after removal
         renumberAllMarks();
         updateMarkSelection();
     }
@@ -2932,7 +3445,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
             label.textContent = m.seriesLabel;
             item.appendChild(label);
 
-            // Add delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'btn';
             deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
@@ -2961,7 +3473,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
     function setScale(scale) {
         imageScale = Math.max(0.3, Math.min(3, scale));
 
-        // Calculate scaled dimensions
         const img = previewImage;
         const containerRect = imgContainer.getBoundingClientRect();
         const imgAspect = img.naturalWidth / img.naturalHeight;
@@ -2981,7 +3492,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
 
         imgInner.style.transform = `scale(${imageScale})`;
 
-        // Update all marks after zoom
         requestAnimationFrame(() => {
             updateImageDimensions();
         });
@@ -3022,13 +3532,11 @@ function showWireEditOptions(startMark, endMark, wireType) {
         setScale(1);
     });
 
-    // Click outside marks to deselect
     imgContainer.addEventListener('click', (e) => {
-        if (!e.target.closest('.mark') && !e.target.closest('.wire')) {
+        if (!e.target.closest('.mark') && !e.target.closest('.wire') && !e.target.closest('.draggable-point')) {
             selectedMarkId = null;
             updateMarkSelection();
             
-            // Reset wire selection if not in wire mode
             if (!isWireMode) {
                 resetWireSelection();
             }
@@ -3036,350 +3544,28 @@ function showWireEditOptions(startMark, endMark, wireType) {
     });
 
     /* ------------------------- INIT ------------------------- */
-    buildList();
+    // Call this function early in initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load the floor plan image
+        loadFloorPlanImage();
+        
+        // Build the product list
+        buildList();
 
-    // Wait for image to load before initializing
-    if (previewImage.complete) {
-        updateImageDimensions();
-    } else {
-        previewImage.addEventListener('load', updateImageDimensions);
-    }
-
-    // Select first product
-    const firstKey = PRODUCT_ORDER[0] || Object.keys(productData)[0];
-    selectProduct(firstKey);
-    
-    /* ------------------------- PDF EXPORT FUNCTIONALITY ------------------------- */
-
-    // Add brand information to product data
-    function enhanceProductDataWithBrands() {
-        const brands = {
-            "DOOR LOCK": "LocPro",
-            "PROCESSOR": "LUMI",
-            "LUMI GLASS SERIES": "LUMI",
-            "ESCULT SERIES": "Escult",
-            "WALL MOUNT DISPLAY": "LUMI",
-            "TACTILE HEXA SERIES": "LUMI",
-            "DUO-QUAD SERIES": "LUMI",
-            "DOMOGENIE GLASS LITE SERIES": "Domogenie",
-            "TREMBLAY SOUNDS": "Tremblay",
-            "Z-WAVE RELAY": "LUMI",
-            "CURTAIN MOTORS": "LUMI",
-            "SENSORS": "Big Sense"
-        };
-
-        // Add brand to all products
-        for (const [category, brand] of Object.entries(brands)) {
-            if (productData[category]) {
-                productData[category].brand = brand;
-                if (productData[category].subProducts) {
-                    for (const subProduct of Object.values(productData[category].subProducts)) {
-                        subProduct.brand = brand;
-                    }
-                }
-            }
+        // Check if image is already loaded
+        if (previewImage.complete) {
+            updateImageDimensions();
+        } else {
+            previewImage.addEventListener('load', updateImageDimensions);
         }
-    }
 
-    // Initialize brand data
-    enhanceProductDataWithBrands();
+        // Select the first product
+        const firstKey = PRODUCT_ORDER[0] || Object.keys(productData)[0];
+        selectProduct(firstKey);
+    });
 
-    // PDF Download functionality
-    document.getElementById('downloadPdfBtn').addEventListener('click', generateConfiguratorPDF);
-
-    async function generateConfiguratorPDF() {
-        try {
-            // Show loading state
-            const btn = document.getElementById('downloadPdfBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">hourglass_empty</span> Generating PDF...';
-            btn.disabled = true;
-
-            // Create PDF with proper configuration
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            // Set document properties
-            doc.setProperties({
-                title: 'Home Automation Configuration',
-                subject: 'Product Configuration Summary',
-                creator: 'Automation Configurator'
-            });
-
-            // PAGE 1: FLOOR PLAN
-            // Add title
-            doc.setFontSize(20);
-            doc.setTextColor(40, 40, 40);
-            doc.text('Floor Plan Configuration', 105, 20, { align: 'center' });
-
-            // Add date
-            doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
-            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 28, { align: 'center' });
-
-            let yPosition = 40;
-
-            // Capture floor plan screenshot with error handling
-            try {
-                const screenshot = await captureFloorPlanScreenshot();
-                if (screenshot && screenshot !== 'data:,') { // Check for empty data URL
-                    // Calculate dimensions to fit within page width
-                    const pageWidth = doc.internal.pageSize.getWidth();
-                    const margin = 20;
-                    const imgWidth = pageWidth - (2 * margin);
-                    const imgHeight = imgWidth * 0.75; // 4:3 aspect ratio
-
-                    // Add screenshot to PDF centered
-                    doc.addImage(screenshot, 'PNG', margin, yPosition, imgWidth, imgHeight);
-
-                    // Add caption
-                    doc.setFontSize(9);
-                    doc.setTextColor(100, 100, 100);
-                    doc.text('Floor Plan Layout', 105, yPosition + imgHeight + 5, { align: 'center' });
-                }
-            } catch (imgError) {
-                console.warn('Could not add floor plan image:', imgError);
-                // Add placeholder text
-                doc.setFontSize(12);
-                doc.setTextColor(150, 150, 150);
-                doc.text('Floor plan image not available', 105, 80, { align: 'center' });
-            }
-
-            // Add page number for page 1
-            doc.setFontSize(8);
-            doc.setTextColor(150, 150, 150);
-            doc.text('Page 1 of 2', doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
-
-            // PAGE 2: PRODUCT SUMMARY
-            doc.addPage();
-
-            // Reset yPosition for new page
-            yPosition = 30;
-
-            // Add title for product summary
-            doc.setFontSize(20);
-            doc.setTextColor(40, 40, 40);
-            doc.text('Product Configuration Summary', 105, yPosition, { align: 'center' });
-            yPosition += 10;
-
-            // Add subtitle
-            doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
-            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, yPosition, { align: 'center' });
-            yPosition += 10;
-
-            // Generate product table
-            const productTable = generateProductTable();
-
-            if (productTable.length > 0) {
-                // Add summary statistics
-                const totalProducts = productTable.reduce((sum, item) => sum + item.quantity, 0);
-                const uniqueProducts = productTable.length;
-
-                doc.setFontSize(11);
-                doc.setTextColor(26, 115, 232);
-                doc.text(`Total Items: ${totalProducts} | Unique Products: ${uniqueProducts}`, 105, yPosition, { align: 'center' });
-                yPosition += 15;
-
-                // Prepare table data
-                const tableData = productTable.map(item => [
-                    item.label,
-                    item.category,
-                    item.brand,
-                    item.model,
-                    item.quantity.toString()
-                ]);
-
-                // Calculate table width for centering
-                const columnWidths = [15, 25, 20, 70, 15]; // Column widths in mm
-                const totalTableWidth = columnWidths.reduce((sum, width) => sum + width, 0) + 10; // Add padding
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const tableLeftMargin = (pageWidth - totalTableWidth) / 2;
-
-                // Add centered table
-                doc.autoTable({
-                    startY: yPosition,
-                    head: [['Label', 'Category', 'Brand', 'Model', 'Qty']],
-                    body: tableData,
-                    theme: 'grid',
-                    headStyles: {
-                        fillColor: [26, 115, 232],
-                        textColor: 255,
-                        fontStyle: 'bold',
-                        halign: 'center'
-                    },
-                    styles: {
-                        fontSize: 8,
-                        cellPadding: 3,
-                        overflow: 'linebreak',
-                        halign: 'center',
-                        minCellHeight: 6
-                    },
-                    columnStyles: {
-                        0: { cellWidth: 15, halign: 'center' },
-                        1: { cellWidth: 25, halign: 'center' },
-                        2: { cellWidth: 20, halign: 'center' },
-                        3: { cellWidth: 70, halign: 'left' }, // Keep model left-aligned for readability
-                        4: { cellWidth: 15, halign: 'center' }
-                    },
-                    margin: { left: tableLeftMargin },
-                    tableWidth: totalTableWidth,
-                    didDrawPage: function (data) {
-                        // Add page number
-                        doc.setFontSize(8);
-                        doc.setTextColor(150, 150, 150);
-                        doc.text(`Page ${data.pageNumber} of ${doc.internal.getNumberOfPages()}`,
-                            doc.internal.pageSize.getWidth() / 2,
-                            doc.internal.pageSize.getHeight() - 10,
-                            { align: 'center' });
-                    }
-                });
-
-                // Add footer note if there's space
-                const finalY = doc.lastAutoTable.finalY || yPosition;
-                if (finalY < doc.internal.pageSize.getHeight() - 30) {
-                    doc.setFontSize(8);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text('* This is an automated configuration summary. All specifications are subject to change.',
-                        105, finalY + 10, { align: 'center' });
-                }
-            } else {
-                // No products message
-                doc.setFontSize(16);
-                doc.setTextColor(100, 100, 100);
-                doc.text('No Products Configured', 105, 80, { align: 'center' });
-                doc.setFontSize(12);
-                doc.text('Add products to the floor plan to generate a summary.', 105, 95, { align: 'center' });
-
-                // Add page number
-                doc.setFontSize(8);
-                doc.setTextColor(150, 150, 150);
-                doc.text('Page 2 of 2', 105, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
-            }
-
-            // Save PDF
-            doc.save(`home-automation-configuration-${new Date().toISOString().split('T')[0]}.pdf`);
-
-            // Show success notification
-            showNotification('PDF generated successfully!', 'success');
-
-        } catch (error) {
-            console.error('PDF generation error:', error);
-            showNotification('Error generating PDF: ' + error.message, 'error');
-        } finally {
-            // Always reset button state
-            const btn = document.getElementById('downloadPdfBtn');
-            btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">download</span> DOWNLOAD CONFIGURATOR PDF';
-            btn.disabled = false;
-        }
-    }
-
-    async function captureFloorPlanScreenshot() {
-        try {
-            const imageContainer = document.getElementById('imgContainer');
-
-            // Use html2canvas directly on the container
-            const canvas = await html2canvas(imageContainer, {
-                backgroundColor: '#ffffff',
-                scale: 1, // Reduce scale for better compatibility
-                useCORS: true,
-                logging: false,
-                removeContainer: true // Clean up cloned elements
-            });
-
-            return canvas.toDataURL('image/png');
-        } catch (error) {
-            console.error('Screenshot capture error:', error);
-
-            // Fallback: return a blank image or handle gracefully
-            const canvas = document.createElement('canvas');
-            canvas.width = 800;
-            canvas.height = 600;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#f8f9fa';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#5f6368';
-            ctx.font = '16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Floor Plan Image', canvas.width / 2, canvas.height / 2);
-
-            return canvas.toDataURL('image/png');
-        }
-    }
-
-    function generateProductTable() {
-        if (marks.length === 0) return [];
-
-        // Group marks by series label and count quantities
-        const productMap = new Map();
-
-        marks.forEach(mark => {
-            const key = mark.seriesLabel;
-            if (!productMap.has(key)) {
-                // Get product details
-                let category = mark.categoryName || 'Unknown';
-                let model = mark.modelName || 'Unknown';
-                let brand = 'LUMI'; // Default brand
-
-                // Try to get brand from product data
-                if (mark.categoryName && productData[mark.categoryName]) {
-                    brand = productData[mark.categoryName].brand || brand;
-
-                    // Try to get model-specific brand
-                    if (mark.modelName && productData[mark.categoryName].subProducts) {
-                        const subProduct = productData[mark.categoryName].subProducts[mark.modelName];
-                        if (subProduct && subProduct.brand) {
-                            brand = subProduct.brand;
-                        }
-                    }
-                }
-
-                // Handle relay items specially
-                if (mark.categoryName === 'Z-WAVE RELAY' && mark.relayItems && mark.relayItems.length > 0) {
-                    // For relays, we'll create separate entries for each relay type
-                    mark.relayItems.forEach(relayItem => {
-                        const relayKey = `${key}-${relayItem.name}`;
-                        if (!productMap.has(relayKey)) {
-                            productMap.set(relayKey, {
-                                label: key,
-                                category: 'Relay Module',
-                                brand: 'LUMI',
-                                model: relayItem.name,
-                                quantity: relayItem.quantity
-                            });
-                        } else {
-                            productMap.get(relayKey).quantity += relayItem.quantity;
-                        }
-                    });
-                    return; // Skip the main mark for relays
-                }
-
-                productMap.set(key, {
-                    label: key,
-                    category: category,
-                    brand: brand,
-                    model: model,
-                    quantity: 1
-                });
-            } else {
-                // Increment quantity for existing product
-                const existing = productMap.get(key);
-                existing.quantity += 1;
-            }
-        });
-
-        // Convert map to array and sort by label
-        return Array.from(productMap.values())
-            .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
-    }
-
-    // Notification function
+    /* ------------------------- UTILITY FUNCTIONS ------------------------- */
     function showNotification(message, type = 'info') {
-        // Remove existing notification
         const existingNotification = document.querySelector('.pdf-notification');
         if (existingNotification) {
             existingNotification.remove();
@@ -3392,12 +3578,11 @@ function showWireEditOptions(startMark, endMark, wireType) {
             <span class="pdf-notification-text">${message}</span>
         `;
 
-        // Add styles
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+            background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
             color: white;
             padding: 12px 20px;
             border-radius: 8px;
@@ -3413,7 +3598,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
 
         document.body.appendChild(notification);
 
-        // Auto remove after 5 seconds
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.style.animation = 'slideOutRight 0.3s ease';
@@ -3422,7 +3606,6 @@ function showWireEditOptions(startMark, endMark, wireType) {
         }, 5000);
     }
 
-    // Add CSS animations for notifications
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideInRight {
@@ -3439,126 +3622,426 @@ function showWireEditOptions(startMark, endMark, wireType) {
             font-weight: bold;
             font-size: 16px;
         }
+        
+        .draggable-point {
+            transition: all 0.2s ease;
+        }
+        
+        .draggable-point:hover {
+            transform: scale(1.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        
+        .draggable-point.dragging {
+            transform: scale(1.4);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+            cursor: grabbing;
+        }
     `;
     document.head.appendChild(style);
-    
-    /* ------------------------- IMPORT FLOOR PLAN FROM PLANNER ------------------------- */
 
-    function importFloorPlanFromPlanner() {
-        try {
-            const exportedPlan = sessionStorage.getItem('exportedPlan');
-            const exportedPlanBounds = sessionStorage.getItem('exportedPlanBounds');
-            const exportedPlanData = sessionStorage.getItem('exportedPlanData');
+/* ------------------------- DOWNLOAD FUNCTIONALITY ------------------------- */
+/* ------------------------- PDF EXPORT FUNCTIONALITY ------------------------- */
 
-            if (exportedPlan) {
-                // Replace the preview image with the exported floor plan
-                previewImage.src = exportedPlan;
+// Add brand information to product data
+function enhanceProductDataWithBrands() {
+    const brands = {
+        "DOOR LOCK": "LocPro",
+        "PROCESSOR": "LUMI",
+        "LUMI GLASS SERIES": "LUMI",
+        "ESCULT SERIES": "Escult",
+        "WALL MOUNT DISPLAY": "LUMI",
+        "TACTILE HEXA SERIES": "LUMI",
+        "DUO-QUAD SERIES": "LUMI",
+        "DOMOGENIE GLASS LITE SERIES": "Domogenie",
+        "TREMBLAY SOUNDS": "Tremblay",
+        "Z-WAVE RELAY": "LUMI",
+        "CURTAIN MOTORS": "LUMI",
+        "SENSORS": "Big Sense"
+    };
 
-                // Update image dimensions after load
-                previewImage.onload = function () {
-                    updateImageDimensions();
-
-                    // Show success notification
-                    showNotification('Floor plan imported successfully!', 'success');
-
-                    // Clear the stored data (optional - comment out if you want to keep it)
-                    // sessionStorage.removeItem('exportedPlan');
-                    // sessionStorage.removeItem('exportedPlanBounds');
-                    // sessionStorage.removeItem('exportedPlanData');
-                };
-
-                // Add imported plan info to the UI
-                addImportedPlanInfo(exportedPlanData);
-            }
-        } catch (error) {
-            console.error('Import error:', error);
-            showNotification('Error importing floor plan', 'error');
-        }
-    }
-
-    function addImportedPlanInfo(planData) {
-        try {
-            if (planData) {
-                const data = JSON.parse(planData);
-                const exportTime = new Date(data.exportTime).toLocaleString();
-                const wallCount = data.walls ? data.walls.length : 0;
-                const furnitureCount = data.furniture ? data.furniture.length : 0;
-
-                // Create info overlay
-                const infoOverlay = document.createElement('div');
-                infoOverlay.id = 'imported-plan-info';
-                infoOverlay.style.cssText = `
-                    position: absolute;
-                    top: 10px;
-                    left: 10px;
-                    background: rgba(26, 115, 232, 0.9);
-                    color: white;
-                    padding: 8px 12px;
-                    border-radius: 6px;
-                    font-size: 12px;
-                    z-index: 100;
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255,255,255,0.2);
-                `;
-
-                infoOverlay.innerHTML = `
-                    <div style="font-weight: bold; margin-bottom: 4px;">Imported Floor Plan</div>
-                    <div>Walls: ${wallCount} | Furniture: ${furnitureCount}</div>
-                    <div style="font-size: 10px; opacity: 0.8;">Exported: ${exportTime}</div>
-                `;
-
-                // Remove existing info if any
-                const existingInfo = document.getElementById('imported-plan-info');
-                if (existingInfo) {
-                    existingInfo.remove();
+    // Add brand to all products
+    for (const [category, brand] of Object.entries(brands)) {
+        if (productData[category]) {
+            productData[category].brand = brand;
+            if (productData[category].subProducts) {
+                for (const subProduct of Object.values(productData[category].subProducts)) {
+                    subProduct.brand = brand;
                 }
-
-                document.querySelector('.right-panel').appendChild(infoOverlay);
-
-                // Auto-remove after 10 seconds
-                setTimeout(() => {
-                    if (infoOverlay.parentNode) {
-                        infoOverlay.style.opacity = '0';
-                        infoOverlay.style.transition = 'opacity 0.5s';
-                        setTimeout(() => infoOverlay.remove(), 500);
-                    }
-                }, 10000);
             }
-        } catch (error) {
-            console.error('Error adding plan info:', error);
         }
     }
+}
 
-    // Check for exported plan on page load
-    document.addEventListener('DOMContentLoaded', function () {
-        // Small delay to ensure everything is loaded
-        setTimeout(() => {
-            importFloorPlanFromPlanner();
-        }, 500);
+// Initialize brand data
+enhanceProductDataWithBrands();
+
+// PDF Download functionality - FIXED VERSION
+document.getElementById('downloadPdfBtn').addEventListener('click', async function() {
+    try {
+        // Show loading state
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">hourglass_empty</span> Generating PDF...';
+        btn.disabled = true;
+
+        // Create PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        // Set document properties
+        doc.setProperties({
+            title: 'Home Automation Configuration',
+            subject: 'Product Configuration Summary',
+            creator: 'Automation Configurator'
+        });
+
+        // PAGE 1: FLOOR PLAN
+        doc.setFontSize(20);
+        doc.setTextColor(40, 40, 40);
+        doc.text('Floor Plan Configuration', 105, 20, { align: 'center' });
+
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        const currentDate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        doc.text(`Generated on: ${currentDate}`, 105, 28, { align: 'center' });
+
+        let yPosition = 40;
+
+        // Capture floor plan screenshot
+        try {
+            const screenshot = await captureFloorPlanScreenshot();
+            if (screenshot) {
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 20;
+                const imgWidth = pageWidth - (2 * margin);
+                
+                // Auto height calculation based on aspect ratio
+                const tempImg = new Image();
+                tempImg.src = screenshot;
+                await new Promise((resolve) => {
+                    tempImg.onload = () => {
+                        const aspectRatio = tempImg.height / tempImg.width;
+                        const imgHeight = imgWidth * aspectRatio;
+                        
+                        // Add image to PDF
+                        doc.addImage(screenshot, 'PNG', margin, yPosition, imgWidth, imgHeight);
+
+                        // Add caption
+                        doc.setFontSize(9);
+                        doc.setTextColor(100, 100, 100);
+                        doc.text('Floor Plan with Product Labels', 105, yPosition + imgHeight + 5, { align: 'center' });
+                        yPosition = yPosition + imgHeight + 15;
+                        
+                        resolve();
+                    };
+                    tempImg.onerror = resolve; // In case image fails to load
+                });
+            }
+        } catch (imgError) {
+            console.warn('Could not capture floor plan:', imgError);
+            doc.setFontSize(12);
+            doc.setTextColor(150, 150, 150);
+            doc.text('Floor plan image not available', 105, 80, { align: 'center' });
+            yPosition = 100;
+        }
+
+        // REMOVED: Product Legend section
+
+        // Add page number for page 1
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text('Page 1 of 2', doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+
+        // PAGE 2: PRODUCT SUMMARY
+        doc.addPage();
+        yPosition = 30;
+
+        // Add title
+        doc.setFontSize(20);
+        doc.setTextColor(40, 40, 40);
+        doc.text('Product Configuration Summary', 105, yPosition, { align: 'center' });
+        yPosition += 10;
+
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Generated on: ${currentDate}`, 105, yPosition, { align: 'center' });
+        yPosition += 15;
+
+        // Generate product table
+        const productTable = generateProductTable();
+
+        if (productTable.length > 0) {
+            // Add summary statistics
+            const totalProducts = productTable.reduce((sum, item) => sum + item.quantity, 0);
+            const uniqueProducts = productTable.length;
+
+            doc.setFontSize(11);
+            doc.setTextColor(26, 115, 232);
+            doc.text(`Total Items: ${totalProducts} | Unique Products: ${uniqueProducts}`, 105, yPosition, { align: 'center' });
+            yPosition += 15;
+
+            // Prepare table data
+            const tableData = productTable.map(item => [
+                item.label,
+                item.category,
+                item.brand,
+                item.model,
+                item.quantity.toString()
+            ]);
+
+            // Add table
+            doc.autoTable({
+                startY: yPosition,
+                head: [['Label', 'Category', 'Brand', 'Model', 'Qty']],
+                body: tableData,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [26, 115, 232],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    overflow: 'linebreak',
+                    halign: 'center',
+                    minCellHeight: 6
+                },
+                columnStyles: {
+                    0: { cellWidth: 15, halign: 'center' },
+                    1: { cellWidth: 50, halign: 'center' },
+                    2: { cellWidth: 30, halign: 'center' },
+                    3: { cellWidth: 70, halign: 'left' },
+                    4: { cellWidth: 15, halign: 'center' }
+                },
+                margin: { left: 15 },
+                didDrawPage: function (data) {
+                    // Add page number
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(`Page ${data.pageNumber} of ${doc.internal.getNumberOfPages()}`,
+                        doc.internal.pageSize.getWidth() / 2,
+                        doc.internal.pageSize.getHeight() - 10,
+                        { align: 'center' });
+                }
+            });
+
+            // Add footer note
+            const finalY = doc.lastAutoTable.finalY || yPosition;
+            if (finalY < doc.internal.pageSize.getHeight() - 30) {
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('* This is an automated configuration summary. All specifications are subject to change.',
+                    105, finalY + 10, { align: 'center' });
+            }
+        } else {
+            // No products message
+            doc.setFontSize(16);
+            doc.setTextColor(100, 100, 100);
+            doc.text('No Products Configured', 105, 80, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text('Add products to the floor plan to generate a summary.', 105, 95, { align: 'center' });
+
+            // Add page number
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text('Page 2 of 2', 105, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+        }
+
+        // Save PDF with timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+        doc.save(`home-automation-configuration-${timestamp}.pdf`);
+
+        // Show success notification
+        showNotification('PDF generated successfully!', 'success');
+
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        showNotification('Error generating PDF: ' + error.message, 'error');
+    } finally {
+        // Reset button state
+        const btn = document.getElementById('downloadPdfBtn');
+        btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">download</span> DOWNLOAD CONFIGURATOR PDF';
+        btn.disabled = false;
+    }
+});
+
+async function captureFloorPlanScreenshot() {
+    try {
+        const imageContainer = document.querySelector('.img-container');
+        
+        // Temporarily hide any notifications or overlays
+        const notifications = document.querySelectorAll('.pdf-notification');
+        notifications.forEach(n => n.style.visibility = 'hidden');
+
+        const canvas = await html2canvas(imageContainer, {
+            backgroundColor: '#ffffff',
+            scale: 1,
+            useCORS: true,
+            logging: false,
+            allowTaint: true,
+            imageTimeout: 15000,
+            onclone: function(clonedDoc) {
+                // Ensure all images are loaded in the clone
+                const images = clonedDoc.querySelectorAll('img');
+                images.forEach(img => {
+                    if (img.complete) return;
+                    img.onload = function() {
+                        console.log('Image loaded in clone');
+                    };
+                });
+            }
+        });
+
+        // Restore notifications
+        notifications.forEach(n => n.style.visibility = 'visible');
+
+        return canvas.toDataURL('image/png');
+    } catch (error) {
+        console.error('Screenshot capture error:', error);
+        
+        // Create a fallback image
+        const canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#f8f9fa';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#5f6368';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Floor Plan Image Not Available', canvas.width / 2, canvas.height / 2);
+        ctx.font = '12px Arial';
+        ctx.fillText('Please check console for errors', canvas.width / 2, canvas.height / 2 + 20);
+        
+        return canvas.toDataURL('image/png');
+    }
+}
+
+function generateProductTable() {
+    if (marks.length === 0) return [];
+
+    const productMap = new Map();
+
+    marks.forEach(mark => {
+        const key = mark.seriesLabel;
+        const category = mark.categoryName || 'Unknown';
+        let model = mark.modelName || 'Unknown';
+        let brand = 'LUMI'; // Default brand
+
+        // Get brand from product data
+        if (mark.categoryName && productData[mark.categoryName]) {
+            brand = productData[mark.categoryName].brand || brand;
+        }
+
+        // Handle relay items
+        if (category === 'Z-WAVE RELAY' && mark.relayItems && mark.relayItems.length > 0) {
+            mark.relayItems.forEach(relayItem => {
+                const relayKey = `${key}-${relayItem.name}`;
+                if (!productMap.has(relayKey)) {
+                    productMap.set(relayKey, {
+                        label: key,
+                        category: 'Relay Module',
+                        brand: 'LUMI',
+                        model: relayItem.name,
+                        quantity: relayItem.quantity
+                    });
+                } else {
+                    productMap.get(relayKey).quantity += relayItem.quantity;
+                }
+            });
+            return; // Skip the main mark for relays
+        }
+
+        if (!productMap.has(key)) {
+            productMap.set(key, {
+                label: key,
+                category: category,
+                brand: brand,
+                model: model,
+                quantity: 1
+            });
+        } else {
+            productMap.get(key).quantity += 1;
+        }
     });
 
-    // Add this to panel.html script section, after the DOMContentLoaded event
-    function checkForUploadedPlan() {
-        const uploadedPlan = sessionStorage.getItem('uploadedFloorPlan');
-        if (uploadedPlan) {
-            // Replace the default preview image with the uploaded one
-            previewImage.src = uploadedPlan;
+    // Convert to array and sort
+    return Array.from(productMap.values())
+        .sort((a, b) => {
+            // Sort by label (S1, S2, P1, etc.)
+            return a.label.localeCompare(b.label);
+        });
+}
 
-            // Clear the stored image after use (optional)
-            sessionStorage.removeItem('uploadedFloorPlan');
-
-            // Show success notification
-            showNotification('Floor plan uploaded successfully!', 'success');
-        }
+function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existingNotification = document.querySelector('.pdf-notification');
+    if (existingNotification) {
+        existingNotification.remove();
     }
 
-    // Call this function when panel.html loads
-    document.addEventListener('DOMContentLoaded', function () {
-        // ... existing code ...
+    const notification = document.createElement('div');
+    notification.className = `pdf-notification pdf-notification-${type}`;
+    notification.innerHTML = `
+        <span class="pdf-notification-icon">${type === 'success' ? '✓' : '⚠'}</span>
+        <span class="pdf-notification-text">${message}</span>
+    `;
 
-        // Check for uploaded floor plan
-        checkForUploadedPlan();
-    });
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        animation: slideInRight 0.3s ease;
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 5000);
+}
+
+// Add CSS animations for notifications
+const notificationStyle = document.createElement('style');
+notificationStyle.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(notificationStyle);
 </script>
 </body>
 
