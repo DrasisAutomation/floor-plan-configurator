@@ -24,7 +24,9 @@ const appState = {
     isRotating: false,
     isResizing: false,
     resizeHandle: null,
-    nextJointId: 1
+    nextJointId: 1,
+    lastPlacedFurnitureType: null,
+    selectedFurnitureType: null
 };
 
 // Furniture images configuration
@@ -80,6 +82,10 @@ const furnitureRotation = document.getElementById('furniture-rotation');
 const rotationValue = document.getElementById('rotation-value');
 const rotate90Btn = document.getElementById('rotate-90-btn');
 
+// Size scale slider
+const furnitureScale = document.getElementById('furniture-scale');
+const scaleValue = document.getElementById('scale-value');
+
 // Delete buttons
 const deleteWallBtn = document.getElementById('delete-wall');
 const deleteFurnitureBtn = document.getElementById('delete-furniture');
@@ -95,6 +101,7 @@ const redoBtn = document.getElementById('redo-btn');
 const zoomInBtn = document.getElementById('zoom-in');
 const zoomOutBtn = document.getElementById('zoom-out');
 const resetViewBtn = document.getElementById('reset-view');
+const exportToConfiguratorBtn = document.getElementById('export-to-configurator');
 
 // Furniture items
 const furnitureItems = document.querySelectorAll('.furniture-item');
@@ -143,7 +150,7 @@ function initCanvas() {
         item.addEventListener('click', () => {
             setTool('furniture');
             appState.selectedFurnitureType = item.getAttribute('data-type');
-            operationStatus.textContent = `Placing ${appState.selectedFurnitureType}`;
+            operationStatus.textContent = `Placing ${appState.selectedFurnitureType}. Click to place.`;
         });
     });
     
@@ -158,6 +165,7 @@ function initCanvas() {
     zoomInBtn.addEventListener('click', () => zoom(1.2));
     zoomOutBtn.addEventListener('click', () => zoom(0.8));
     resetViewBtn.addEventListener('click', resetView);
+    exportToConfiguratorBtn.addEventListener('click', exportToConfigurator);
     
     // Add property input events
     wallX1.addEventListener('change', updateWallProperties);
@@ -169,6 +177,9 @@ function initCanvas() {
     furnitureWidth.addEventListener('change', updateFurnitureProperties);
     furnitureHeight.addEventListener('change', updateFurnitureProperties);
     furnitureRotation.addEventListener('input', updateFurnitureRotation);
+    
+    // Add scale slider event
+    furnitureScale.addEventListener('input', updateFurnitureScale);
     
     // Add rotation button event
     rotate90Btn.addEventListener('click', rotateFurniture90);
@@ -198,8 +209,37 @@ function initCanvas() {
     // Load saved plan if exists
     loadPlan();
     
+    // Initialize history with empty state
+    saveToHistory();
+    
     // Start animation loop
     requestAnimationFrame(render);
+}
+
+// Update furniture scale
+function updateFurnitureScale() {
+    if (!appState.selectedItem || appState.selectedType !== 'furniture') return;
+    
+    const furniture = appState.selectedItem;
+    const scale = parseInt(furnitureScale.value) / 100;
+    
+    // Store original size if not already stored
+    if (!furniture.originalSize) {
+        furniture.originalSize = {
+            width: furniture.width,
+            height: furniture.height
+        };
+    }
+    
+    // Calculate new size based on original size and scale
+    furniture.width = furniture.originalSize.width * scale;
+    furniture.height = furniture.originalSize.height * scale;
+    
+    scaleValue.textContent = `${furnitureScale.value}%`;
+    furnitureWidth.value = Math.round(furniture.width);
+    furnitureHeight.value = Math.round(furniture.height);
+    
+    saveToHistory();
 }
 
 // Rotate furniture by 90 degrees
@@ -225,6 +265,12 @@ function setTool(tool) {
     appState.currentTool = tool;
     appState.isMeasuring = tool === 'measure';
     
+    // If switching from wall drawing mode, clear temporary wall
+    if (tool !== 'wall') {
+        appState.isDrawingWall = false;
+        appState.tempWall = null;
+    }
+    
     if (tool === 'measure') {
         appState.measurementPoints = [];
     }
@@ -235,7 +281,10 @@ function setTool(tool) {
     panTool.classList.remove('active');
     measureTool.classList.remove('active');
     
-    if (tool === 'select') selectTool.classList.add('active');
+    if (tool === 'select') {
+        selectTool.classList.add('active');
+        appState.selectedFurnitureType = null;
+    }
     if (tool === 'wall') wallTool.classList.add('active');
     if (tool === 'pan') panTool.classList.add('active');
     if (tool === 'measure') measureTool.classList.add('active');
@@ -283,6 +332,7 @@ let dragStart = { x: 0, y: 0 };
 let isPanning = false;
 let spacePressed = false;
 let selectedEndpoint = null;
+let isDraggingWallMiddle = false;
 
 function handleMouseDown(e) {
     const rect = canvas.getBoundingClientRect();
@@ -323,8 +373,9 @@ function handleMouseDown(e) {
                 appState.tempWall.jointId1,
                 appState.tempWall.jointId2
             );
+            
             appState.tempWall = null;
-            operationStatus.textContent = 'Wall added';
+            operationStatus.textContent = 'Wall added. Click to start new wall.';
         }
     } else if (appState.currentTool === 'furniture' && appState.selectedFurnitureType) {
         // Place furniture
@@ -336,7 +387,14 @@ function handleMouseDown(e) {
             getDefaultFurnitureSize(appState.selectedFurnitureType).width,
             getDefaultFurnitureSize(appState.selectedFurnitureType).height
         );
-        operationStatus.textContent = `${appState.selectedFurnitureType} placed`;
+        operationStatus.textContent = `${appState.selectedFurnitureType} placed. Switching to select tool.`;
+        
+        // Automatically switch back to select tool after placing one furniture
+        setTimeout(() => {
+            setTool('select');
+            appState.lastPlacedFurnitureType = appState.selectedFurnitureType;
+            appState.selectedFurnitureType = null;
+        }, 100);
     } else if (appState.currentTool === 'select') {
         // Check if clicking on a wall or furniture
         const clickedWall = getWallAtPoint(worldPos.x, worldPos.y);
@@ -345,10 +403,19 @@ function handleMouseDown(e) {
         // Check if clicking on a wall endpoint
         selectedEndpoint = getWallEndpointAtPoint(worldPos.x, worldPos.y);
         
-        if (selectedEndpoint) {
+        // Check if clicking on the middle of a wall (not on endpoints)
+        if (clickedWall && !selectedEndpoint) {
+            // Dragging the entire wall from the middle
+            selectItem('wall', clickedWall);
+            isDragging = true;
+            isDraggingWallMiddle = true;
+            dragStart = { x: worldPos.x, y: worldPos.y };
+            operationStatus.textContent = 'Selected wall: Drag from middle to move entire wall';
+        } else if (selectedEndpoint) {
             // Dragging a specific endpoint
             selectItem('wall', selectedEndpoint.wall);
             isDragging = true;
+            isDraggingWallMiddle = false;
             dragStart = { x: worldPos.x, y: worldPos.y };
             operationStatus.textContent = 'Dragging wall endpoint';
         } else if (clickedWall) {
@@ -437,14 +504,22 @@ function handleMouseMove(e) {
             const dx = worldPos.x - dragStart.x;
             const dy = worldPos.y - dragStart.y;
             
-            if (selectedEndpoint) {
+            if (selectedEndpoint && !isDraggingWallMiddle) {
                 // Dragging a specific endpoint
                 const snappedPoint = snapToPoint(worldPos.x, worldPos.y);
                 
                 if (selectedEndpoint.endpoint === 'start') {
+                    // Update start joint position
                     updateJointPosition(wall.jointId1, snappedPoint.x, snappedPoint.y);
+                    // Update wall coordinates from joint
+                    wall.x1 = appState.joints[wall.jointId1].x;
+                    wall.y1 = appState.joints[wall.jointId1].y;
                 } else {
+                    // Update end joint position
                     updateJointPosition(wall.jointId2, snappedPoint.x, snappedPoint.y);
+                    // Update wall coordinates from joint
+                    wall.x2 = appState.joints[wall.jointId2].x;
+                    wall.y2 = appState.joints[wall.jointId2].y;
                 }
                 
                 // Apply angle snapping
@@ -452,8 +527,11 @@ function handleMouseMove(e) {
                 applyLengthSnapping(wall);
             } else {
                 // Dragging the entire wall
-                updateJointPosition(wall.jointId1, wall.x1 + dx, wall.y1 + dy);
-                updateJointPosition(wall.jointId2, wall.x2 + dx, wall.y2 + dy);
+                const snappedStart = snapToPoint(wall.x1 + dx, wall.y1 + dy);
+                const snappedEnd = snapToPoint(wall.x2 + dx, wall.y2 + dy);
+                
+                updateJointPosition(wall.jointId1, snappedStart.x, snappedStart.y);
+                updateJointPosition(wall.jointId2, snappedEnd.x, snappedEnd.y);
             }
             
             // Update properties panel
@@ -523,16 +601,17 @@ function handleMouseMove(e) {
 }
 
 function handleMouseUp() {
+    if (isDragging || isPanning || appState.isRotating || appState.isResizing) {
+        saveToHistory();
+    }
+    
     isDragging = false;
     isPanning = false;
     appState.isRotating = false;
     appState.isResizing = false;
     appState.resizeHandle = null;
     selectedEndpoint = null;
-    
-    if (appState.selectedItem) {
-        saveToHistory();
-    }
+    isDraggingWallMiddle = false;
 }
 
 function handleWheel(e) {
@@ -547,17 +626,51 @@ function handleWheel(e) {
 }
 
 function handleKeyDown(e) {
+    // Prevent Escape key from navigating back
+    if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Cancel current operation
+        if (appState.isDrawingWall) {
+            appState.isDrawingWall = false;
+            appState.tempWall = null;
+            operationStatus.textContent = 'Wall drawing cancelled';
+        } else if (appState.currentTool === 'furniture') {
+            setTool('select');
+            operationStatus.textContent = 'Switched to select tool';
+        } else if (appState.selectedItem) {
+            appState.selectedItem = null;
+            appState.selectedType = null;
+            updatePropertiesPanel();
+            operationStatus.textContent = 'Selection cleared';
+        }
+        
+        return false;
+    }
+    
     if (e.code === 'Space') {
         spacePressed = true;
         if (appState.currentTool === 'select') {
             canvas.style.cursor = 'grab';
         }
     } else if (e.key === 'Delete' && appState.selectedItem) {
+        e.preventDefault();
         if (appState.selectedType === 'wall') {
             deleteSelectedWall();
         } else if (appState.selectedType === 'furniture') {
             deleteSelectedFurniture();
         }
+    } else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+            redo();
+        } else {
+            undo();
+        }
+    } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault();
+        redo();
     }
 }
 
@@ -613,7 +726,15 @@ function removeWallFromJoint(wall, jointId) {
 }
 
 // Wall functions
-function addWall(x1, y1, x2, y2, jointId1, jointId2) {
+function addWall(x1, y1, x2, y2, jointId1 = null, jointId2 = null) {
+    // Create joints if not provided
+    if (jointId1 === null) {
+        jointId1 = createJoint(x1, y1);
+    }
+    if (jointId2 === null) {
+        jointId2 = createJoint(x2, y2);
+    }
+    
     const wall = {
         id: Date.now(),
         x1: x1,
@@ -695,7 +816,8 @@ function addFurniture(type, x, y, width, height) {
         y: y,
         width: width,
         height: height,
-        rotation: 0
+        rotation: 0,
+        originalSize: { width: width, height: height } // Store original size
     };
     
     appState.furniture.push(furniture);
@@ -771,12 +893,12 @@ function getResizeHandleAtPoint(x, y, furniture) {
 
 function getDefaultFurnitureSize(type) {
     const sizes = {
-        door: { width: 80, height: 80 },      // Square
-        window: { width: 100, height: 100 },  // Square
-        sofa: { width: 120, height: 120 },    // Square
-        table: { width: 100, height: 100 },   // Square
-        bed: { width: 120, height: 120 },     // Square
-        tv: { width: 80, height: 80 }         // Square
+        door: { width: 80, height: 80 },
+        window: { width: 100, height: 100 },
+        sofa: { width: 120, height: 120 },
+        table: { width: 100, height: 100 },
+        bed: { width: 120, height: 120 },
+        tv: { width: 80, height: 80 }
     };
     return sizes[type] || { width: 100, height: 100 };
 }
@@ -948,6 +1070,16 @@ function updateFurniturePropertiesPanel() {
     furnitureHeight.value = Math.round(furniture.height);
     furnitureRotation.value = Math.round(furniture.rotation);
     rotationValue.textContent = `${Math.round(furniture.rotation)}°`;
+    
+    // Update scale slider
+    if (furniture.originalSize) {
+        const scale = Math.round((furniture.width / furniture.originalSize.width) * 100);
+        furnitureScale.value = scale;
+        scaleValue.textContent = `${scale}%`;
+    } else {
+        furnitureScale.value = 100;
+        scaleValue.textContent = '100%';
+    }
 }
 
 function updateWallProperties() {
@@ -972,8 +1104,26 @@ function updateFurnitureProperties() {
     const furniture = appState.selectedItem;
     furniture.x = parseInt(furnitureX.value);
     furniture.y = parseInt(furnitureY.value);
-    furniture.width = parseInt(furnitureWidth.value);
-    furniture.height = parseInt(furnitureHeight.value);
+    
+    // Update original size if it exists
+    if (furniture.originalSize) {
+        const oldWidth = furniture.width;
+        const oldHeight = furniture.height;
+        
+        furniture.width = parseInt(furnitureWidth.value);
+        furniture.height = parseInt(furnitureHeight.value);
+        
+        // Calculate new scale
+        const widthScale = (furniture.width / furniture.originalSize.width) * 100;
+        const heightScale = (furniture.height / furniture.originalSize.height) * 100;
+        const avgScale = (widthScale + heightScale) / 2;
+        
+        furnitureScale.value = Math.round(avgScale);
+        scaleValue.textContent = `${Math.round(avgScale)}%`;
+    } else {
+        furniture.width = parseInt(furnitureWidth.value);
+        furniture.height = parseInt(furnitureHeight.value);
+    }
     
     saveToHistory();
 }
@@ -1179,8 +1329,6 @@ function drawGridOnCanvas(ctx, width, height, offsetX, offsetY) {
         ctx.lineTo(width, y);
         ctx.stroke();
     }
-    
-    // REMOVED: Darker major grid lines for export
 }
 
 function drawWallOnCanvas(ctx, wall, offsetX, offsetY) {
@@ -1274,16 +1422,22 @@ function newPlan() {
 
 // Undo/redo functions
 function saveToHistory() {
+    // Don't save if nothing changed
+    if (appState.historyIndex >= 0) {
+        const lastState = appState.history[appState.historyIndex];
+        const currentState = getCurrentState();
+        
+        // Check if state actually changed
+        if (JSON.stringify(lastState) === JSON.stringify(currentState)) {
+            return;
+        }
+    }
+    
     // Remove any future states if we're not at the end of history
     appState.history = appState.history.slice(0, appState.historyIndex + 1);
     
     // Save current state
-    const state = {
-        walls: JSON.parse(JSON.stringify(appState.walls)),
-        furniture: JSON.parse(JSON.stringify(appState.furniture)),
-        joints: JSON.parse(JSON.stringify(appState.joints)),
-        nextJointId: appState.nextJointId
-    };
+    const state = getCurrentState();
     
     appState.history.push(state);
     appState.historyIndex++;
@@ -1297,20 +1451,21 @@ function saveToHistory() {
     updateUndoRedoButtons();
 }
 
+function getCurrentState() {
+    return {
+        walls: JSON.parse(JSON.stringify(appState.walls)),
+        furniture: JSON.parse(JSON.stringify(appState.furniture)),
+        joints: JSON.parse(JSON.stringify(appState.joints)),
+        nextJointId: appState.nextJointId,
+        viewTransform: JSON.parse(JSON.stringify(appState.viewTransform)),
+        measurementPoints: JSON.parse(JSON.stringify(appState.measurementPoints))
+    };
+}
+
 function undo() {
     if (appState.historyIndex > 0) {
         appState.historyIndex--;
-        const state = appState.history[appState.historyIndex];
-        appState.walls = JSON.parse(JSON.stringify(state.walls));
-        appState.furniture = JSON.parse(JSON.stringify(state.furniture));
-        appState.joints = JSON.parse(JSON.stringify(state.joints));
-        appState.nextJointId = state.nextJointId;
-        
-        // Deselect any items
-        appState.selectedItem = null;
-        appState.selectedType = null;
-        updatePropertiesPanel();
-        
+        restoreState(appState.history[appState.historyIndex]);
         updateUndoRedoButtons();
         operationStatus.textContent = 'Undo';
     }
@@ -1319,20 +1474,24 @@ function undo() {
 function redo() {
     if (appState.historyIndex < appState.history.length - 1) {
         appState.historyIndex++;
-        const state = appState.history[appState.historyIndex];
-        appState.walls = JSON.parse(JSON.stringify(state.walls));
-        appState.furniture = JSON.parse(JSON.stringify(state.furniture));
-        appState.joints = JSON.parse(JSON.stringify(state.joints));
-        appState.nextJointId = state.nextJointId;
-        
-        // Deselect any items
-        appState.selectedItem = null;
-        appState.selectedType = null;
-        updatePropertiesPanel();
-        
+        restoreState(appState.history[appState.historyIndex]);
         updateUndoRedoButtons();
         operationStatus.textContent = 'Redo';
     }
+}
+
+function restoreState(state) {
+    appState.walls = JSON.parse(JSON.stringify(state.walls));
+    appState.furniture = JSON.parse(JSON.stringify(state.furniture));
+    appState.joints = JSON.parse(JSON.stringify(state.joints));
+    appState.nextJointId = state.nextJointId;
+    appState.viewTransform = JSON.parse(JSON.stringify(state.viewTransform || { x: 0, y: 0, scale: 1 }));
+    appState.measurementPoints = JSON.parse(JSON.stringify(state.measurementPoints || []));
+    
+    // Deselect any items
+    appState.selectedItem = null;
+    appState.selectedType = null;
+    updatePropertiesPanel();
 }
 
 function updateUndoRedoButtons() {
@@ -1423,8 +1582,6 @@ function drawGrid() {
         ctx.lineTo(endX, y);
         ctx.stroke();
     }
-    
-    // REMOVED: Darker major grid lines
 }
 
 function drawWall(wall, isTemporary = false) {
@@ -1648,13 +1805,7 @@ function drawAngleGuides(wall) {
     }
 }
 
-// Initialize the application
-initCanvas();
-
-// Add export to configurator functionality
-const exportToConfiguratorBtn = document.getElementById('export-to-configurator');
-exportToConfiguratorBtn.addEventListener('click', exportToConfigurator);
-
+// Export to configurator
 function exportToConfigurator() {
     try {
         // Capture the current canvas state
@@ -1848,3 +1999,6 @@ function drawFurnitureOnExportCanvas(ctx, furniture, offsetX, offsetY) {
     
     ctx.restore();
 }
+
+// Initialize the application
+initCanvas();

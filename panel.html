@@ -1339,21 +1339,64 @@
             }
         }
     };
+/* ------------------------- PRODUCT DATA ADDITIONS ------------------------- */
+// Add these to the productData object, after the SENSORS category:
+productData["AUTOMATION DISTRIBUTION BOX"] = {
+    title: "Automation Distribution Box",
+    desc: "Professional distribution boxes for automation system components.",
+    brand: "DB",
+    subProducts: {
+        "SMART DB 12 WAY": {
+            title: "Smart DB 12 Way",
+            desc: "12-way automation distribution box with modular design",
+            img: "./images/db/57.png", // You'll need to add this image
+            features: ["12 modular spaces", "DIN rail mounting", "Transparent cover", "IP65 rated", "Wall mountable", "Cable management"]
+        },
+        "SMART DB 24 WAY": {
+            title: "Smart DB 24 Way",
+            desc: "24-way automation distribution box for larger installations",
+            img: "./images/db/58.png", // You'll need to add this image
+            features: ["24 modular spaces", "DIN rail mounting", "Lockable transparent cover", "IP65 rated", "Wall mountable", "Advanced cable management"]
+        }
+    }
+};
 
-    const PRODUCT_ORDER = [
-        "DOOR LOCK",
-        "PROCESSOR",
-        "LUMI GLASS SERIES",
-        "ESCULT SERIES",
-        "TACTILE HEXA SERIES",
-        "DUO-QUAD SERIES",
-        "DOMOGENIE GLASS LITE SERIES",
-        "WALL MOUNT DISPLAY",
-        "TREMBLAY SOUNDS",
-        "Z-WAVE RELAY",
-        "CURTAIN MOTORS",
-        "SENSORS"
-    ];
+productData["NETWORK DISTRIBUTION BOX"] = {
+    title: "Network Distribution Box",
+    desc: "Distribution boxes for network and communication equipment.",
+    brand: "DB",
+    subProducts: {
+        "NETWORK DB 8 PORT": {
+            title: "Network DB 8 Port",
+            desc: "8-port network distribution box with patch panel",
+            img: "./images/db/59.png", // You'll need to add this image
+            features: ["8-port patch panel", "Cable management", "Ventilation slots", "Wall mountable", "Lockable door", "Rack mount options"]
+        },
+        "NETWORK DB 16 PORT": {
+            title: "Network DB 16 Port",
+            desc: "16-port network distribution box for enterprise installations",
+            img: "./images/db/60.png", // You'll need to add this image
+            features: ["16-port patch panel", "Advanced cable management", "Cooling fan", "Wall/rack mountable", "Lockable door", "Power strip included"]
+        }
+    }
+};
+
+const PRODUCT_ORDER = [
+    "DOOR LOCK",
+    "PROCESSOR",
+    "LUMI GLASS SERIES",
+    "ESCULT SERIES",
+    "TACTILE HEXA SERIES",
+    "DUO-QUAD SERIES",
+    "DOMOGENIE GLASS LITE SERIES",
+    "WALL MOUNT DISPLAY",
+    "TREMBLAY SOUNDS",
+    "Z-WAVE RELAY",
+    "CURTAIN MOTORS",
+    "SENSORS",
+    "AUTOMATION DISTRIBUTION BOX",  // Add this line
+    "NETWORK DISTRIBUTION BOX"      // Add this line
+];
 
     /* ------------------------- UI BUILD ------------------------- */
     const productListEl = document.getElementById('productList');
@@ -1447,16 +1490,18 @@
 
     const seriesCounters = {};
 
-    function getSeriesCode(productKey) {
-        if (productKey === 'DOOR LOCK') return 'L';
-        if (productKey === 'PROCESSOR') return 'P';
-        if (productKey === 'WALL MOUNT DISPLAY') return 'D';
-        if (productKey === 'CURTAIN MOTORS') return 'C';
-        if (productKey === 'Z-WAVE RELAY') return 'R';
-        if (productKey === 'TREMBLAY SOUNDS') return 'T';
-        if (switchFamilies.has(productKey)) return 'S';
-        return 'S';
-    }
+function getSeriesCode(productKey) {
+    if (productKey === 'DOOR LOCK') return 'L';
+    if (productKey === 'PROCESSOR') return 'P';
+    if (productKey === 'WALL MOUNT DISPLAY') return 'D';
+    if (productKey === 'CURTAIN MOTORS') return 'C';
+    if (productKey === 'Z-WAVE RELAY') return 'R';
+    if (productKey === 'TREMBLAY SOUNDS') return 'T';
+    if (productKey === 'AUTOMATION DISTRIBUTION BOX') return 'ADB'; // Added
+    if (productKey === 'NETWORK DISTRIBUTION BOX') return 'NDB';   // Added
+    if (switchFamilies.has(productKey)) return 'S';
+    return 'S';
+}
 
     /* ------------------------- LOAD FLOOR PLAN IMAGE ------------------------- */
     function loadFloorPlanImage() {
@@ -1945,6 +1990,7 @@
         return wireTypes.find(wt => wt.id === type) || wireTypes[0];
     }
 
+/* ------------------------- UPDATE WIRE CONTROLS UI ------------------------- */
 function showWireControls() {
     const wireTypeInfo = getWireTypeInfo(currentWireType);
     
@@ -1952,10 +1998,16 @@ function showWireControls() {
     
     const wireControlsHTML = `
         <div class="mark-controls-box" id="wireControls" style="margin-top: 20px; border-color: ${wireTypeInfo.color};">
-            <h3 style="color: ${wireTypeInfo.color};">
-                <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">${wireTypeInfo.icon}</span>
-                ${wireTypeInfo.title} Mapping
-            </h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: ${wireTypeInfo.color}; margin: 0;">
+                    <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">${wireTypeInfo.icon}</span>
+                    ${wireTypeInfo.title} Mapping
+                </h3>
+                <button id="clearWireSelectionBtn" class="btn" style="padding: 4px 8px; font-size: 11px; background: #f8f9fa; border-color: #ccc;">
+                    <span class="material-icons" style="font-size: 14px; margin-right: 4px;">clear</span>
+                    Clear
+                </button>
+            </div>
             
             <div class="form-group">
                 <div style="background: ${wireTypeInfo.bgColor}; padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid ${wireTypeInfo.borderColor};">
@@ -1971,6 +2023,7 @@ function showWireControls() {
                 </div>
             </div>
 
+            <!-- ... rest of the wire controls HTML remains the same ... -->
             <div class="form-group">
                 <label style="color: ${wireTypeInfo.color};">Wire Mode</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 12px;">
@@ -2035,7 +2088,7 @@ function showWireControls() {
 
             <div style="margin-top: 12px; color: #666; font-size: 11px; text-align: center; padding: 8px; background: #f8f9fa; border-radius: 6px;">
                 <span class="material-icons" style="font-size: 12px; vertical-align: middle; margin-right: 4px;">tips_and_updates</span>
-                Wire color: ${wireTypeInfo.title} • Click wire to select • Drag to move
+                Wire color: ${wireTypeInfo.title} • Click wire to select • Drag to move • Click Clear to reset
             </div>
         </div>
     `;
@@ -2048,12 +2101,16 @@ function showWireControls() {
         attachWireControlsEvents();
     }
 }
+
+
+/* ------------------------- UPDATE attachWireControlsEvents FUNCTION ------------------------- */
 function attachWireControlsEvents() {
     const curveBtn = document.getElementById('curveModeBtn');
     const pointsBtn = document.getElementById('pointsModeBtn');
     const addPointBtn = document.getElementById('addPointBtn');
     const createWireBtn = document.getElementById('createWireBtn');
     const cancelWireBtn = document.getElementById('cancelWireBtn');
+    const clearWireSelectionBtn = document.getElementById('clearWireSelectionBtn');
     
     if (curveBtn) {
         curveBtn.addEventListener('click', () => setWireMode('curve'));
@@ -2075,6 +2132,10 @@ function attachWireControlsEvents() {
         cancelWireBtn.addEventListener('click', cancelWire);
     }
     
+    if (clearWireSelectionBtn) {
+        clearWireSelectionBtn.addEventListener('click', clearWireSelection);
+    }
+    
     const wireCurveSlider = document.getElementById('wireCurveSlider');
     if (wireCurveSlider) {
         wireCurveSlider.addEventListener('input', function() {
@@ -2085,8 +2146,8 @@ function attachWireControlsEvents() {
             }
         });
     }
-}
-    function hideWireControls() {
+}  
+function hideWireControls() {
         const wireControls = document.getElementById('wireControls');
         if (wireControls) {
             wireControls.remove();
@@ -3542,6 +3603,55 @@ function attachWireControlsEvents() {
             }
         }
     });
+/* ------------------------- WIRE SELECTION CLEARING FUNCTION ------------------------- */
+function clearWireSelection() {
+    // Clear wire mode
+    isWireMode = false;
+    currentWireType = null;
+    
+    // Reset wire selection
+    wireStartMark = null;
+    wireEndMark = null;
+    wirePoints = [];
+    selectedWire = null;
+    
+    // Remove all point elements
+    document.querySelectorAll('.draggable-point').forEach(el => el.remove());
+    
+    // Remove wire preview
+    const tempWire = document.querySelector('.wire-preview');
+    if (tempWire) {
+        tempWire.remove();
+    }
+    
+    // Reset wire selection labels
+    updateWireSelectionLabels();
+    updatePointsList();
+    
+    // Remove active class from wire buttons
+    document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"]').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Reset wire thickness for all wires (deselect them)
+    wires.forEach(wire => {
+        if (wire.element && wire.element.path) {
+            wire.element.path.setAttribute('stroke-width', '4');
+        }
+    });
+    
+    // Remove wire edit controls
+    const wireEditControls = document.querySelector('.wire-edit-controls');
+    if (wireEditControls) {
+        wireEditControls.remove();
+    }
+    
+    // Hide wire controls if they exist
+    hideWireControls();
+    
+    // Show notification
+    showNotification('Wire selection cleared', 'info');
+}
 
     /* ------------------------- INIT ------------------------- */
     // Call this function early in initialization
@@ -3642,8 +3752,6 @@ function attachWireControlsEvents() {
 
 /* ------------------------- DOWNLOAD FUNCTIONALITY ------------------------- */
 /* ------------------------- PDF EXPORT FUNCTIONALITY ------------------------- */
-
-// Add brand information to product data
 function enhanceProductDataWithBrands() {
     const brands = {
         "DOOR LOCK": "LocPro",
@@ -3657,7 +3765,9 @@ function enhanceProductDataWithBrands() {
         "TREMBLAY SOUNDS": "Tremblay",
         "Z-WAVE RELAY": "LUMI",
         "CURTAIN MOTORS": "LUMI",
-        "SENSORS": "Big Sense"
+        "SENSORS": "Big Sense",
+        "AUTOMATION DISTRIBUTION BOX": "DB",       // Added
+        "NETWORK DISTRIBUTION BOX": "DB"          // Added
     };
 
     // Add brand to all products
@@ -3703,7 +3813,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
         // PAGE 1: FLOOR PLAN
         doc.setFontSize(20);
         doc.setTextColor(40, 40, 40);
-        doc.text('Floor Plan Configuration', 105, 20, { align: 'center' });
+        doc.text('Automation Design Suite', 105, 20, { align: 'center' });
 
         doc.setFontSize(10);
         doc.setTextColor(100, 100, 100);

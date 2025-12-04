@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Home Floor Planner</title>
+    <title>Automation Design Planner</title>
     <link rel="stylesheet" href="style.css">
     <!-- <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -20,14 +20,14 @@
         <div class="warning-box">
             <div class="warning-icon">⚠️</div>
             <h2>Please Use a Laptop or Desktop</h2>
-            <p>This 2D Floor Planner works only on larger screens.</p>
+            <p>This Automation Design Suite works only on larger screens.</p>
         </div>
     </div>
 
     <div class="app-container">
         <div class="top-bar">
             <div class="app-title">
-                <h1>2D Home Floor Planner</h1>
+                <h1>Automation Design Suite</h1>
             </div>
             <div class="controls">
                 <button class="control-btn" id="new-plan">New Plan</button>
@@ -43,7 +43,7 @@
                     <button class="zoom-btn" id="zoom-in">+</button>
                     <button class="control-btn" id="reset-view">Reset View</button>
                     <!-- Add this button in the top-bar controls section after existing buttons -->
-<button class="control-btn" id="export-to-configurator">EXPORT TO CONFIGURATOR</button>
+                    <button class="control-btn" id="export-to-configurator">EXPORT TO CONFIGURATOR</button>
                 </div>
             </div>
         </div>
@@ -198,12 +198,18 @@
                                 <input type="number" class="property-input" id="furniture-y">
                             </div>
                         </div>
-                        <div class="property-group">
+                        <div class="property-group" id="hide">
                             <label class="property-label">Size (Width, Height)</label>
                             <div style="display: flex; gap: 5px;">
                                 <input type="number" class="property-input" id="furniture-width">
                                 <input type="number" class="property-input" id="furniture-height">
                             </div>
+                        </div>
+                        <div class="property-group">
+                            <label class="property-label">Size Scale</label>
+                            <input type="range" class="property-slider" id="furniture-scale" min="50" max="200"
+                                value="100">
+                            <span id="scale-value">100%</span>
                         </div>
                         <div class="property-group">
                             <label class="property-label">Rotation</label>
@@ -217,6 +223,7 @@
                                 Rotate +90°
                             </button>
                         </div>
+
                         <button class="delete-btn" id="delete-furniture">Delete Furniture</button>
                     </div>
                 </div>
