@@ -615,17 +615,31 @@ function handleMouseUp() {
 }
 
 function handleWheel(e) {
-    e.preventDefault();
+    // Prevent browser zoom with Cmd+Wheel (macOS) or Ctrl+Wheel (Windows)
+    if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+    }
     
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-    zoom(zoomFactor, x, y);
+    // Only use our custom zoom if not using modifier keys
+    if (!e.ctrlKey && !e.metaKey) {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+        zoom(zoomFactor, x, y);
+    }
 }
 
 function handleKeyDown(e) {
+    // Determine if it's a macOS shortcut (Cmd key) or Windows/Linux (Ctrl key)
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const cmdKey = e.metaKey; // Cmd key on macOS
+    const ctrlKey = e.ctrlKey; // Ctrl key on Windows/Linux
+    
+    // For shortcuts, check both based on platform
+    const isShortcutKey = isMac ? cmdKey : ctrlKey;
+    
     // Prevent Escape key from navigating back
     if (e.key === 'Escape') {
         e.preventDefault();
@@ -649,6 +663,48 @@ function handleKeyDown(e) {
         return false;
     }
     
+    // Prevent browser zoom with Cmd++/Cmd- (macOS) or Ctrl++/Ctrl- (Windows)
+    if ((cmdKey || ctrlKey) && (e.key === '=' || e.key === '-' || e.key === '0')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+    
+    // Prevent browser zoom with Cmd/Ctrl+MouseWheel
+    if ((cmdKey || ctrlKey) && (e.key === 'Add' || e.key === 'Subtract')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+    
+    // Handle undo: Cmd+Z (macOS) or Ctrl+Z (Windows)
+    if (isShortcutKey && e.key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+            // Cmd+Shift+Z or Ctrl+Shift+Z for redo
+            redo();
+        } else {
+            undo();
+        }
+        return false;
+    }
+    
+    // Handle redo: Cmd+Y (macOS) or Ctrl+Y (Windows)
+    // Note: Many macOS apps use Cmd+Shift+Z for redo, but we'll support both
+    if (isShortcutKey && e.key === 'y') {
+        e.preventDefault();
+        redo();
+        return false;
+    }
+    
+    // Also support Cmd+Shift+Z specifically for macOS redo
+    if (isMac && cmdKey && e.shiftKey && e.key === 'Z') {
+        e.preventDefault();
+        redo();
+        return false;
+    }
+    
+    // Handle other keys
     if (e.code === 'Space') {
         spacePressed = true;
         if (appState.currentTool === 'select') {
@@ -661,16 +717,6 @@ function handleKeyDown(e) {
         } else if (appState.selectedType === 'furniture') {
             deleteSelectedFurniture();
         }
-    } else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-        e.preventDefault();
-        if (e.shiftKey) {
-            redo();
-        } else {
-            undo();
-        }
-    } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
-        e.preventDefault();
-        redo();
     }
 }
 
