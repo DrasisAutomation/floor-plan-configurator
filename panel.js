@@ -512,6 +512,9 @@ function loadFloorPlanImage() {
 
     previewImage.src = '';
 
+    // Add a loading placeholder to maintain aspect ratio
+    previewImage.style.visibility = 'hidden';
+
     if (uploadedFloorPlan) {
         console.log('📤 Loading uploaded floor plan from index.html');
         previewImage.src = uploadedFloorPlan;
@@ -526,12 +529,22 @@ function loadFloorPlanImage() {
 
     previewImage.onload = function () {
         console.log('✅ Floor plan image loaded successfully');
-        updateImageDimensions();
-        clearAllMarksAndWires();
+        // Make image visible
+        previewImage.style.visibility = 'visible';
+
+        // Force a reflow to ensure dimensions are accurate
+        void previewImage.offsetWidth;
+
+        // Wait a frame for layout to settle
+        setTimeout(() => {
+            updateImageDimensions();
+            clearAllMarksAndWires();
+        }, 50);
     };
 
     previewImage.onerror = function () {
         console.error('❌ Failed to load floor plan image');
+        previewImage.style.visibility = 'visible';
         const exportedFallback = sessionStorage.getItem('exportedPlan');
         if (exportedFallback && previewImage.src !== exportedFallback) {
             console.log('🔄 Trying exported plan as fallback');
@@ -2202,10 +2215,22 @@ window.addEventListener('resize', updateImageDimensions);
 function getImageTransform() {
     const img = previewImage;
     const containerRect = imgContainer.getBoundingClientRect();
+
+    // Get the actual rendered image dimensions
     const imgRect = img.getBoundingClientRect();
 
-    imageNaturalWidth = img.naturalWidth;
-    imageNaturalHeight = img.naturalHeight;
+    // Calculate natural dimensions, fallback to displayed if not available
+    let naturalWidth = img.naturalWidth || imgRect.width;
+    let naturalHeight = img.naturalHeight || imgRect.height;
+
+    // If natural dimensions are 0 or invalid, use the displayed dimensions
+    if (naturalWidth <= 0 || naturalHeight <= 0) {
+        naturalWidth = imgRect.width;
+        naturalHeight = imgRect.height;
+    }
+
+    imageNaturalWidth = naturalWidth;
+    imageNaturalHeight = naturalHeight;
 
     if (!imageNaturalWidth || !imageNaturalHeight) return null;
 
@@ -2214,12 +2239,15 @@ function getImageTransform() {
 
     let displayWidth, displayHeight, imgOffsetX, imgOffsetY;
 
+    // Calculate how the image is actually displayed with object-fit: contain
     if (imgAspect > containerAspect) {
+        // Image is wider than container
         displayWidth = containerRect.width;
         displayHeight = containerRect.width / imgAspect;
         imgOffsetX = 0;
         imgOffsetY = (containerRect.height - displayHeight) / 2;
     } else {
+        // Image is taller than container
         displayHeight = containerRect.height;
         displayWidth = containerRect.height * imgAspect;
         imgOffsetX = (containerRect.width - displayWidth) / 2;
@@ -2237,11 +2265,62 @@ function getImageTransform() {
     };
 }
 
+// Add this function near the top with other utility functions
+function getActualImageDimensions() {
+    const img = previewImage;
+    const containerRect = imgContainer.getBoundingClientRect();
+
+    // Get the actual rendered dimensions
+    const imgRect = img.getBoundingClientRect();
+
+    // Calculate natural dimensions
+    let naturalWidth = img.naturalWidth || imgRect.width;
+    let naturalHeight = img.naturalHeight || imgRect.height;
+
+    // Calculate displayed dimensions based on object-fit: contain
+    const imgAspect = naturalWidth / naturalHeight;
+    const containerAspect = containerRect.width / containerRect.height;
+
+    let displayWidth, displayHeight;
+
+    if (imgAspect > containerAspect) {
+        displayWidth = containerRect.width;
+        displayHeight = containerRect.width / imgAspect;
+    } else {
+        displayHeight = containerRect.height;
+        displayWidth = containerRect.height * imgAspect;
+    }
+
+    return {
+        naturalWidth,
+        naturalHeight,
+        displayWidth,
+        displayHeight
+    };
+}
+
 function updateImageDimensions() {
     const transform = getImageTransform();
     if (transform) {
+        // Also store the actual displayed image position for reference
+        const img = previewImage;
+        const imgRect = img.getBoundingClientRect();
+        const containerRect = imgContainer.getBoundingClientRect();
+
+        // Calculate the actual visible area of the image
+        const imgActual = getActualImageDimensions();
+
+        // Update marks and wires with the accurate transform
         updateAllMarks();
         updateAllWires();
+
+        console.log('Image updated:', {
+            natural: `${imgActual.naturalWidth}x${imgActual.naturalHeight}`,
+            displayed: `${Math.round(imgActual.displayWidth)}x${Math.round(imgActual.displayHeight)}`,
+            container: `${Math.round(containerRect.width)}x${Math.round(containerRect.height)}`,
+            scale: `${transform.scaleX.toFixed(4)}x${transform.scaleY.toFixed(4)}`,
+            offset: `${Math.round(transform.imgOffsetX)}x${Math.round(transform.imgOffsetY)}`
+        });
     }
 }
 
@@ -3245,7 +3324,7 @@ function generateProductTable() {
 /* ------------------------- PROJECT SAVE/LOAD FUNCTIONS ------------------------- */
 
 // Add event listeners for save/load buttons
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Add event listeners for project management buttons
     const saveProjectBtn = document.getElementById('saveProjectBtn');
     const loadProjectBtn = document.getElementById('loadProjectBtn');
@@ -3335,7 +3414,7 @@ function saveProject() {
 
         // Convert to JSON string
         const jsonString = JSON.stringify(projectData, null, 2);
-        
+
         // Create blob and download
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -3357,7 +3436,7 @@ function saveProject() {
     } catch (error) {
         console.error('Save error:', error);
         showNotification('Error saving project: ' + error.message, 'error');
-        
+
         const btn = document.getElementById('saveProjectBtn');
         btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">save</span> SAVE PROJECT';
         btn.disabled = false;
@@ -3370,7 +3449,7 @@ function loadProjectFromFile(event) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         try {
             const projectData = JSON.parse(e.target.result);
             loadProject(projectData);
@@ -3379,11 +3458,11 @@ function loadProjectFromFile(event) {
             console.error('Load error:', error);
             showNotification('Error loading project: Invalid file format', 'error');
         }
-        
+
         // Reset file input
         event.target.value = '';
     };
-    
+
     reader.readAsText(file);
 }
 
@@ -3397,7 +3476,7 @@ function loadProject(projectData) {
 
     // Clear current project
     clearAllMarksAndWires();
-    
+
     // Reset counters
     markCounter = 0;
     Object.keys(seriesCounters).forEach(key => delete seriesCounters[key]);
@@ -3405,7 +3484,7 @@ function loadProject(projectData) {
     // Load floor plan image
     if (projectData.floorPlanImage) {
         previewImage.src = projectData.floorPlanImage;
-        previewImage.onload = function() {
+        previewImage.onload = function () {
             // Load the rest after image loads
             loadProjectData(projectData);
         };
@@ -3433,7 +3512,7 @@ function loadProjectData(projectData) {
 
     // Create a mapping from seriesLabel to mark object for wire restoration
     const markMap = new Map();
-    
+
     // Restore marks
     projectData.marks.forEach(savedMark => {
         // Find the actual product data
@@ -3571,7 +3650,7 @@ function loadProjectData(projectData) {
                 dragStarted = false;
                 try {
                     el.releasePointerCapture(ev.pointerId);
-                } catch (e) {}
+                } catch (e) { }
                 el.classList.remove('selected');
 
                 if (!dragStarted) {
@@ -3588,7 +3667,7 @@ function loadProjectData(projectData) {
         document.addEventListener('pointerup', onPointerUp);
 
         // Click to open modal
-        el.addEventListener('click', function(e) {
+        el.addEventListener('click', function (e) {
             if (!dragStarted && !isWireMode) {
                 selectedMarkId = mark.id;
                 updateMarkSelection();
@@ -3720,7 +3799,7 @@ function createWireElementWithPoints(startMark, endMark, points, isPreview = fal
 
     if (!isPreview) {
         path.style.cursor = "pointer";
-        path.addEventListener('click', function(e) {
+        path.addEventListener('click', function (e) {
             e.stopPropagation();
             selectWire(startMark, endMark, currentWireType);
         });
