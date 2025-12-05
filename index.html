@@ -233,6 +233,39 @@
                 <p>Upload an existing floor plan image and add your automation products directly to it.</p>
                 <button class="btn" id="existingPlanBtn">Upload Plan</button>
             </div>
+            <div style="margin-top: 20px; text-align: center; position: relative;">
+                <label
+                    style="color: rgba(255, 255, 255, 0.7); cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center;"
+                    title="Click to load a previously saved project file">
+                    <input type="file" id="dmpFileInput" accept=".dmp" style="display: none;"
+                        onchange="loadDmpFile(this)">
+                    <span class="material-icons" style="font-size: 16px; margin-right: 5px;"></span>
+                    Load existing project (.dmp file)
+                </label>
+                <div style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 5px;">
+                    Click to upload a saved configuration
+                </div>
+            </div>
+
+            <script>
+                function loadDmpFile(input) {
+                    if (!input.files[0]) return;
+
+                    const file = input.files[0];
+                    if (!file.name.toLowerCase().endsWith('.dmp')) {
+                        alert('Please select a .dmp project file');
+                        input.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        localStorage.setItem('projectDataToLoad', e.target.result);
+                        window.location.href = 'panel.html?load_from_local=true';
+                    };
+                    reader.readAsText(file);
+                }
+            </script>
         </div>
 
         <div class="upload-area" id="uploadArea">
@@ -365,12 +398,21 @@
 
             // Use this plan button
             usePlanBtn.addEventListener('click', function () {
-                // Store the image in sessionStorage for use in panel.html
-                sessionStorage.setItem('uploadedFloorPlan', previewImage.src);
 
-                // Redirect to panel.html
-                window.location.href = 'panel.html';
+                const img = previewImage.src;
+
+                if (!img || img.trim() === "") {
+                    alert("No image selected!");
+                    return;
+                }
+
+                // Make sure uploaded image overrides everything in panel.html
+                sessionStorage.setItem("uploadedFloorPlan", img);
+                sessionStorage.removeItem("exportedPlan");   // prevent drawing from overriding uploaded image
+
+                window.location.href = "panel.html";
             });
+
 
             // Change image button
             changePlanBtn.addEventListener('click', function () {
