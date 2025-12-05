@@ -397,19 +397,28 @@
             });
 
             // Use this plan button
+            // Use this plan button - in index.html
             usePlanBtn.addEventListener('click', function () {
-
                 const img = previewImage.src;
 
-                if (!img || img.trim() === "") {
-                    alert("No image selected!");
+                if (!img || img.trim() === "" || img.includes("data:image") === false) {
+                    alert("No valid image selected! Please select an image file.");
                     return;
                 }
 
-                // Make sure uploaded image overrides everything in panel.html
-                sessionStorage.setItem("uploadedFloorPlan", img);
-                sessionStorage.removeItem("exportedPlan");   // prevent drawing from overriding uploaded image
+                console.log('📤 Storing uploaded image to sessionStorage:', img.substring(0, 50) + '...');
 
+                // Store the uploaded image
+                sessionStorage.setItem("uploadedFloorPlan", img);
+
+                // Clear any previously exported plan to prevent conflicts
+                sessionStorage.removeItem("exportedPlan");
+
+                // Add a timestamp to force reload
+                const timestamp = new Date().getTime();
+                sessionStorage.setItem("imageTimestamp", timestamp.toString());
+
+                // Redirect to panel
                 window.location.href = "panel.html";
             });
 
