@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (userDoc.exists) {
                 const userData = userDoc.data();
                 if (userData.status === 'approved') {
-                    window.location.href = '../index.html';
+                    window.location.href = 'index.html';
                 } else {
                     showMessage(`Your account is ${userData.status}. Please contact administrator.`);
                     await auth.signOut();
