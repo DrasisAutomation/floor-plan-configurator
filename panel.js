@@ -360,6 +360,65 @@ const productData = {
             }
         }
     },
+        // ADD THIS NEW CATEGORY - Add it with the other products before PRODUCT_ORDER
+    "IR BLASTER - ZMOTE": {
+        title: "IR Blaster - Zmote",
+        desc: "Universal infrared remote control devices for home automation.",
+        subProducts: {
+            "ZMOTE PRO LAN": {
+                title: "Zmote Pro LAN",
+                desc: "Ethernet-connected universal IR blaster with extended range and learning capability.",
+                img: "./images/irblaster/60.png", // You'll need to add this image
+                features: [
+                    "Ethernet connectivity",
+                    "Extended IR range (up to 15m)",
+                    "Learn IR codes from existing remotes",
+                    "Control up to 8 devices simultaneously",
+                    "REST API for integration",
+                    "Wide compatibility with AV equipment"
+                ]
+            },
+            "ZMOTE PRO WIFI": {
+                title: "Zmote Pro WiFi",
+                desc: "WiFi-enabled universal IR blaster with cloud integration.",
+                img: "./images/irblaster/61.png", // You'll need to add this image
+                features: [
+                    "WiFi connectivity (2.4GHz)",
+                    "Cloud-based remote access",
+                    "Mobile app control",
+                    "Schedule and timer functions",
+                    "Scene integration",
+                    "Works with Alexa/Google Home"
+                ]
+            },
+            "ZMOTE BLASTER PRO": {
+                title: "WiFi to IR",
+                desc: "Compact WiFi to infrared converter for legacy IR devices.",
+                img: "./images/irblaster/59.png", // You'll need to add this image
+                features: [
+                    "Compact size (45×45×15 mm)",
+                    "WiFi to IR conversion",
+                    "Low power consumption",
+                    "Easy setup via mobile app",
+                    "Support for multiple IR protocols",
+                    "Affordable solution for IR automation"
+                ]
+            },
+            "ZMOTE WIFI2IR": {
+                title: "WiFi to IR",
+                desc: "Compact WiFi to infrared converter for legacy IR devices.",
+                img: "./images/irblaster/58.png", // You'll need to add this image
+                features: [
+                    "Compact size (45×45×15 mm)",
+                    "WiFi to IR conversion",
+                    "Low power consumption",
+                    "Easy setup via mobile app",
+                    "Support for multiple IR protocols",
+                    "Affordable solution for IR automation"
+                ]
+            }
+        }
+    },
     "AUTOMATION DISTRIBUTION BOX": {
         title: "Automation Distribution Box",
         desc: "Professional distribution boxes for automation system components.",
@@ -389,6 +448,7 @@ const PRODUCT_ORDER = [
     "Z-WAVE RELAY",
     "CURTAIN MOTORS",
     "SENSORS",
+    "IR BLASTER - ZMOTE", // ADD THIS LINE
     "AUTOMATION DISTRIBUTION BOX",
     "NETWORK DISTRIBUTION BOX"
 ];
@@ -492,6 +552,7 @@ function getSeriesCode(productKey) {
     if (productKey === 'CURTAIN MOTORS') return 'C';
     if (productKey === 'Z-WAVE RELAY') return 'R';
     if (productKey === 'TREMBLAY SOUNDS') return 'T';
+    if (productKey === 'IR BLASTER - ZMOTE') return 'I'; // ADD THIS LINE
     if (productKey === 'AUTOMATION DISTRIBUTION BOX') return 'ADB';
     if (productKey === 'NETWORK DISTRIBUTION BOX') return 'NDB';
     if (switchFamilies.has(productKey)) return 'S';
@@ -627,6 +688,7 @@ let selectedWire = null;
 let wirePoints = [];
 
 // Updated wireTypes with CAT6 cable
+// Updated wireTypes with CAT6 cable and IR Cable
 const wireTypes = [
     {
         id: 'knx',
@@ -659,10 +721,20 @@ const wireTypes = [
         id: 'cat6',
         name: 'CAT6_WIRE',
         title: 'CAT6 Cable',
-        color: '#9E9E9E', // Grey color
+        color: '#9E9E9E',
         icon: 'cable',
         bgColor: '#f5f5f5',
         borderColor: '#e0e0e0'
+    },
+    // ADD THIS NEW IR CABLE TYPE
+    {
+        id: 'ir',
+        name: 'IR_WIRE',
+        title: 'IR Cable',
+        color: '#2196F3', // Blue color
+        icon: 'settings_remote',
+        bgColor: '#f0f7ff',
+        borderColor: '#bbdefb'
     }
 ];
 
@@ -685,10 +757,16 @@ function createAutomationDBBoxControls() {
 
     // Automation DB box specific options - REMOVED MODULES
     const dbBoxRelays = [
-        { id: 'db-relay-8ch', label: '8 Channel Relay' },
-        { id: 'db-relay-12ch', label: '12 Channel Relay' },
-        { id: 'db-relay-16ch', label: '16 Channel Relay' },
-        { id: 'db-relay-24ch', label: '24 Channel Relay' }
+        { id: 'knx-power-supply', label: 'KNX Power Supply' },
+        { id: '12-channel-actuator', label: '12 Channel Actuator' },
+        { id: '2-fold-dally-gateway', label: '2 Fold Dally Gateway' },
+        { id: 'knx-tuya-gateway', label: 'KNX Tuya Gateway' },
+        { id: '4-channel-face-cut-dimmer', label: '4 Channel Face Cut Dimmer' },
+        { id: '4-channel-analog-dimmer', label: '4 Channel Analog Dimmer' },
+        { id: 'knx-ip-router', label: 'KNX IP Router' },
+        { id: 'knx-vrv-gateway', label: 'KNX VRV Gateway' },
+        { id: 'zmote-lan', label: 'Zmote LAN' },
+        { id: '4-channel-inwall-relay', label: '4 Channel Inwall Relay' }
     ];
 
     const dbControlsHTML = `
@@ -727,7 +805,7 @@ function createAutomationDBBoxControls() {
             </div>
 
             <div class="form-group" style="margin-top: 20px;">
-                <label style="color: #2196F3; font-weight: 500;">Relay Modules</label>
+                <label style="color: #2196F3; font-weight: 500;">Modules</label>
                 <div id="automationDBRelaysList" style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
                     ${dbBoxRelays.map(relay => `
                         <div class="db-relay-option" style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; border: 1px solid #e0e0e0;">
@@ -1356,7 +1434,7 @@ function buildList() {
             currentWireType = wireType.id;
             isWireMode = true;
 
-            document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"]').forEach(btn => {
+            document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"]').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.name === wireType.name);
             });
 
@@ -2818,7 +2896,7 @@ function clearWireSelection() {
     updateWireSelectionLabels();
     updatePointsList();
 
-    document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"]').forEach(btn => {
+    document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"]').forEach(btn => {
         btn.classList.remove('active');
     });
 
@@ -2836,7 +2914,7 @@ function clearWireSelection() {
     hideWireControls();
 
     showNotification('Wire selection cleared', 'info');
-}
+}   
 
 /* ------------------------- MARKS & DRAGGING ------------------------- */
 const marksListEl = document.getElementById('marksList');
@@ -3606,6 +3684,7 @@ function enhanceProductDataWithBrands() {
         "Z-WAVE RELAY": "LUMI",
         "CURTAIN MOTORS": "LUMI",
         "SENSORS": "Big Sense",
+        "IR BLASTER - ZMOTE": "Zmote", // ADD THIS LINE
         "AUTOMATION DISTRIBUTION BOX": "DB",
         "NETWORK DISTRIBUTION BOX": "DB"
     };
@@ -3623,7 +3702,6 @@ function enhanceProductDataWithBrands() {
         }
     }
 }
-
 enhanceProductDataWithBrands();
 
 /* ------------------------- PDF EXPORT FUNCTIONALITY ------------------------- */
@@ -3774,7 +3852,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 yPosition += 5;
                 doc.setFontSize(12);
                 doc.setTextColor(33, 150, 243);
-                doc.text('DB Box Relays:', 20, yPosition);
+                doc.text('DB Box Modules:', 20, yPosition);
                 yPosition += 8;
 
                 let itemY = yPosition;
