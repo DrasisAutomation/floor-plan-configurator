@@ -1225,12 +1225,12 @@ function populateModal(mark) {
         }
     } else if (mark.isNetworkDBBox) {
         description = `${mark.categoryName || 'Network DB Box'}\nBrand: ${mark.brand || 'Not specified'}\nSize: ${mark.sizeFt || 'Not specified'} feet`;
-        
+
         if (mark.routerBrand || mark.routerModel) {
             description += '\n\nRouter:';
             description += `\n• ${mark.seriesLabel}: ${mark.routerBrand || ''} ${mark.routerModel || ''} x${mark.routerQty || 1}`;
         }
-        
+
         if (mark.apBrand || mark.apModel) {
             description += '\n\nAccess Point:';
             description += `\n• ${mark.seriesLabel}: ${mark.apBrand || ''} ${mark.apModel || ''} x${mark.apQty || 1}`;
@@ -2612,14 +2612,58 @@ function deleteWire(wire) {
 function updateAllWires(wireType = null) {
     wires.forEach(wire => {
         if (!wireType || wire.wireType === wireType) {
+            // Only update wires if their SVG element exists
+            if (wire.element && wire.element.svg && wire.element.svg.parentNode) {
+                // Just remove and recreate the wire
+                if (wire.element.svg) {
+                    wire.element.svg.remove();
+                }
+                
+                // Temporarily set currentWireType to the wire's type
+                const tempWireType = currentWireType;
+                currentWireType = wire.wireType;
+                
+                let newElement;
+                if (wire.mode === 'curve') {
+                    newElement = createWireElement(wire.startMark, wire.endMark, wire.curveValue, false);
+                } else {
+                    newElement = createWireElementWithPoints(wire.startMark, wire.endMark, wire.points, false);
+                }
+                
+                // Restore original wire type
+                currentWireType = tempWireType;
+                
+                if (newElement) {
+                    wire.element = newElement;
+                    
+                    // Reattach event listeners
+                    if (newElement.path) {
+                        newElement.path.style.cursor = "pointer";
+                        newElement.path.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            selectWire(wire.startMark, wire.endMark, wire.wireType);
+                        });
+                        
+                        makeWireDraggable(newElement.path, wire.startMark, wire.endMark);
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateWiresConnectedToMark(mark) {
+    wires.forEach(wire => {
+        if (wire.startMark === mark || wire.endMark === mark) {
+            // Recreate the wire with updated positions
             if (wire.element && wire.element.svg) {
                 wire.element.svg.remove();
             }
-
+            
             // Temporarily set currentWireType to the wire's type
             const tempWireType = currentWireType;
             currentWireType = wire.wireType;
-
+            
             let newElement;
             if (wire.mode === 'curve') {
                 newElement = createWireElement(wire.startMark, wire.endMark, wire.curveValue, false);
@@ -2640,7 +2684,7 @@ function updateAllWires(wireType = null) {
                         e.stopPropagation();
                         selectWire(wire.startMark, wire.endMark, wire.wireType);
                     });
-
+                    
                     makeWireDraggable(newElement.path, wire.startMark, wire.endMark);
                 }
             }
@@ -3591,178 +3635,178 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
         const hasNetworkDBBoxes = tables.networkDBBoxes.length > 0;
         const hasMainProducts = tables.mainProducts.length > 0;
 
-// In the Automation DB Box section, update to show like:
-if (hasDBBoxes) {
-    doc.setFontSize(14);
-    doc.setTextColor(26, 115, 232);
-    doc.text('Automation Distribution Boxes', 20, yPosition);
-    yPosition += 8;
+        // In the Automation DB Box section, update to show like:
+        if (hasDBBoxes) {
+            doc.setFontSize(14);
+            doc.setTextColor(26, 115, 232);
+            doc.text('Automation Distribution Boxes', 20, yPosition);
+            yPosition += 8;
 
-    const dbTableData = tables.dbBoxes.map(item => [
-        item.label,
-        item.category,
-        item.brand,
-        item.size,
-        item.model,
-        item.quantity.toString()
-    ]);
+            const dbTableData = tables.dbBoxes.map(item => [
+                item.label,
+                item.category,
+                item.brand,
+                item.size,
+                item.model,
+                item.quantity.toString()
+            ]);
 
-    doc.autoTable({
-        startY: yPosition,
-        head: [['Label', 'Type', 'Brand', 'Size (ft)', 'Model', 'Qty']],
-        body: dbTableData,
-        theme: 'grid',
-        headStyles: {
-            fillColor: [33, 150, 243],
-            textColor: 255,
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        styles: {
-            fontSize: 8,
-            cellPadding: 3,
-            overflow: 'linebreak',
-            halign: 'center',
-            minCellHeight: 6
-        },
-        columnStyles: {
-            0: { cellWidth: 15, halign: 'center' },
-            1: { cellWidth: 30, halign: 'center' },
-            2: { cellWidth: 30, halign: 'center' },
-            3: { cellWidth: 20, halign: 'center' },
-            4: { cellWidth: 60, halign: 'left' },
-            5: { cellWidth: 15, halign: 'center' }
-        },
-        margin: { left: 15 }
-    });
-
-    yPosition = doc.lastAutoTable.finalY + 15;
-
-    // Add DB box relays if any
-    const dbBoxWithRelays = tables.dbBoxes.filter(item => item.selectedRelays && item.selectedRelays.length > 0);
-    if (dbBoxWithRelays.length > 0) {
-        yPosition += 5;
-        doc.setFontSize(12);
-        doc.setTextColor(33, 150, 243);
-        doc.text('DB Box Relays:', 20, yPosition);
-        yPosition += 8;
-
-        let itemY = yPosition;
-        dbBoxWithRelays.forEach(dbBox => {
-            dbBox.selectedRelays.forEach(item => {
-                if (itemY > doc.internal.pageSize.getHeight() - 30) {
-                    doc.addPage();
-                    itemY = 30;
-                }
-                doc.setFontSize(10);
-                doc.setTextColor(80, 80, 80);
-                doc.text(`• ${dbBox.label}: ${item.name} x${item.quantity}`, 25, itemY);
-                itemY += 5;
+            doc.autoTable({
+                startY: yPosition,
+                head: [['Label', 'Type', 'Brand', 'Size (ft)', 'Model', 'Qty']],
+                body: dbTableData,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [33, 150, 243],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    overflow: 'linebreak',
+                    halign: 'center',
+                    minCellHeight: 6
+                },
+                columnStyles: {
+                    0: { cellWidth: 15, halign: 'center' },
+                    1: { cellWidth: 30, halign: 'center' },
+                    2: { cellWidth: 30, halign: 'center' },
+                    3: { cellWidth: 20, halign: 'center' },
+                    4: { cellWidth: 60, halign: 'left' },
+                    5: { cellWidth: 15, halign: 'center' }
+                },
+                margin: { left: 15 }
             });
-        });
-        yPosition = itemY + 10;
-    }
-}
 
-// In the PDF generation section, replace the Network DB Box equipment part:
-if (hasNetworkDBBoxes) {
-    doc.setFontSize(14);
-    doc.setTextColor(156, 39, 176);
-    doc.text('Network Distribution Boxes', 20, yPosition);
-    yPosition += 8;
+            yPosition = doc.lastAutoTable.finalY + 15;
 
-    const networkDBTableData = tables.networkDBBoxes.map(item => [
-        item.label,
-        item.category,
-        item.brand,
-        item.size,
-        item.model,
-        item.quantity.toString()
-    ]);
+            // Add DB box relays if any
+            const dbBoxWithRelays = tables.dbBoxes.filter(item => item.selectedRelays && item.selectedRelays.length > 0);
+            if (dbBoxWithRelays.length > 0) {
+                yPosition += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(33, 150, 243);
+                doc.text('DB Box Relays:', 20, yPosition);
+                yPosition += 8;
 
-    doc.autoTable({
-        startY: yPosition,
-        head: [['Label', 'Type', 'Brand', 'Size (ft)', 'Model', 'Qty']],
-        body: networkDBTableData,
-        theme: 'grid',
-        headStyles: {
-            fillColor: [156, 39, 176],
-            textColor: 255,
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        styles: {
-            fontSize: 8,
-            cellPadding: 3,
-            overflow: 'linebreak',
-            halign: 'center',
-            minCellHeight: 6
-        },
-        columnStyles: {
-            0: { cellWidth: 15, halign: 'center' },
-            1: { cellWidth: 30, halign: 'center' },
-            2: { cellWidth: 30, halign: 'center' },
-            3: { cellWidth: 20, halign: 'center' },
-            4: { cellWidth: 60, halign: 'left' },
-            5: { cellWidth: 15, halign: 'center' }
-        },
-        margin: { left: 15 }
-    });
-
-    yPosition = doc.lastAutoTable.finalY + 15;
-
-    // Add router details if any
-    const networkDBWithRouters = tables.networkDBBoxes.filter(item => 
-        item.routerBrand && item.routerModel
-    );
-    
-    if (networkDBWithRouters.length > 0) {
-        yPosition += 5;
-        doc.setFontSize(12);
-        doc.setTextColor(156, 39, 176);
-        doc.text('Network Routers:', 20, yPosition);
-        yPosition += 8;
-
-        let itemY = yPosition;
-        networkDBWithRouters.forEach(dbBox => {
-            if (itemY > doc.internal.pageSize.getHeight() - 30) {
-                doc.addPage();
-                itemY = 30;
+                let itemY = yPosition;
+                dbBoxWithRelays.forEach(dbBox => {
+                    dbBox.selectedRelays.forEach(item => {
+                        if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                            doc.addPage();
+                            itemY = 30;
+                        }
+                        doc.setFontSize(10);
+                        doc.setTextColor(80, 80, 80);
+                        doc.text(`• ${dbBox.label}: ${item.name} x${item.quantity}`, 25, itemY);
+                        itemY += 5;
+                    });
+                });
+                yPosition = itemY + 10;
             }
-            doc.setFontSize(10);
-            doc.setTextColor(80, 80, 80);
-            doc.text(`• ${dbBox.label}: ${dbBox.routerBrand} ${dbBox.routerModel} x${dbBox.routerQty || 1}`, 25, itemY);
-            itemY += 5;
-        });
-        yPosition = itemY + 10;
-    }
+        }
 
-    // Add access point details if any
-    const networkDBWithAPs = tables.networkDBBoxes.filter(item => 
-        item.apBrand && item.apModel
-    );
-    
-    if (networkDBWithAPs.length > 0) {
-        yPosition += 5;
-        doc.setFontSize(12);
-        doc.setTextColor(156, 39, 176);
-        doc.text('Access Points:', 20, yPosition);
-        yPosition += 8;
+        // In the PDF generation section, replace the Network DB Box equipment part:
+        if (hasNetworkDBBoxes) {
+            doc.setFontSize(14);
+            doc.setTextColor(156, 39, 176);
+            doc.text('Network Distribution Boxes', 20, yPosition);
+            yPosition += 8;
 
-        let itemY = yPosition;
-        networkDBWithAPs.forEach(dbBox => {
-            if (itemY > doc.internal.pageSize.getHeight() - 30) {
-                doc.addPage();
-                itemY = 30;
+            const networkDBTableData = tables.networkDBBoxes.map(item => [
+                item.label,
+                item.category,
+                item.brand,
+                item.size,
+                item.model,
+                item.quantity.toString()
+            ]);
+
+            doc.autoTable({
+                startY: yPosition,
+                head: [['Label', 'Type', 'Brand', 'Size (ft)', 'Model', 'Qty']],
+                body: networkDBTableData,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [156, 39, 176],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    overflow: 'linebreak',
+                    halign: 'center',
+                    minCellHeight: 6
+                },
+                columnStyles: {
+                    0: { cellWidth: 15, halign: 'center' },
+                    1: { cellWidth: 30, halign: 'center' },
+                    2: { cellWidth: 30, halign: 'center' },
+                    3: { cellWidth: 20, halign: 'center' },
+                    4: { cellWidth: 60, halign: 'left' },
+                    5: { cellWidth: 15, halign: 'center' }
+                },
+                margin: { left: 15 }
+            });
+
+            yPosition = doc.lastAutoTable.finalY + 15;
+
+            // Add router details if any
+            const networkDBWithRouters = tables.networkDBBoxes.filter(item =>
+                item.routerBrand && item.routerModel
+            );
+
+            if (networkDBWithRouters.length > 0) {
+                yPosition += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(156, 39, 176);
+                doc.text('Network Routers:', 20, yPosition);
+                yPosition += 8;
+
+                let itemY = yPosition;
+                networkDBWithRouters.forEach(dbBox => {
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`• ${dbBox.label}: ${dbBox.routerBrand} ${dbBox.routerModel} x${dbBox.routerQty || 1}`, 25, itemY);
+                    itemY += 5;
+                });
+                yPosition = itemY + 10;
             }
-            doc.setFontSize(10);
-            doc.setTextColor(80, 80, 80);
-            doc.text(`• ${dbBox.label}: ${dbBox.apBrand} ${dbBox.apModel} x${dbBox.apQty || 1}`, 25, itemY);
-            itemY += 5;
-        });
-        yPosition = itemY + 10;
-    }
-}
+
+            // Add access point details if any
+            const networkDBWithAPs = tables.networkDBBoxes.filter(item =>
+                item.apBrand && item.apModel
+            );
+
+            if (networkDBWithAPs.length > 0) {
+                yPosition += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(156, 39, 176);
+                doc.text('Access Points:', 20, yPosition);
+                yPosition += 8;
+
+                let itemY = yPosition;
+                networkDBWithAPs.forEach(dbBox => {
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`• ${dbBox.label}: ${dbBox.apBrand} ${dbBox.apModel} x${dbBox.apQty || 1}`, 25, itemY);
+                    itemY += 5;
+                });
+                yPosition = itemY + 10;
+            }
+        }
 
         if (hasMainProducts) {
             if (hasDBBoxes || hasNetworkDBBoxes) {
@@ -4285,50 +4329,47 @@ function loadProjectData(projectData) {
             el.classList.add('selected');
         }
 
-        function onPointerMove(ev) {
-            if (!dragging) return;
 
-            const dx = ev.clientX - startX;
-            const dy = ev.clientY - startY;
+function onPointerMove(ev) {
+    if (!dragging) return;
 
-            if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
-                dragStarted = true;
-            }
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
 
-            if (!dragStarted) return;
+    if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+        dragStarted = true;
+    }
 
-            ev.preventDefault();
-            ev.stopPropagation();
+    if (!dragStarted) return;
 
-            const transform = getImageTransform();
-            if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
+    ev.preventDefault();
+    ev.stopPropagation();
 
-            const imgRect = previewImage.getBoundingClientRect();
-            const scaleX = imageNaturalWidth / imgRect.width;
-            const scaleY = imageNaturalHeight / imgRect.height;
+    const transform = getImageTransform();
+    if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
 
-            const imageDx = dx * scaleX;
-            const imageDy = dy * scaleY;
+    const imgRect = previewImage.getBoundingClientRect();
+    const scaleX = imageNaturalWidth / imgRect.width;
+    const scaleY = imageNaturalHeight / imgRect.height;
 
-            let newX = startMarkX + imageDx;
-            let newY = startMarkY + imageDy;
+    const imageDx = dx * scaleX;
+    const imageDy = dy * scaleY;
 
-            newX = Math.max(0, Math.min(imageNaturalWidth - mark.size, newX));
-            newY = Math.max(0, Math.min(imageNaturalHeight - mark.size, newY));
+    let newX = startMarkX + imageDx;
+    let newY = startMarkY + imageDy;
 
-            mark.x = newX;
-            mark.y = newY;
+    newX = Math.max(0, Math.min(imageNaturalWidth - mark.size, newX));
+    newY = Math.max(0, Math.min(imageNaturalHeight - mark.size, newY));
 
-            updateMarkPosition(mark);
-            updateAllWires();
+    mark.x = newX;
+    mark.y = newY;
 
-            // Force update all wires with the correct wire type
-            wires.forEach(wire => {
-                if (wire.startMark === mark || wire.endMark === mark) {
-                    updateWireDisplay(wire);
-                }
-            });
-        }
+    updateMarkPosition(mark);
+    
+    // 🟢 FIX: Update ONLY wires connected to this mark
+    updateWiresConnectedToMark(mark);
+}   
+
 
         function onPointerUp(ev) {
             if (dragging) {
@@ -4354,7 +4395,7 @@ function loadProjectData(projectData) {
 
         el.addEventListener('click', function (e) {
             e.stopPropagation();
-            
+
             if (isWireMode && currentWireType && !e.defaultPrevented) {
                 // Handle wire selection
                 if (!wireStartMark) {
@@ -4408,7 +4449,7 @@ function loadProjectData(projectData) {
 
         // Restore wire type
         const originalWireType = savedWire.wireType || 'knx';
-        
+
         // Temporarily set currentWireType to create the wire with correct color
         const tempWireType = currentWireType;
         currentWireType = originalWireType;
@@ -4438,7 +4479,7 @@ function loadProjectData(projectData) {
         };
 
         wires.push(wire);
-        
+
         // IMPORTANT: Reattach event listeners to the wire
         if (wireElement.path) {
             wireElement.path.style.cursor = "pointer";
@@ -4461,7 +4502,7 @@ function loadProjectData(projectData) {
     if (projectData.currentWireType) {
         currentWireType = projectData.currentWireType;
         isWireMode = projectData.isWireMode || false;
-        
+
         if (isWireMode && currentWireType) {
             showWireControls();
             document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"]').forEach(btn => {
