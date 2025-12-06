@@ -2,7 +2,7 @@ auth.onAuthStateChanged(async (user) => {
 
     // NOT LOGGED IN → redirect to login page inside /login/
     if (!user) {
-        window.location.href = "login/login.html";
+        window.location.href = "../login.html";
         return;
     }
 
@@ -10,7 +10,7 @@ auth.onAuthStateChanged(async (user) => {
 
     if (!userDoc.exists) {
         await auth.signOut();
-        window.location.href = "login/login.html";
+        window.location.href = "../login.html";
         return;
     }
 
@@ -20,7 +20,7 @@ auth.onAuthStateChanged(async (user) => {
     if (data.status !== "approved") {
         alert(`Your account is ${data.status}. Contact admin.`);
         await auth.signOut();
-        window.location.href = "login/login.html";
+        window.location.href = "../login.html";
         return;
     }
 
