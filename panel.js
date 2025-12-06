@@ -1214,35 +1214,90 @@ function populateModal(mark) {
 
     modalProductTitle.textContent = title;
 
-    let description = mark.desc || '';
+    // Clear previous content
+    modalProductDesc.innerHTML = '';
+
     if (mark.isDBBox) {
-        description = `${mark.categoryName || 'DB Box'}\nBrand: ${mark.brand || 'Not specified'}\nSize: ${mark.sizeFt || 'Not specified'} feet`;
+        // Create HTML elements for separate points/lines
+        const typeEl = document.createElement('div');
+        typeEl.textContent = `Type: ${mark.categoryName || 'DB Box'}`;
+        modalProductDesc.appendChild(typeEl);
+
+        const brandEl = document.createElement('div');
+        brandEl.textContent = `Brand: ${mark.brand || 'Not specified'}`;
+        modalProductDesc.appendChild(brandEl);
+
+        const sizeEl = document.createElement('div');
+        sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
+        modalProductDesc.appendChild(sizeEl);
+        
+        // Add relay details if any - as bullet points
         if (mark.selectedRelays && mark.selectedRelays.length > 0) {
-            description += '\n\nRelays:';
+            const relayHeader = document.createElement('div');
+            relayHeader.textContent = 'Relays:';
+            relayHeader.style.marginTop = '8px';
+            relayHeader.style.fontWeight = 'bold';
+            modalProductDesc.appendChild(relayHeader);
+            
             mark.selectedRelays.forEach(item => {
-                description += `\n• ${mark.seriesLabel}: ${item.name} x${item.quantity}`;
+                const relayItem = document.createElement('div');
+                relayItem.textContent = `• ${item.name} x${item.quantity}`;
+                relayItem.style.marginLeft = '15px';
+                modalProductDesc.appendChild(relayItem);
             });
         }
     } else if (mark.isNetworkDBBox) {
-        description = `${mark.categoryName || 'Network DB Box'}\nBrand: ${mark.brand || 'Not specified'}\nSize: ${mark.sizeFt || 'Not specified'} feet`;
+        // Create HTML elements for separate points/lines
+        const typeEl = document.createElement('div');
+        typeEl.textContent = `Type: ${mark.categoryName || 'Network DB Box'}`;
+        modalProductDesc.appendChild(typeEl);
 
+        const brandEl = document.createElement('div');
+        brandEl.textContent = `Brand: ${mark.brand || 'Not specified'}`;
+        modalProductDesc.appendChild(brandEl);
+
+        const sizeEl = document.createElement('div');
+        sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
+        modalProductDesc.appendChild(sizeEl);
+        
+        // Add router details if any - as bullet point
         if (mark.routerBrand || mark.routerModel) {
-            description += '\n\nRouter:';
-            description += `\n• ${mark.seriesLabel}: ${mark.routerBrand || ''} ${mark.routerModel || ''} x${mark.routerQty || 1}`;
+            const routerEl = document.createElement('div');
+            routerEl.innerHTML = `<strong>• Network Router:</strong> ${mark.routerBrand || ''} ${mark.routerModel || ''} x${mark.routerQty || 1}`;
+            routerEl.style.marginTop = '8px';
+            modalProductDesc.appendChild(routerEl);
         }
-
+        
+        // Add access point details if any - as bullet point
         if (mark.apBrand || mark.apModel) {
-            description += '\n\nAccess Point:';
-            description += `\n• ${mark.seriesLabel}: ${mark.apBrand || ''} ${mark.apModel || ''} x${mark.apQty || 1}`;
+            const apEl = document.createElement('div');
+            apEl.innerHTML = `<strong>• Access Point:</strong> ${mark.apBrand || ''} ${mark.apModel || ''} x${mark.apQty || 1}`;
+            apEl.style.marginTop = '4px';
+            modalProductDesc.appendChild(apEl);
         }
-    } else if (mark.relayItems && mark.relayItems.length > 0) {
-        description += '\n\nRelay Items:';
-        mark.relayItems.forEach(item => {
-            description += `\n• ${item.name} x${item.quantity}`;
-        });
+    } else {
+        // For regular products
+        const descEl = document.createElement('div');
+        descEl.textContent = mark.desc || '';
+        modalProductDesc.appendChild(descEl);
+        
+        // For Z-Wave Relay, show relay items
+        if (mark.relayItems && mark.relayItems.length > 0) {
+            const relayHeader = document.createElement('div');
+            relayHeader.textContent = 'Relay Items:';
+            relayHeader.style.marginTop = '8px';
+            relayHeader.style.fontWeight = 'bold';
+            modalProductDesc.appendChild(relayHeader);
+            
+            mark.relayItems.forEach(item => {
+                const relayItem = document.createElement('div');
+                relayItem.textContent = `• ${item.name} x${item.quantity}`;
+                relayItem.style.marginLeft = '15px';
+                modalProductDesc.appendChild(relayItem);
+            });
+        }
     }
-
-    modalProductDesc.textContent = description;
+    
     const imageSrc = mark.imageSrc || previewImage.src;
     if (imageSrc) {
         modalProductImage.src = imageSrc;
@@ -1250,13 +1305,17 @@ function populateModal(mark) {
     } else {
         modalProductImage.style.display = 'none';
     }
+    
     modalProductFeatures.innerHTML = '';
-    const featureList = (mark.features && mark.features.length ? mark.features : ['No features provided']).slice(0, 12);
-    featureList.forEach(feature => {
-        const li = document.createElement('li');
-        li.textContent = feature;
-        modalProductFeatures.appendChild(li);
-    });
+    // For DB Boxes, don't show features in modal
+    if (!mark.isDBBox && !mark.isNetworkDBBox) {
+        const featureList = (mark.features && mark.features.length ? mark.features : ['No features provided']).slice(0, 12);
+        featureList.forEach(feature => {
+            const li = document.createElement('li');
+            li.textContent = feature;
+            modalProductFeatures.appendChild(li);
+        });
+    }
 }
 
 function openProductModal(mark) {
@@ -2618,24 +2677,24 @@ function updateAllWires(wireType = null) {
                 if (wire.element.svg) {
                     wire.element.svg.remove();
                 }
-                
+
                 // Temporarily set currentWireType to the wire's type
                 const tempWireType = currentWireType;
                 currentWireType = wire.wireType;
-                
+
                 let newElement;
                 if (wire.mode === 'curve') {
                     newElement = createWireElement(wire.startMark, wire.endMark, wire.curveValue, false);
                 } else {
                     newElement = createWireElementWithPoints(wire.startMark, wire.endMark, wire.points, false);
                 }
-                
+
                 // Restore original wire type
                 currentWireType = tempWireType;
-                
+
                 if (newElement) {
                     wire.element = newElement;
-                    
+
                     // Reattach event listeners
                     if (newElement.path) {
                         newElement.path.style.cursor = "pointer";
@@ -2643,7 +2702,7 @@ function updateAllWires(wireType = null) {
                             e.stopPropagation();
                             selectWire(wire.startMark, wire.endMark, wire.wireType);
                         });
-                        
+
                         makeWireDraggable(newElement.path, wire.startMark, wire.endMark);
                     }
                 }
@@ -2659,24 +2718,24 @@ function updateWiresConnectedToMark(mark) {
             if (wire.element && wire.element.svg) {
                 wire.element.svg.remove();
             }
-            
+
             // Temporarily set currentWireType to the wire's type
             const tempWireType = currentWireType;
             currentWireType = wire.wireType;
-            
+
             let newElement;
             if (wire.mode === 'curve') {
                 newElement = createWireElement(wire.startMark, wire.endMark, wire.curveValue, false);
             } else {
                 newElement = createWireElementWithPoints(wire.startMark, wire.endMark, wire.points, false);
             }
-            
+
             // Restore original wire type
             currentWireType = tempWireType;
-            
+
             if (newElement) {
                 wire.element = newElement;
-                
+
                 // Reattach event listeners
                 if (newElement.path) {
                     newElement.path.style.cursor = "pointer";
@@ -2684,7 +2743,7 @@ function updateWiresConnectedToMark(mark) {
                         e.stopPropagation();
                         selectWire(wire.startMark, wire.endMark, wire.wireType);
                     });
-                    
+
                     makeWireDraggable(newElement.path, wire.startMark, wire.endMark);
                 }
             }
@@ -3034,23 +3093,42 @@ function createMark({ x, y, size, shape }) {
     let selectedModules = [];
     let selectedRelays = [];
     let selectedModels = [];
+    let routerBrand = '';
+    let routerModel = '';
+    let routerQty = 1;
+    let apBrand = '';
+    let apModel = '';
+    let apQty = 1;
 
     if (data.isDBBox) {
         brand = productData[currentProduct].brand || '';
         sizeFt = productData[currentProduct].size || '';
+        // Keep original model name format
         modelName = brand ? `${brand} - ${sizeFt} ft` : 'DB Box';
         descText = `${categoryName}: ${brand} ${sizeFt} ft`;
-        featuresList = productDataForMark.features || [];
-        selectedModules = productData[currentProduct].selectedModules || [];
+        featuresList = []; // Empty features for DB Box
         selectedRelays = productData[currentProduct].selectedRelays || [];
+
     } else if (data.isNetworkDBBox) {
         brand = productData[currentProduct].brand || '';
         sizeFt = productData[currentProduct].size || '';
+        // Keep original model name format
         modelName = brand ? `${brand} - ${sizeFt} ft` : 'Network DB Box';
         descText = `${categoryName}: ${brand} ${sizeFt} ft`;
-        featuresList = productDataForMark.features || [];
-        selectedModels = productData[currentProduct].selectedModels || [];
-        selectedRelays = productData[currentProduct].selectedRelays || [];
+        featuresList = []; // Empty features for Network DB Box
+        currentSubProduct = null;
+
+        // ✅ ADD THESE LINES: Extract network equipment details
+        routerBrand = productData[currentProduct].routerBrand || '';
+        routerModel = productData[currentProduct].routerModel || '';
+        routerQty = productData[currentProduct].routerQty || 1;
+        apBrand = productData[currentProduct].apBrand || '';
+        apModel = productData[currentProduct].apModel || '';
+        apQty = productData[currentProduct].apQty || 1;
+
+        console.log('Creating Network DB Box with equipment:', {
+            brand, sizeFt, routerBrand, routerModel, apBrand, apModel
+        });
     } else if (currentProduct === 'Z-WAVE RELAY') {
         modelName = relayItems.length === 1 ? relayItems[0].name : `${relayItems.length} modules selected`;
         featuresList = relayItems.map(item => `${item.name} — Qty ${item.quantity}`);
@@ -3116,6 +3194,13 @@ function createMark({ x, y, size, shape }) {
         isNetworkDBBox: data.isNetworkDBBox || false,
         selectedModules: selectedModules,
         selectedRelays: selectedRelays,
+        selectedModels: selectedModels,
+        routerBrand: routerBrand,
+        routerModel: routerModel,
+        routerQty: routerQty,
+        apBrand: apBrand,
+        apModel: apModel,
+        apQty: apQty,
         selectedModels: selectedModels
     };
 
@@ -3644,7 +3729,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             const dbTableData = tables.dbBoxes.map(item => [
                 item.label,
-                item.category,
+                'AUTOMATION\nDISTRIBUTION\nBOX', // Type with line breaks
                 item.brand,
                 item.size,
                 item.model,
@@ -3671,10 +3756,10 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 },
                 columnStyles: {
                     0: { cellWidth: 15, halign: 'center' },
-                    1: { cellWidth: 30, halign: 'center' },
+                    1: { cellWidth: 60, halign: 'center'}, // Type column
                     2: { cellWidth: 30, halign: 'center' },
                     3: { cellWidth: 20, halign: 'center' },
-                    4: { cellWidth: 60, halign: 'left' },
+                    4: { cellWidth: 40, halign: 'left' },
                     5: { cellWidth: 15, halign: 'center' }
                 },
                 margin: { left: 15 }
@@ -3682,7 +3767,8 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             yPosition = doc.lastAutoTable.finalY + 15;
 
-            // Add DB box relays if any
+            // DB Box Relays section
+            // DB Box Relays section
             const dbBoxWithRelays = tables.dbBoxes.filter(item => item.selectedRelays && item.selectedRelays.length > 0);
             if (dbBoxWithRelays.length > 0) {
                 yPosition += 5;
@@ -3693,16 +3779,22 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
                 let itemY = yPosition;
                 dbBoxWithRelays.forEach(dbBox => {
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`${dbBox.label}:`, 25, itemY);
+                    itemY += 5;
+
                     dbBox.selectedRelays.forEach(item => {
                         if (itemY > doc.internal.pageSize.getHeight() - 30) {
                             doc.addPage();
                             itemY = 30;
                         }
-                        doc.setFontSize(10);
-                        doc.setTextColor(80, 80, 80);
-                        doc.text(`• ${dbBox.label}: ${item.name} x${item.quantity}`, 25, itemY);
-                        itemY += 5;
+                        doc.setFontSize(9);
+                        doc.setTextColor(60, 60, 60);
+                        doc.text(`• ${item.name} x${item.quantity}`, 35, itemY);
+                        itemY += 4;
                     });
+                    itemY += 3;
                 });
                 yPosition = itemY + 10;
             }
@@ -3717,7 +3809,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             const networkDBTableData = tables.networkDBBoxes.map(item => [
                 item.label,
-                item.category,
+                'NETWORK\nDISTRIBUTION\nBOX', // Type with line breaks
                 item.brand,
                 item.size,
                 item.model,
@@ -3744,10 +3836,10 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 },
                 columnStyles: {
                     0: { cellWidth: 15, halign: 'center' },
-                    1: { cellWidth: 30, halign: 'center' },
+                    1: { cellWidth: 60, halign: 'center'}, // Type column
                     2: { cellWidth: 30, halign: 'center' },
                     3: { cellWidth: 20, halign: 'center' },
-                    4: { cellWidth: 60, halign: 'left' },
+                    4: { cellWidth: 40, halign: 'left' },
                     5: { cellWidth: 15, halign: 'center' }
                 },
                 margin: { left: 15 }
@@ -3755,59 +3847,62 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             yPosition = doc.lastAutoTable.finalY + 15;
 
-            // Add router details if any
-            const networkDBWithRouters = tables.networkDBBoxes.filter(item =>
-                item.routerBrand && item.routerModel
+            // DB Box Equipment section (renamed and combined)
+            // DB Box Equipment section (renamed and combined)
+            const networkDBWithEquipment = tables.networkDBBoxes.filter(item =>
+                (item.routerBrand && item.routerModel) || (item.apBrand && item.apModel)
             );
 
-            if (networkDBWithRouters.length > 0) {
+            if (networkDBWithEquipment.length > 0) {
                 yPosition += 5;
                 doc.setFontSize(12);
                 doc.setTextColor(156, 39, 176);
-                doc.text('Network Routers:', 20, yPosition);
+                doc.text('DB Box Equipments:', 20, yPosition);
                 yPosition += 8;
 
                 let itemY = yPosition;
-                networkDBWithRouters.forEach(dbBox => {
+                networkDBWithEquipment.forEach(dbBox => {
                     if (itemY > doc.internal.pageSize.getHeight() - 30) {
                         doc.addPage();
                         itemY = 30;
                     }
+
                     doc.setFontSize(10);
                     doc.setTextColor(80, 80, 80);
-                    doc.text(`• ${dbBox.label}: ${dbBox.routerBrand} ${dbBox.routerModel} x${dbBox.routerQty || 1}`, 25, itemY);
+                    doc.text(`${dbBox.label}:`, 25, itemY);
                     itemY += 5;
-                });
-                yPosition = itemY + 10;
-            }
 
-            // Add access point details if any
-            const networkDBWithAPs = tables.networkDBBoxes.filter(item =>
-                item.apBrand && item.apModel
-            );
+                    // Network Router
+                    if (dbBox.routerBrand && dbBox.routerModel) {
+                        doc.setFontSize(9);
+                        doc.setTextColor(60, 60, 60);
+                        doc.text(`Network Router:`, 35, itemY);
+                        itemY += 4;
 
-            if (networkDBWithAPs.length > 0) {
-                yPosition += 5;
-                doc.setFontSize(12);
-                doc.setTextColor(156, 39, 176);
-                doc.text('Access Points:', 20, yPosition);
-                yPosition += 8;
-
-                let itemY = yPosition;
-                networkDBWithAPs.forEach(dbBox => {
-                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
-                        doc.addPage();
-                        itemY = 30;
+                        doc.setFontSize(8);
+                        doc.setTextColor(40, 40, 40);
+                        doc.text(`${dbBox.routerBrand} - ${dbBox.routerModel}`, 40, itemY);
+                        itemY += 6;
                     }
-                    doc.setFontSize(10);
-                    doc.setTextColor(80, 80, 80);
-                    doc.text(`• ${dbBox.label}: ${dbBox.apBrand} ${dbBox.apModel} x${dbBox.apQty || 1}`, 25, itemY);
-                    itemY += 5;
+
+                    // Access Point
+                    if (dbBox.apBrand && dbBox.apModel) {
+                        doc.setFontSize(9);
+                        doc.setTextColor(60, 60, 60);
+                        doc.text(`Access point:`, 35, itemY);
+                        itemY += 4;
+
+                        doc.setFontSize(8);
+                        doc.setTextColor(40, 40, 40);
+                        doc.text(`${dbBox.apBrand} - ${dbBox.apModel}`, 40, itemY);
+                        itemY += 6;
+                    }
+
+                    itemY += 3;
                 });
                 yPosition = itemY + 10;
             }
         }
-
         if (hasMainProducts) {
             if (hasDBBoxes || hasNetworkDBBoxes) {
                 doc.setFontSize(14);
@@ -3816,6 +3911,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 yPosition += 8;
             }
 
+            // KEEP ORIGINAL 5-COLUMN TABLE
             const mainTableData = tables.mainProducts.map(item => [
                 item.label,
                 item.category,
@@ -3826,7 +3922,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             doc.autoTable({
                 startY: yPosition,
-                head: [['Label', 'Category', 'Brand', 'Model', 'Qty']],
+                head: [['Label', 'Category', 'Brand', 'Model', 'Qty']], // KEEP 5 COLUMNS
                 body: mainTableData,
                 theme: 'grid',
                 headStyles: {
@@ -3967,10 +4063,27 @@ function generateProductTable() {
                 category: category,
                 brand: mark.brand || 'Not specified',
                 size: mark.sizeFt || 'Not specified',
-                model: model,
+                model: `${mark.brand || ''} - ${mark.sizeFt || ''} ft`.trim(), // Ensure proper format
                 quantity: 1,
-                selectedModules: mark.selectedModules || [],
                 selectedRelays: mark.selectedRelays || []
+            });
+            return;
+        }
+
+        if (mark.isNetworkDBBox) {
+            networkDBBoxesTable.push({
+                label: key,
+                category: category,
+                brand: mark.brand || 'Not specified',
+                size: mark.sizeFt || 'Not specified',
+                model: `${mark.brand || ''} - ${mark.sizeFt || ''} ft`.trim(), // Ensure proper format
+                quantity: 1,
+                routerBrand: mark.routerBrand || '',
+                routerModel: mark.routerModel || '',
+                routerQty: mark.routerQty || 1,
+                apBrand: mark.apBrand || '',
+                apModel: mark.apModel || '',
+                apQty: mark.apQty || 1
             });
             return;
         }
@@ -3992,6 +4105,7 @@ function generateProductTable() {
             });
             return;
         }
+
         if (category === 'Z-WAVE RELAY' && mark.relayItems && mark.relayItems.length > 0) {
             mark.relayItems.forEach(relayItem => {
                 const relayKey = `${key}-${relayItem.name}`;
@@ -4024,9 +4138,7 @@ function generateProductTable() {
     });
 
     const mainProducts = Array.from(productMap.values())
-        .sort((a, b) => {
-            return a.label.localeCompare(b.label);
-        });
+        .sort((a, b) => a.label.localeCompare(b.label));
 
     return {
         mainProducts: mainProducts,
@@ -4330,45 +4442,45 @@ function loadProjectData(projectData) {
         }
 
 
-function onPointerMove(ev) {
-    if (!dragging) return;
+        function onPointerMove(ev) {
+            if (!dragging) return;
 
-    const dx = ev.clientX - startX;
-    const dy = ev.clientY - startY;
+            const dx = ev.clientX - startX;
+            const dy = ev.clientY - startY;
 
-    if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
-        dragStarted = true;
-    }
+            if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+                dragStarted = true;
+            }
 
-    if (!dragStarted) return;
+            if (!dragStarted) return;
 
-    ev.preventDefault();
-    ev.stopPropagation();
+            ev.preventDefault();
+            ev.stopPropagation();
 
-    const transform = getImageTransform();
-    if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
+            const transform = getImageTransform();
+            if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
 
-    const imgRect = previewImage.getBoundingClientRect();
-    const scaleX = imageNaturalWidth / imgRect.width;
-    const scaleY = imageNaturalHeight / imgRect.height;
+            const imgRect = previewImage.getBoundingClientRect();
+            const scaleX = imageNaturalWidth / imgRect.width;
+            const scaleY = imageNaturalHeight / imgRect.height;
 
-    const imageDx = dx * scaleX;
-    const imageDy = dy * scaleY;
+            const imageDx = dx * scaleX;
+            const imageDy = dy * scaleY;
 
-    let newX = startMarkX + imageDx;
-    let newY = startMarkY + imageDy;
+            let newX = startMarkX + imageDx;
+            let newY = startMarkY + imageDy;
 
-    newX = Math.max(0, Math.min(imageNaturalWidth - mark.size, newX));
-    newY = Math.max(0, Math.min(imageNaturalHeight - mark.size, newY));
+            newX = Math.max(0, Math.min(imageNaturalWidth - mark.size, newX));
+            newY = Math.max(0, Math.min(imageNaturalHeight - mark.size, newY));
 
-    mark.x = newX;
-    mark.y = newY;
+            mark.x = newX;
+            mark.y = newY;
 
-    updateMarkPosition(mark);
-    
-    // 🟢 FIX: Update ONLY wires connected to this mark
-    updateWiresConnectedToMark(mark);
-}   
+            updateMarkPosition(mark);
+
+            // 🟢 FIX: Update ONLY wires connected to this mark
+            updateWiresConnectedToMark(mark);
+        }
 
 
         function onPointerUp(ev) {
