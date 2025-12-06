@@ -4,11 +4,20 @@
 <head>
     <meta charset="UTF-8" />
     <!-- Add these to your login.html -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script src="login.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="login.js"></script>
+    <script>
+        window.onload = function () {
+            document.querySelectorAll("link[rel='stylesheet']").forEach(link => {
+                link.rel = "preload";
+                link.as = "style";
+            });
+        };
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
 
@@ -321,7 +330,7 @@
 
     </div>
 
-<script src="login.js"></script>
+    <script src="login.js"></script>
 
 </body>
 

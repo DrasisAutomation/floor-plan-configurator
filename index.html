@@ -7,6 +7,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script src="firebase-config.js"></script>
+    <script>
+        window.onload = function () {
+            document.querySelectorAll("link[rel='stylesheet']").forEach(link => {
+                link.rel = "preload";
+                link.as = "style";
+            });
+        };
+    </script>
 
     <script src="./scripts/auth-check.js"></script>
 
