@@ -1,18 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-    <script src="firebase-config.js"></script>
-
-    <script src="./scripts/auth-check.js"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Floor Plan Selection</title>
+    <title>DomoticsDesigner | Professional Automation Design Suite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -20,417 +12,806 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            background: linear-gradient(135deg, #1a2533, #0d141c);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
         }
-
+        
         .container {
-            max-width: 800px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: fixed;
             width: 100%;
-            text-align: center;
+            top: 0;
+            z-index: 1000;
         }
-
-        .logo {
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #3498db;
-        }
-
-        .logo p {
-            font-size: 1.1rem;
-            opacity: 0.8;
-        }
-
-        .selection-cards {
+        
+        .header-content {
             display: flex;
-            gap: 30px;
-            justify-content: center;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 40px 30px;
-            width: 300px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-            border-color: rgba(52, 152, 219, 0.5);
-        }
-
-        .card-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            color: #3498db;
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-
-        .card p {
-            font-size: 0.95rem;
-            opacity: 0.8;
-            line-height: 1.5;
-        }
-
-        .upload-area {
-            margin-top: 20px;
-            display: none;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            gap: 20px;
+            padding: 20px 0;
         }
-
-        .upload-box {
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .upload-box:hover {
-            border-color: #3498db;
-            background: rgba(52, 152, 219, 0.1);
+        
+        .logo-icon {
+            color: #2a5bd7;
+            font-size: 28px;
         }
-
-        .upload-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: #3498db;
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2a5bd7;
         }
-
-        .upload-box p {
-            margin-bottom: 10px;
+        
+        .logo-text span {
+            color: #ff6b35;
         }
-
-        .upload-hint {
-            font-size: 0.85rem;
-            opacity: 0.7;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            background: #3498db;
+        
+        .cta-button {
+            background-color: #2a5bd7;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            font-size: 16px;
         }
-
-        .btn:hover {
-            background: #2980b9;
+        
+        .cta-button:hover {
+            background-color: #1e4ac4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 91, 215, 0.2);
         }
-
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 100px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            position: relative;
+            overflow: hidden;
         }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
+        
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
         }
-
-        .preview-container {
-            margin-top: 20px;
-            max-width: 500px;
-            display: none;
+        
+        .hero-text {
+            flex: 1;
         }
-
-        .preview-image {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: #1a1a1a;
         }
-
-        .action-buttons {
+        
+        .hero-title span {
+            color: #2a5bd7;
+        }
+        
+        .hero-subtitle {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+        
+        .hero-buttons {
             display: flex;
             gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .back-link {
             margin-top: 40px;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: color 0.3s ease;
         }
-
-        .back-link:hover {
+        
+        .btn-primary {
+            background-color: #2a5bd7;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e4ac4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 91, 215, 0.2);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: #2a5bd7;
+            border: 2px solid #2a5bd7;
+            padding: 14px 32px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(42, 91, 215, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .hero-visual {
+            flex: 1;
+            position: relative;
+        }
+        
+        .design-interface {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            height: 400px;
+        }
+        
+        .design-toolbar {
+            background-color: #2a5bd7;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .toolbar-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
         }
-
-        @media (max-width: 768px) {
-            .selection-cards {
-                flex-direction: column;
-                align-items: center;
+        
+        .design-canvas {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 15px;
+            height: calc(100% - 70px);
+        }
+        
+        .device-icon {
+            background-color: #f1f5ff;
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 12px;
+            color: #2a5bd7;
+            transition: all 0.3s ease;
+        }
+        
+        .device-icon:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(42, 91, 215, 0.1);
+        }
+        
+        .device-icon i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-icon {
+            background-color: #e9efff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: #2a5bd7;
+            font-size: 24px;
+        }
+        
+        .feature-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+        
+        .feature-description {
+            color: #666;
+        }
+        
+        /* Brands Section with Marquee */
+        .brands {
+            padding: 80px 0;
+            background-color: #f8f9fa;
+            overflow: hidden;
+        }
+        
+        .marquee-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+        
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marqueeLeft 30s linear infinite;
+        }
+        
+        .marquee-track.reverse {
+            animation: marqueeRight 30s linear infinite;
+        }
+        
+        .brand-logo {
+            background-color: white;
+            padding: 15px 30px;
+            margin: 0 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            color: #444;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            width: 180px;
+            flex-shrink: 0;
+        }
+        
+        .brand-logo img {
+            max-height: 40px;
+            max-width: 120px;
+            object-fit: contain;
+        }
+        
+        @keyframes marqueeLeft {
+            0% {
+                transform: translateX(0);
             }
-
-            .card {
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        @keyframes marqueeRight {
+            0% {
+                transform: translateX(-50%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #2a5bd7 0%, #1e4ac4 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .cta-text {
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+        
+        .cta-button-white {
+            background-color: white;
+            color: #2a5bd7;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+        
+        .cta-button-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: #aaa;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo span {
+            color: #ff6b35;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-content {
+                flex-direction: column;
+            }
+            
+            .hero-text, .hero-visual {
                 width: 100%;
-                max-width: 350px;
+            }
+            
+            .hero-title {
+                font-size: 40px;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 32px;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            
+            .section-title {
+                font-size: 30px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .brand-logo {
+                height: 60px;
+                width: 140px;
+                padding: 10px 15px;
+                margin: 0 10px;
+            }
+            
+            .brand-logo img {
+                max-height: 30px;
+                max-width: 100px;
             }
         }
     </style>
 </head>
-
 <body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-home-automation"></i>
+                    </div>
+                    <div class="logo-text">Domotics<span>Designer</span></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">Professional <span>Automation Design Suite</span> for Smart Homes & Buildings</h1>
+                    <p class="hero-subtitle">Design, visualize, and plan complete automation systems with our powerful web-based platform. Create floor plans, add devices, manage wiring, and integrate with leading brands—all in one intuitive interface.</p>
+                    
+                    <div class="hero-buttons">
+                        <a href="home.html" class="btn-primary">
+                            <i class="fa-solid fa-compass-drafting"></i> Start Designing now
+                        </a>
+                        <a href="#" class="btn-secondary">
+                            <i class="fas fa-video"></i> Watch Demo
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="hero-visual">
+                    <div class="design-interface">
+                        <div class="design-toolbar">
+                            <div class="toolbar-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="toolbar-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="toolbar-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="toolbar-icon">
+                                <i class="fa-solid fa-ethernet"></i>
+                            </div>
+                            <div class="toolbar-icon">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                        </div>
+                        <div class="design-canvas">
+                            <div class="device-icon">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>Smart Switches</span>
+                            </div>
+                            <div class="device-icon">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Speakers</span>
+                            </div>
+                            <div class="device-icon">
+                                <i class="fas fa-temperature-high"></i>
+                                <span>Sensors</span>
+                            </div>
+                            <div class="device-icon">
+                                <i class="fas fa-microchip"></i>
+                                <span>DB Box</span>
+                            </div>
+                            <div class="device-icon">
+                                <i class="fas fa-broadcast-tower"></i>
+                                <span>Relays</span>
+                            </div>
+                            <div class="device-icon">
+                                <i class="fas fa-satellite-dish"></i>
+                                <span>KNX Wiring</span>
+                            </div>
+                            <div class="device-icon">
+                                <i class="fas fa-network-wired"></i>
+                                <span>CAT6 Cable</span>
+                            </div>
+                            <div class="device-icon">
+                                <i class="fas fa-plug"></i>
+                                <span>IR Cable</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Complete Automation Design Solution</h2>
+            <p class="section-subtitle">From concept to installation-ready plans, DomoticsDesigner provides everything you need for professional automation system design.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-drafting-compass"></i>
+                    </div>
+                    <h3 class="feature-title">Intuitive Floor Plan Design</h3>
+                    <p class="feature-description">Draw new floor plans or upload existing ones in multiple formats. Our drag-and-drop interface makes it easy to create accurate representations of any space.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <h3 class="feature-title">Comprehensive Device Library</h3>
+                    <p class="feature-description">Access a vast library of smart switches, relays, speakers, sensors, and DB boxes. Drag and drop devices directly onto your floor plans.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3 class="feature-title">Advanced Wiring Management</h3>
+                    <p class="feature-description">Design and visualize wiring layouts for KNX, IR cables, CAT6, neutral cables, and more. Calculate cable lengths and requirements automatically.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="feature-title">Multi-Brand Integration</h3>
+                    <p class="feature-description">Seamlessly integrate devices from leading automation brands. Our platform supports Lumi Electronics and dozens of other manufacturers.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h3 class="feature-title">Export & Documentation</h3>
+                    <p class="feature-description">Generate professional installation documents, wiring diagrams, bills of materials, and client presentations with a single click.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-share"></i>
+                    </div>
+                    <h3 class="feature-title">Shareable Design Files</h3>
+                    <p class="feature-description">
+                        Save your automation designs as project files that can be opened, edited, and updated by anyone you share them with—perfect for teams, clients, and collaborative workflows.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Brands Section with Marquee -->
+<section class="brands">
     <div class="container">
-        <div class="logo">
-            <h1>Home Automation Configurator</h1>
-            <p>Design and configure your smart home layout</p>
-        </div>
-
-        <div class="selection-cards">
-            <div class="card" id="newPlanCard">
-                <div class="card-icon">🏠</div>
-                <h2>Create New Plan</h2>
-                <p>Start with a blank canvas and design your floor plan from scratch using our intuitive tools.</p>
-                <button class="btn" id="newPlanBtn">Get Started</button>
-            </div>
-
-            <div class="card" id="existingPlanCard">
-                <div class="card-icon">📁</div>
-                <h2>Use Existing Plan</h2>
-                <p>Upload an existing floor plan image and add your automation products directly to it.</p>
-                <button class="btn" id="existingPlanBtn">Upload Plan</button>
-            </div>
-            <div style="margin-top: 20px; text-align: center; position: relative;">
-                <label
-                    style="color: rgba(255, 255, 255, 0.7); cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center;"
-                    title="Click to load a previously saved project file">
-                    <input type="file" id="dmpFileInput" accept=".dmp" style="display: none;"
-                        onchange="loadDmpFile(this)">
-                    <span class="material-icons" style="font-size: 16px; margin-right: 5px;"></span>
-                    Load existing project (.dmp file)
-                </label>
-                <div style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 5px;">
-                    Click to upload a saved configuration
+        <h2 class="section-title">Integrated with Leading Brands</h2>
+        <p class="section-subtitle">DomoticsDesigner supports devices and systems from top automation manufacturers worldwide.</p>
+        
+        <!-- First marquee line (left to right) -->
+        <div class="marquee-container">
+            <div class="marquee-track">
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Lumi</div>
                 </div>
-            </div>
-
-            <script>
-                function loadDmpFile(input) {
-                    if (!input.files[0]) return;
-
-                    const file = input.files[0];
-                    if (!file.name.toLowerCase().endsWith('.dmp')) {
-                        alert('Please select a .dmp project file');
-                        input.value = '';
-                        return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        localStorage.setItem('projectDataToLoad', e.target.result);
-                        window.location.href = 'panel.html?load_from_local=true';
-                    };
-                    reader.readAsText(file);
-                }
-            </script>
-        </div>
-
-        <div class="upload-area" id="uploadArea">
-            <div class="upload-box" id="uploadBox">
-                <div class="upload-icon">📤</div>
-                <p>Drag & drop your floor plan image here</p>
-                <p class="upload-hint">or click to browse files</p>
-                <p class="upload-hint">Supported formats: JPG, PNG, GIF</p>
-                <input type="file" id="fileInput" accept="image/*">
-            </div>
-
-            <div class="preview-container" id="previewContainer">
-                <img class="preview-image" id="previewImage" src="" alt="Floor plan preview">
-                <div class="action-buttons">
-                    <button class="btn" id="usePlanBtn">Use This Plan</button>
-                    <button class="btn btn-secondary" id="changePlanBtn">Change Image</button>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">LocPro</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Escult</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Domogenie</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Tremblay</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Big Sense</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Zmote</div>
+                </div>
+                <!-- Duplicate for seamless loop -->
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Lumi</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">LocPro</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Escult</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Domogenie</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Tremblay</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Big Sense</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Zmote</div>
                 </div>
             </div>
         </div>
-
-        <a href="#" class="back-link" id="backLink" style="display: none;">
-            <span>←</span> Back to selection
+        
+        <!-- Second marquee line (right to left) - Same brands -->
+        <div class="marquee-container">
+            <div class="marquee-track reverse">
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Lumi</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">LocPro</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Escult</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Domogenie</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Tremblay</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Big Sense</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Zmote</div>
+                </div>
+                <!-- Duplicate for seamless loop -->
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Lumi</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">LocPro</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Escult</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Domogenie</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Tremblay</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Big Sense</div>
+                </div>
+                <div class="brand-logo">
+                    <div class="logo-placeholder">Zmote</div>
+                </div>
+            </div>
+        </div>
+        </div>
+</section>
+    <!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Experience the Future of Automation Design</h2>
+        <p class="cta-text">
+            DomoticsDesigner is a powerful new tool built to help professionals create smarter,
+            faster, and more accurate automation systems with ease.
+        </p>
+        <a href="home.html">
+        <button class="cta-button-white">
+            <i class="fas fa-rocket"></i> Explore DomoticsDesigner
+        </button>
         </a>
     </div>
+</section>
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">Domotics<span>Designer</span></div>
+                    <p>Professional automation design suite for smart homes and commercial buildings.</p>
+                </div>
+                <div>
+                    <p><i class="fas fa-globe"></i> domoticsdesigner.com</p>
+                    <p><i class="fas fa-envelope"></i> contact@domoticsdesigner.com</p>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 DomoticsDesigner.com. All rights reserved.
+            </div>
+        </div>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const newPlanCard = document.getElementById('newPlanCard');
-            const existingPlanCard = document.getElementById('existingPlanCard');
-            const newPlanBtn = document.getElementById('newPlanBtn');
-            const existingPlanBtn = document.getElementById('existingPlanBtn');
-            const uploadArea = document.getElementById('uploadArea');
-            const uploadBox = document.getElementById('uploadBox');
-            const fileInput = document.getElementById('fileInput');
-            const previewContainer = document.getElementById('previewContainer');
-            const previewImage = document.getElementById('previewImage');
-            const usePlanBtn = document.getElementById('usePlanBtn');
-            const changePlanBtn = document.getElementById('changePlanBtn');
-            const backLink = document.getElementById('backLink');
-            const selectionCards = document.querySelector('.selection-cards');
-
-            // New Plan - redirect to index.html
-            newPlanBtn.addEventListener('click', function () {
-                window.location.href = 'floorplan.html';
-            });
-
-            // Existing Plan - show upload area
-            existingPlanBtn.addEventListener('click', function () {
-                selectionCards.style.display = 'none';
-                uploadArea.style.display = 'flex';
-                backLink.style.display = 'inline-flex';
-            });
-
-            // Back to selection
-            backLink.addEventListener('click', function (e) {
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                selectionCards.style.display = 'flex';
-                uploadArea.style.display = 'none';
-                previewContainer.style.display = 'none';
-                backLink.style.display = 'none';
-            });
-
-            // Upload box click
-            uploadBox.addEventListener('click', function () {
-                fileInput.click();
-            });
-
-            // File input change
-            fileInput.addEventListener('change', function (e) {
-                if (e.target.files && e.target.files[0]) {
-                    const file = e.target.files[0];
-
-                    // Check if file is an image
-                    if (!file.type.match('image.*')) {
-                        alert('Please select an image file (JPG, PNG, GIF)');
-                        return;
-                    }
-
-                    const reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        previewImage.src = e.target.result;
-                        previewContainer.style.display = 'block';
-                        uploadBox.style.display = 'none';
-                    };
-
-                    reader.readAsDataURL(file);
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
                 }
-            });
-
-            // Drag and drop functionality
-            uploadBox.addEventListener('dragover', function (e) {
-                e.preventDefault();
-                uploadBox.style.borderColor = '#3498db';
-                uploadBox.style.background = 'rgba(52, 152, 219, 0.1)';
-            });
-
-            uploadBox.addEventListener('dragleave', function () {
-                uploadBox.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                uploadBox.style.background = 'rgba(255, 255, 255, 0.05)';
-            });
-
-            uploadBox.addEventListener('drop', function (e) {
-                e.preventDefault();
-                uploadBox.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                uploadBox.style.background = 'rgba(255, 255, 255, 0.05)';
-
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    const file = e.dataTransfer.files[0];
-
-                    // Check if file is an image
-                    if (!file.type.match('image.*')) {
-                        alert('Please select an image file (JPG, PNG, GIF)');
-                        return;
-                    }
-
-                    fileInput.files = e.dataTransfer.files;
-
-                    const reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        previewImage.src = e.target.result;
-                        previewContainer.style.display = 'block';
-                        uploadBox.style.display = 'none';
-                    };
-
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // Use this plan button
-            // Use this plan button - in index.html
-            usePlanBtn.addEventListener('click', function () {
-                const img = previewImage.src;
-
-                if (!img || img.trim() === "" || img.includes("data:image") === false) {
-                    alert("No valid image selected! Please select an image file.");
-                    return;
-                }
-
-                console.log('📤 Storing uploaded image to sessionStorage:', img.substring(0, 50) + '...');
-
-                // Store the uploaded image
-                sessionStorage.setItem("uploadedFloorPlan", img);
-
-                // Clear any previously exported plan to prevent conflicts
-                sessionStorage.removeItem("exportedPlan");
-
-                // Add a timestamp to force reload
-                const timestamp = new Date().getTime();
-                sessionStorage.setItem("imageTimestamp", timestamp.toString());
-
-                // Redirect to panel
-                window.location.href = "panel.html";
-            });
-
-
-            // Change image button
-            changePlanBtn.addEventListener('click', function () {
-                previewContainer.style.display = 'none';
-                uploadBox.style.display = 'block';
-                fileInput.value = '';
             });
         });
+        
+        
+        // Add some interactive effects to device icons
+        document.querySelectorAll('.device-icon').forEach(icon => {
+            icon.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 5px 15px rgba(42, 91, 215, 0.15)';
+            });
+            
+            icon.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+        
+        // Pause marquee on hover
+        // document.querySelectorAll('.marquee-track').forEach(track => {
+        //     track.addEventListener('mouseenter', function() {
+        //         this.style.animationPlayState = 'paused';
+        //     });
+            
+        //     track.addEventListener('mouseleave', function() {
+        //         this.style.animationPlayState = 'running';
+        //     });
+        // });
     </script>
 </body>
-
 </html>

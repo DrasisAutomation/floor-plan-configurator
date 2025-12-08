@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (userDoc.exists) {
                 const userData = userDoc.data();
                 if (userData.status === 'approved') {
-                    window.location.href = 'index.html';
+                    window.location.href = 'home.html';
                 } else {
                     showMessage(`Your account is ${userData.status}. Please contact administrator.`);
                     await auth.signOut();
@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const userData = userDoc.exists ? userDoc.data() : { role: isAdmin ? 'admin' : 'user' };
             
             if (userData.role === 'admin') {
-                window.location.href = 'index.html';
+                window.location.href = 'home.html';
             } else {
-                window.location.href = 'index.html';
+                window.location.href = 'home.html';
             }
             
         } catch (error) {
