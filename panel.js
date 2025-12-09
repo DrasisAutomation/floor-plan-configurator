@@ -300,18 +300,91 @@ const productData = {
             }
         }
     },
-    "TREMBLAY SOUNDS": {
-        title: "Tremblay Sounds",
-        desc: "Premium audio solutions.",
-        subProducts: {
-            "MULTIROOM AUDIO CEILING SPEAKER": {
-                title: "Multiroom Audio Ceiling Speaker",
-                desc: "In-ceiling streaming speaker with built-in amplifier.",
-                img: "./images/tremblay/53.png",
-                features: ["Built-in amplifier", "Wi-Fi/Bluetooth/Ethernet", "50W×2 output", "6.5\" glass-fibre woofer + 1\" aluminium tweeter", "40–20kHz response", "Supports AirPlay/DLNA/Spotify Connect"]
+// In the productData object, replace the TREMBLAY SOUNDS section with:
+// Replace the TREMBLAY SOUNDS section with:
+"TREMBLAY SOUNDS": {
+    title: "Tremblay Sounds",
+    desc: "Premium audio solutions.",
+    isMultiComponent: true,
+    subProducts: {
+        "MULTIROOM AUDIO": {
+            title: "Multiroom Audio System",
+            desc: "In-ceiling streaming speaker system",
+            img: "./images/tremblay/53.png",
+            components: {
+                "MASTER": {
+                    title: "Master Speaker",
+                    quantity: 1
+                },
+                "SLAVE": {
+                    title: "Slave Speaker", 
+                    quantity: 1
+                }
+            }
+        },
+        "7.2 SURROUND SYSTEM": {
+            title: "7.1 Surround Sound System",
+            desc: "7.1 channel home theater system",
+            img: "./images/tremblay/53.png",
+            components: {
+                "SOUNDBAR": {
+                    title: "Sound Bar",
+                    quantity: 1
+                },
+                "SATELLITE": {
+                    title: "Satellite Speaker",
+                    quantity: 4
+                },
+                "SUBWOOFER": {
+                    title: "Subwoofer",
+                    quantity: 2
+                }
+            }
+        },
+        "5.1.2 DOLBY ATMOS": {
+            title: "5.1.2 Dolby Atmos System",
+            desc: "5.1.2 channel Dolby Atmos home theater",
+            img: "./images/tremblay/53.png",
+            components: {
+                "LCR": {
+                    title: "LCR Speaker",
+                    quantity: 3
+                },
+                "SURROUND": {
+                    title: "Surround Speaker",
+                    quantity: 2
+                },
+                "SUBWOOFER": {
+                    title: "Subwoofer",
+                    quantity: 1
+                },
+                "ATMOS": {
+                    title: "Atmos Speaker",
+                    quantity: 2
+                }
+            }
+        },
+        "7.1 SURROUND SYSTEM": {
+            title: "5.1 Surround Sound System",
+            desc: "5.1 channel home theater system",
+            img: "./images/tremblay/53.png",
+            components: {
+                "SOUNDBAR": {
+                    title: "Sound Bar",
+                    quantity: 1
+                },
+                "SATELLITE": {
+                    title: "Satellite Speaker",
+                    quantity: 4
+                },
+                "SUBWOOFER": {
+                    title: "Subwoofer",
+                    quantity: 1
+                }
             }
         }
-    },
+    }
+},
     "Z-WAVE RELAY": {
         title: "Z-Wave Relay",
         desc: "Multi-channel relay modules and accessories.",
@@ -418,6 +491,12 @@ const productData = {
                 ]
             }
         }
+    },    
+    "TEXT": {
+        title: "Text Label",
+        desc: "Add custom text labels to the floor plan.",
+        isTextLabel: true,
+        img: "./images/text/placeholder.png" // You'll need to add this image
     },
     "AUTOMATION DISTRIBUTION BOX": {
         title: "Automation Distribution Box",
@@ -450,7 +529,8 @@ const PRODUCT_ORDER = [
     "SENSORS",
     "IR BLASTER - ZMOTE", // ADD THIS LINE
     "AUTOMATION DISTRIBUTION BOX",
-    "NETWORK DISTRIBUTION BOX"
+    "NETWORK DISTRIBUTION BOX",
+    "TEXT"
 ];
 
 /* ------------------------- UI BUILD ------------------------- */
@@ -552,7 +632,8 @@ function getSeriesCode(productKey) {
     if (productKey === 'CURTAIN MOTORS') return 'C';
     if (productKey === 'Z-WAVE RELAY') return 'R';
     if (productKey === 'TREMBLAY SOUNDS') return 'T';
-    if (productKey === 'IR BLASTER - ZMOTE') return 'I'; // ADD THIS LINE
+    if (productKey === 'IR BLASTER - ZMOTE') return 'I';
+    if (productKey === 'TEXT') return 'TX'; // ADD THIS LINE
     if (productKey === 'AUTOMATION DISTRIBUTION BOX') return 'ADB';
     if (productKey === 'NETWORK DISTRIBUTION BOX') return 'NDB';
     if (switchFamilies.has(productKey)) return 'S';
@@ -646,26 +727,30 @@ function clearAllMarksAndWires() {
 
 function nextSeriesLabel(productKey) {
     const code = getSeriesCode(productKey);
-
+    
+    if (!seriesCounters[code]) {
+        seriesCounters[code] = 0;
+    }
+    
+    // Find the next available number
     const existingMarks = marks.filter(mark => mark.seriesCode === code);
-
+    let nextNum = 1;
+    
     if (existingMarks.length > 0) {
         const existingNumbers = existingMarks.map(mark => {
-            const num = parseInt(mark.seriesLabel.substring(1));
+            const num = parseInt(mark.seriesLabel.substring(code.length));
             return isNaN(num) ? 0 : num;
         });
-
-        let nextNum = 1;
+        
         while (existingNumbers.includes(nextNum)) {
             nextNum++;
         }
-
-        seriesCounters[code] = nextNum;
-        return { seriesCode: code, label: `${code}${nextNum}` };
     } else {
-        seriesCounters[code] = 1;
-        return { seriesCode: code, label: `${code}1` };
+        nextNum = seriesCounters[code] + 1;
     }
+    
+    seriesCounters[code] = Math.max(seriesCounters[code], nextNum);
+    return { seriesCode: code, label: `${code}${nextNum}` };
 }
 
 let currentProduct = null;
@@ -677,6 +762,7 @@ let imageNaturalWidth = 0;
 let imageNaturalHeight = 0;
 let imageDisplayWidth = 0;
 let imageDisplayHeight = 0;
+let markColors = {}; // Track colors for each mark
 
 const wires = [];
 let isWireMode = false;
@@ -1387,7 +1473,7 @@ function populateModal(mark) {
     modalProductFeatures.innerHTML = '';
     // For DB Boxes, don't show features in modal
     if (!mark.isDBBox && !mark.isNetworkDBBox) {
-        const featureList = (mark.features && mark.features.length ? mark.features : ['No features provided']).slice(0, 12);
+        const featureList = (mark.features && mark.features.length ? mark.features : ['Immersive Audio Experience','Flexible Speaker Placement','Seamless Connectivity & Control','Expandable & Future-Ready System']).slice(0, 12);
         featureList.forEach(feature => {
             const li = document.createElement('li');
             li.textContent = feature;
@@ -1415,77 +1501,127 @@ productModalEl.addEventListener('click', (e) => {
 function buildList() {
     productListEl.innerHTML = '';
 
+    // First, add wire types
     wireTypes.forEach(wireType => {
         const wireItem = document.createElement('div');
-        wireItem.className = 'tab-btn';
+        wireItem.className = 'tab-btn wire-tab';
         wireItem.dataset.name = wireType.name;
         wireItem.dataset.wireType = wireType.id;
+        wireItem.style.position = 'relative';
+        wireItem.style.cursor = 'pointer';
+        wireItem.style.padding = '12px 16px';
+        wireItem.style.margin = '4px 0';
+        
         wireItem.innerHTML = `
-            <div class="tab-title" style="color: ${wireType.color}; font-weight: 600;">
+            <div class="tab-title" style="color: ${wireType.color}; font-weight: 600; position: relative; z-index: 2;">
                 <span class="material-icons" style="font-size: 18px; margin-right: 8px; vertical-align: middle;">${wireType.icon}</span>
                 ${wireType.title}
             </div>
-            <div class="tab-sub">
+            <div class="tab-sub" style="position: relative; z-index: 2;">
                 <span class="material-icons" style="font-size:20px;color:${wireType.color}">add_link</span>
             </div>
         `;
+        
+        // Add click event directly to the tab-btn
         wireItem.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
-            currentWireType = wireType.id;
-            isWireMode = true;
+            
+            // Get the actual clicked element
+            let target = e.target;
+            while (target && !target.classList.contains('tab-btn')) {
+                target = target.parentElement;
+            }
+            
+            if (target) {
+                currentWireType = wireType.id;
+                isWireMode = true;
 
-            document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"]').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.name === wireType.name);
-            });
+                document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"]').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.name === wireType.name);
+                });
 
-            document.querySelectorAll('.tab-btn[data-name]').forEach(btn => {
-                if (!btn.dataset.name.includes('WIRE')) {
-                    btn.classList.remove('active');
-                }
-            });
+                document.querySelectorAll('.tab-btn[data-name]').forEach(btn => {
+                    if (!btn.dataset.name.includes('WIRE')) {
+                        btn.classList.remove('active');
+                    }
+                });
 
-            showWireControls();
-            showNotification(`${wireType.title} Mode: Select two marks to connect them`, 'info');
+                showWireControls();
+                showNotification(`${wireType.title} Mode: Select two marks to connect them`, 'info');
+            }
         });
+        
         productListEl.appendChild(wireItem);
     });
 
+    // Add separator
     const separator = document.createElement('div');
     separator.style.height = '1px';
     separator.style.backgroundColor = 'var(--border)';
     separator.style.margin = '15px 0';
     productListEl.appendChild(separator);
 
+    // Add product categories
     const keys = PRODUCT_ORDER.length ? PRODUCT_ORDER.filter(k => productData[k]) : Object.keys(productData);
     for (const key of keys) {
         const item = document.createElement('div');
-        item.className = 'tab-btn';
+        item.className = 'tab-btn product-tab';
         item.dataset.name = key;
+        item.style.position = 'relative';
+        item.style.cursor = 'pointer';
+        item.style.padding = '12px 16px';
+        item.style.margin = '4px 0';
 
         const left = document.createElement('div');
         left.className = 'tab-title';
         left.textContent = key;
+        left.style.position = 'relative';
+        left.style.zIndex = '2';
 
         const right = document.createElement('div');
         right.className = 'tab-sub';
+        right.style.position = 'relative';
+        right.style.zIndex = '2';
 
         if (productData[key].subProducts && !productData[key].isDBBox && !productData[key].isNetworkDBBox) {
             right.innerHTML = '<span class="material-icons" style="font-size:20px;color:var(--muted)">expand_more</span>';
+            
             item.addEventListener('click', (e) => {
+                e.preventDefault();
                 e.stopPropagation();
-                const existing = item.nextElementSibling;
-                if (existing && existing.classList.contains('sub-product-list')) {
-                    existing.remove();
-                    item.querySelector('.material-icons').textContent = 'expand_more';
-                } else {
-                    createSubProducts(item, key);
-                    item.querySelector('.material-icons').textContent = 'expand_less';
+                
+                // Get the actual clicked element
+                let target = e.target;
+                while (target && !target.classList.contains('tab-btn')) {
+                    target = target.parentElement;
+                }
+                
+                if (target) {
+                    const existing = item.nextElementSibling;
+                    if (existing && existing.classList.contains('sub-product-list')) {
+                        existing.remove();
+                        item.querySelector('.material-icons').textContent = 'expand_more';
+                    } else {
+                        createSubProducts(item, key);
+                        item.querySelector('.material-icons').textContent = 'expand_less';
+                    }
                 }
             });
         } else {
             item.addEventListener('click', (e) => {
+                e.preventDefault();
                 e.stopPropagation();
-                selectProduct(key);
+                
+                // Get the actual clicked element
+                let target = e.target;
+                while (target && !target.classList.contains('tab-btn')) {
+                    target = target.parentElement;
+                }
+                
+                if (target) {
+                    selectProduct(key);
+                }
             });
         }
 
@@ -1494,7 +1630,6 @@ function buildList() {
         productListEl.appendChild(item);
     }
 }
-
 function createSubProducts(afterItem, productKey) {
     const wrap = document.createElement('div');
     wrap.className = 'sub-product-list';
@@ -1580,7 +1715,7 @@ function selectProduct(productKey, subProductKey = null) {
     currentWireType = null;
     hideWireControls();
 
-    document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"]').forEach(btn => {
+    document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"]').forEach(btn => {
         btn.classList.remove('active');
     });
 
@@ -1593,6 +1728,24 @@ function selectProduct(productKey, subProductKey = null) {
         b.classList.toggle('active', isActive);
     });
 
+    // Clean up text input when switching away from TEXT
+if (currentProduct !== productKey && currentProduct === 'TEXT') {
+    // Remove text instruction
+    const textInstruction = document.querySelector('.text-instruction');
+    if (textInstruction) {
+        textInstruction.remove();
+    }
+    
+    // Remove text controls
+    const textControls = document.getElementById('textLabelControls');
+    if (textControls) {
+        textControls.remove();
+    }
+    
+    // Restore product image display
+    productImage.style.display = 'block';
+}
+
     let data = productData[productKey];
     let title = data.title || productKey;
     let desc = data.desc || '';
@@ -1601,6 +1754,8 @@ function selectProduct(productKey, subProductKey = null) {
     const isRelay = productKey === 'Z-WAVE RELAY';
     const isDBBox = data.isDBBox || false;
     const isNetworkDBBox = data.isNetworkDBBox || false;
+    const isTextLabel = data.isTextLabel || false;
+    const isMultiComponent = data.isMultiComponent || false;
 
     if (isDBBox) {
         title = data.title;
@@ -1614,6 +1769,18 @@ function selectProduct(productKey, subProductKey = null) {
         img = data.img || '';
         features = data.features || [];
         currentSubProduct = null;
+    } else if (isTextLabel) {
+        title = data.title;
+        desc = data.desc;
+        img = data.img || '';
+        features = [];
+        currentSubProduct = null;
+    } else if (isMultiComponent && subProductKey && data.subProducts && data.subProducts[subProductKey]) {
+        const subData = data.subProducts[subProductKey];
+        title = subData.title;
+        desc = subData.desc;
+        img = subData.img || '';
+        features = [];
     } else if (subProductKey && data.subProducts && data.subProducts[subProductKey]) {
         const subData = data.subProducts[subProductKey];
         title = subData.title;
@@ -1639,7 +1806,7 @@ function selectProduct(productKey, subProductKey = null) {
     }
 
     pMeta.innerHTML = '';
-    if (subProductKey && !isDBBox && !isNetworkDBBox) {
+    if (subProductKey && !isDBBox && !isNetworkDBBox && !isTextLabel) {
         const meta = document.createElement('div');
         meta.className = 'meta-item';
         meta.textContent = subProductKey;
@@ -1652,18 +1819,26 @@ function selectProduct(productKey, subProductKey = null) {
         buildRelayOptions();
         productImageOverlay.style.display = 'block';
         updateRelayOverlay();
+        
+        // Hide other controls
+        document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
+        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
         document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
 
     } else if (isDBBox) {
         relayControlsEl.style.display = 'none';
-        featuresSection.style.display = 'none'; // Hide features for DB Box
+        featuresSection.style.display = 'none';
         productImageOverlay.style.display = 'none';
         productImageOverlay.textContent = '';
         resetRelayPreview();
         lastRelaySelectionLabel = '';
 
         createAutomationDBBoxControls();
+        
+        // Hide other controls
+        document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
+        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
 
         pFeatures.innerHTML = '';
         if (features.length > 0) {
@@ -1675,13 +1850,17 @@ function selectProduct(productKey, subProductKey = null) {
         }
     } else if (isNetworkDBBox) {
         relayControlsEl.style.display = 'none';
-        featuresSection.style.display = 'none'; // Hide features for Network DB Box
+        featuresSection.style.display = 'none';
         productImageOverlay.style.display = 'none';
         productImageOverlay.textContent = '';
         resetRelayPreview();
         lastRelaySelectionLabel = '';
 
         createNetworkDBBoxControls();
+        
+        // Hide other controls
+        document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
+        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
 
         pFeatures.innerHTML = '';
         if (features.length > 0) {
@@ -1691,6 +1870,63 @@ function selectProduct(productKey, subProductKey = null) {
                 pFeatures.appendChild(li);
             });
         }
+    } else if (isTextLabel) {
+    // For TEXT labels - Show clean interface
+    pTitle.textContent = "Text Label";
+    pDesc.textContent = "Add custom text annotations to the floor plan";
+    
+    // Hide product image
+    productImage.style.display = 'none';
+    productImageOverlay.style.display = 'none';
+    
+    // Hide features section
+    featuresSection.style.display = 'none';
+    relayControlsEl.style.display = 'none';
+    
+    // Remove existing special controls
+    document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
+    document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+    
+    // Clear features
+    pFeatures.innerHTML = '';
+    
+    // Add text-specific feature
+    const featureLi = document.createElement('li');
+    featureLi.textContent = 'Custom text annotations';
+    pFeatures.appendChild(featureLi);
+    
+    const featureLi2 = document.createElement('li');
+    featureLi2.textContent = 'Serial numbering: TX1, TX2, TX3...';
+    pFeatures.appendChild(featureLi2);
+    
+    const featureLi3 = document.createElement('li');
+    featureLi3.textContent = 'Same styling as product labels';
+    pFeatures.appendChild(featureLi3);
+    
+    // Clear pMeta
+    pMeta.innerHTML = '';
+    
+    // Create text input controls
+    createTextLabelControls();
+} else if (isMultiComponent && subProductKey) {
+        relayControlsEl.style.display = 'none';
+        featuresSection.style.display = 'none';
+        productImageOverlay.style.display = 'none';
+        productImageOverlay.textContent = '';
+        resetRelayPreview();
+        lastRelaySelectionLabel = '';
+
+        createMultiComponentControls(productKey, subProductKey);
+        
+        // Hide other controls
+        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
+        document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
+        document.getElementById('networkDBControls') && (document.getElementById('networkDBBoxControls').style.display = 'none');
+
+        pFeatures.innerHTML = '';
+        const li = document.createElement('li');
+        li.textContent = 'Multi-component audio system';
+        pFeatures.appendChild(li);
     } else {
         relayControlsEl.style.display = 'none';
         featuresSection.style.display = 'block';
@@ -1699,6 +1935,9 @@ function selectProduct(productKey, subProductKey = null) {
         resetRelayPreview();
         lastRelaySelectionLabel = '';
 
+        // Hide all special controls
+        document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
+        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
         document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
 
@@ -1717,6 +1956,441 @@ function selectProduct(productKey, subProductKey = null) {
     }
 }
 
+function createTextLabelControls() {
+    const existingControls = document.getElementById('textLabelControls');
+    if (existingControls) {
+        existingControls.remove();
+    }
+
+    const textControlsHTML = `
+        <div class="mark-controls-box" id="textLabelControls" style="margin-top: 20px; border-color: #667eea;">
+            <h3 style="color: #667eea; margin-bottom: 15px;">
+                <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">text_fields</span>
+                Text Label
+            </h3>
+            
+            <div class="form-group">
+                <label style="color: #667eea; font-weight: 500;">Text Content</label>
+                <input type="text" 
+                       id="textLabelInput" 
+                       class="form-control" 
+                       placeholder="Enter label text (e.g., Living Room, Entrance)"
+                       maxlength="30"
+                       style="border-color: #667eea; margin-bottom: 10px;">
+                <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                    <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
+                    Max 30 characters. Press Enter or click Add Mark
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 12px; background: #f0f4ff; border-radius: 6px; border: 1px solid #c3dafe;">
+                <div style="font-size: 12px; color: #667eea; margin-bottom: 4px;">
+                    <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                    How to add text labels:
+                </div>
+                <div style="font-size: 11px; color: #555;">
+                    1. Enter text in the field above<br>
+                    2. Click "Add Mark" button<br>
+                    3. Click on floor plan where you want the label<br>
+                    4. Labels are numbered TX1, TX2, TX3...
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const markControlsBox = document.querySelector('.mark-controls-box');
+    if (markControlsBox) {
+        markControlsBox.insertAdjacentHTML('afterend', textControlsHTML);
+        
+        // Add Enter key support to text input
+        const textInput = document.getElementById('textLabelInput');
+        if (textInput) {
+            textInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const shape = markShapeEl.value;
+                    let sizePercent = parseFloat(markSizeEl.value) || 4;
+                    if (sizePercent <= 0) sizePercent = 4;
+                    
+                    if (imageNaturalWidth && imageNaturalHeight) {
+                        const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
+                        const centerX = imageNaturalWidth / 2;
+                        const centerY = imageNaturalHeight / 2;
+                        
+                        addTextLabel(this.value.trim(), shape, sizePixels);
+                        this.value = '';
+                    }
+                }
+            });
+            
+            // Focus the input when TEXT category is selected
+            setTimeout(() => {
+                textInput.focus();
+            }, 100);
+        }
+    }
+}
+
+// Add this function to create text marks
+function addTextMark(text) {
+    const shape = markShapeEl.value;
+    let sizePercent = parseFloat(markSizeEl.value) || 4;
+    if (sizePercent <= 0) sizePercent = 4;
+    
+    if (imageNaturalWidth && imageNaturalHeight) {
+        const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
+        const centerX = imageNaturalWidth / 2;
+        const centerY = imageNaturalHeight / 2;
+        
+        createTextMark({
+            x: centerX - (sizePixels / 2),
+            y: centerY - (sizePixels / 2),
+            size: sizePixels,
+            shape: shape,
+            text: text
+        });
+    }
+}
+
+// Add this function to create text mark elements
+function createTextMark({ x, y, size, shape, text }) {
+    const id = 'mark-' + (++markCounter);
+    const { seriesCode, label } = nextSeriesLabel('TEXT');
+    
+    const el = document.createElement('div');
+    el.className = 'mark ' + shape;
+    el.dataset.id = id;
+    el.dataset.size = size;
+    el.dataset.shape = shape;
+    
+    // Style for text label
+    el.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+    el.style.borderColor = '#667eea';
+    el.style.borderWidth = '2px';
+    el.style.borderStyle = 'solid';
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    el.style.justifyContent = 'center';
+    el.style.padding = '6px';
+    el.style.cursor = 'move';
+    
+    const textSpan = document.createElement('span');
+    textSpan.className = 'label-text';
+    textSpan.textContent = text;
+    textSpan.style.color = '#333';
+    textSpan.style.fontSize = '12px';
+    textSpan.style.fontWeight = '600';
+    textSpan.style.textAlign = 'center';
+    textSpan.style.lineHeight = '1.2';
+    textSpan.style.whiteSpace = 'nowrap';
+    textSpan.style.overflow = 'hidden';
+    textSpan.style.textOverflow = 'ellipsis';
+    textSpan.style.maxWidth = '100px';
+    
+    el.appendChild(textSpan);
+    
+    const badge = document.createElement('div');
+    badge.className = 'label-badge';
+    badge.textContent = label;
+    badge.style.backgroundColor = '#667eea';
+    badge.style.color = '#FFFFFF';
+    el.appendChild(badge);
+    
+    // Add hover effect
+    el.addEventListener('mouseenter', function() {
+        this.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.2)';
+    });
+    
+    el.addEventListener('mouseleave', function() {
+        this.style.boxShadow = '';
+    });
+    
+    imgInner.appendChild(el);
+    
+    const markData = {
+        id,
+        x,
+        y,
+        size,
+        shape,
+        el,
+        seriesCode,
+        seriesLabel: label,
+        tooltip: null,
+        categoryName: 'Text Label',
+        modelName: text,
+        desc: `Text Label: ${text}`,
+        features: [],
+        imageSrc: null,
+        isTextLabel: true,
+        text: text,
+        labelElement: textSpan
+    };
+    
+    marks.push(markData);
+    
+    // Add click event - just for selection, no modal
+    el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        selectedMarkId = id;
+        updateMarkSelection();
+        // No modal opens for text labels
+    });
+    
+    // Add dragging functionality
+    setupMarkDragging(el, markData);
+    
+    updateMarkPosition(markData);
+    updateMarkSelection();
+    
+    showNotification(`Text label "${text}" added as ${label}`, 'success');
+    
+    return markData;
+}
+
+
+
+function attachTextLabelEvents() {
+    const textInput = document.getElementById('textLabelInput');
+    const fontSizeSlider = document.getElementById('textFontSize');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+    const addTextBtn = document.getElementById('addTextLabelBtn');
+    
+    // Font size slider
+    if (fontSizeSlider && fontSizeValue) {
+        fontSizeSlider.addEventListener('input', function() {
+            fontSizeValue.textContent = this.value;
+        });
+    }
+    
+    // Add text label button
+    if (addTextBtn) {
+        addTextBtn.addEventListener('click', function() {
+            if (!textInput.value.trim()) {
+                showNotification('Please enter text for the label', 'error');
+                return;
+            }
+            
+            addTextLabel(
+                textInput.value.trim(),
+                parseInt(fontSizeSlider.value)
+            );
+            
+            // Clear input
+            textInput.value = '';
+        });
+    }
+}
+
+function addTextLabel(text, shape, sizePixels) {
+    if (!text || text.trim() === '') {
+        showNotification('Please enter text for the label', 'error');
+        return;
+    }
+    
+    if (!imageNaturalWidth || !imageNaturalHeight) {
+        showNotification('Please wait for floor plan to load', 'error');
+        return;
+    }
+    
+    // Center the label on the image
+    const centerX = imageNaturalWidth / 2;
+    const centerY = imageNaturalHeight / 2;
+    
+    // Create the text mark - EXACTLY LIKE OTHER PRODUCTS
+    const id = 'mark-' + (++markCounter);
+    const { seriesCode, label } = nextSeriesLabel('TEXT');
+    
+    const el = document.createElement('div');
+    el.className = 'mark ' + shape;
+    el.dataset.id = id;
+    el.dataset.size = sizePixels;
+    el.dataset.shape = shape;
+    el.dataset.isTextLabel = true;
+    
+    // ✅ SAME STYLING AS OTHER PRODUCTS
+    // No custom styling - use default CSS classes
+    
+    const badge = document.createElement('div');
+    badge.className = 'label-badge';
+    badge.textContent = label;
+    // ✅ Same badge styling as other products
+    el.appendChild(badge);
+    
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    
+    const tooltipContent = document.createElement('div');
+    tooltipContent.className = 'tooltip-content';
+    
+    const tooltipTitle = document.createElement('div');
+    tooltipTitle.className = 'tooltip-title';
+    tooltipTitle.textContent = 'Text Label'; // Fixed category name
+    
+    const tooltipModel = document.createElement('div');
+    tooltipModel.className = 'tooltip-model';
+    tooltipModel.textContent = text; // The actual text content
+    
+    tooltipContent.appendChild(tooltipTitle);
+    tooltipContent.appendChild(tooltipModel);
+    tooltip.appendChild(tooltipContent);
+    el.appendChild(tooltip);
+    
+    imgInner.appendChild(el);
+    
+    const markData = {
+        id,
+        x: centerX - (sizePixels / 2),
+        y: centerY - (sizePixels / 2),
+        size: sizePixels,
+        shape,
+        el,
+        seriesCode,
+        seriesLabel: label,
+        tooltip,
+        categoryName: 'Text Label', // Fixed category
+        modelName: text, // The text content as model name
+        desc: `Text Label: ${text}`,
+        features: ['Custom text annotation'],
+        imageSrc: previewImage.src, // Use floor plan image
+        isTextLabel: true,
+        text: text
+    };
+    
+    marks.push(markData);
+    
+    // ✅ SAME EVENT HANDLING AS OTHER PRODUCTS
+    el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        
+        if (isWireMode && currentWireType && !e.defaultPrevented) {
+            // Wire selection logic (same as other products)
+            if (!wireStartMark) {
+                wireStartMark = markData;
+                showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
+            } else if (!wireEndMark && wireStartMark !== markData) {
+                wireEndMark = markData;
+                const wireTypeInfo = getWireTypeInfo(currentWireType);
+                showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
+            } else if (wireStartMark === markData) {
+                wireStartMark = null;
+                wireEndMark = null;
+                wirePoints = [];
+                showNotification('First mark selection cleared.', 'info');
+            } else if (wireEndMark === markData) {
+                wireEndMark = null;
+                wirePoints = [];
+                showNotification('Second mark selection cleared.', 'info');
+            }
+            updateWireSelectionLabels();
+            updatePointsList();
+            e.preventDefault();
+        } else if (!isWireMode && !e.defaultPrevented) {
+            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
+            selectedMarkId = id;
+            updateMarkSelection();
+            // Do NOT call openProductModal(markData);
+        }
+    });
+    
+    // ✅ SAME DRAGGING FUNCTIONALITY
+    setupMarkDragging(el, markData);
+    
+    updateMarkPosition(markData);
+    updateMarkSelection();
+    renderMarksList();
+    
+    showNotification(`Text label "${text}" added as ${label}`, 'success');
+    
+    return markData;
+}
+
+function createTextMark(options) {
+    const { x, y, size, shape, text, fontSize } = options;
+    
+    const id = 'mark-' + (++markCounter);
+    const { seriesCode, label } = nextSeriesLabel('TEXT');
+    
+    const el = document.createElement('div');
+    el.className = 'mark ' + shape;
+    el.dataset.id = id;
+    el.dataset.size = size;
+    el.dataset.shape = shape;
+    el.dataset.isTextLabel = true;
+    
+    // Style for text label
+    el.style.backgroundColor = '#FFFFFF';
+    el.style.borderColor = '#607D8B';
+    el.style.borderWidth = '2px';
+    el.style.borderStyle = 'solid';
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    el.style.justifyContent = 'center';
+    el.style.padding = '4px 8px';
+    
+    const textSpan = document.createElement('span');
+    textSpan.className = 'label-text';
+    textSpan.textContent = text;
+    textSpan.style.color = '#000000';
+    textSpan.style.fontSize = fontSize + 'px';
+    textSpan.style.fontWeight = '600';
+    textSpan.style.textAlign = 'center';
+    textSpan.style.lineHeight = '1.2';
+    textSpan.style.whiteSpace = 'nowrap';
+    textSpan.style.overflow = 'hidden';
+    textSpan.style.textOverflow = 'ellipsis';
+    
+    el.appendChild(textSpan);
+    
+    const badge = document.createElement('div');
+    badge.className = 'label-badge';
+    badge.textContent = label;
+    badge.style.backgroundColor = '#607D8B';
+    badge.style.color = '#FFFFFF';
+    el.appendChild(badge);
+    
+    imgInner.appendChild(el);
+    
+    const markData = {
+        id,
+        x,
+        y,
+        size,
+        shape,
+        el,
+        seriesCode,
+        seriesLabel: label,
+        tooltip: null,
+        categoryName: 'Text Label',
+        modelName: text,
+        desc: `Text Label: ${text}`,
+        features: [],
+        imageSrc: null,
+        isTextLabel: true,
+        text: text,
+        fontSize: fontSize,
+        labelElement: textSpan
+    };
+    
+    marks.push(markData);
+    
+    // Add click event to open modal
+    el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        selectedMarkId = id;
+        updateMarkSelection();
+        openTextLabelModal(markData);
+    });
+    
+    // Add dragging functionality
+    setupMarkDragging(el, markData);
+    
+    updateMarkPosition(markData);
+    updateMarkSelection();
+    
+    showNotification(`Text label "${text}" added`, 'success');
+    
+    return markData;
+}
 /* ------------------------- WIRE MAPPING FUNCTIONS ------------------------- */
 function getWireTypeInfo(type) {
     return wireTypes.find(wt => wt.id === type) || wireTypes[0];
@@ -3096,7 +3770,40 @@ addMarkBtn.addEventListener('click', () => {
         alert('Please select a product first');
         return;
     }
+    
     const data = productData[currentProduct];
+    
+    // Handle TEXT labels
+    if (currentProduct === 'TEXT') {
+        const textInput = document.getElementById('textLabelInput');
+        if (!textInput) {
+            showNotification('Please wait for text input to load', 'error');
+            return;
+        }
+        
+        const text = textInput.value.trim();
+        if (!text) {
+            showNotification('Please enter text for the label', 'error');
+            textInput.focus();
+            return;
+        }
+        
+        const shape = markShapeEl.value;
+        let sizePercent = parseFloat(markSizeEl.value) || 4;
+        if (sizePercent <= 0) sizePercent = 4;
+        
+        if (imageNaturalWidth && imageNaturalHeight) {
+            const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
+            addTextLabel(text, shape, sizePixels);
+            textInput.value = '';
+            textInput.focus();
+        } else {
+            showNotification('Please wait for floor plan to load', 'error');
+        }
+        return;
+    }
+    
+    // Handle other products (original logic)
     if (data.subProducts && !data.isDBBox && !data.isNetworkDBBox && currentProduct !== 'Z-WAVE RELAY' && !currentSubProduct) {
         alert('Please select a model first');
         return;
@@ -3402,6 +4109,277 @@ function createMark({ x, y, size, shape }) {
     updateMarkSelection();
 }
 
+/* ------------------------- MULTI-COMPONENT PRODUCT FUNCTIONS ------------------------- */
+function createMultiComponentControls(productKey, subProductKey) {
+    const existingControls = document.getElementById('multiComponentControls');
+    if (existingControls) {
+        existingControls.remove();
+    }
+
+    const data = productData[productKey];
+    if (!data || !data.isMultiComponent || !subProductKey) return;
+
+    const subData = data.subProducts[subProductKey];
+    if (!subData || !subData.components) return;
+
+    // Hide features section
+    featuresSection.style.display = 'none';
+    relayControlsEl.style.display = 'none';
+    
+    // Create controls for multi-component system
+    const componentsHTML = `
+        <div class="mark-controls-box" id="multiComponentControls" style="margin-top: 20px; border-color: #FF9800;">
+            <h3 style="color: #FF9800; margin-bottom: 15px;">
+                <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">speaker_group</span>
+                ${subData.title} Configuration
+            </h3>
+            
+            <div class="form-group">
+                <div style="background: #FFF3E0; padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #FFE0B2;">
+                    <div style="font-size: 12px; color: #FF9800; margin-bottom: 8px;">
+                        <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                        This system includes multiple components. All components will be grouped together.
+                    </div>
+                    <div style="font-size: 11px; color: #555;">
+                        System: <strong>${subData.title}</strong><br>
+                        Total Components: <strong>${Object.values(subData.components).reduce((sum, comp) => sum + comp.quantity, 0)}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="color: #FF9800; font-weight: 500;">System Components</label>
+                <div id="componentsList" style="margin-top: 10px; max-height: 200px; overflow-y: auto; padding: 8px; background: #f8f9fa; border-radius: 6px; border: 1px solid #e0e0e0;">
+                    ${Object.entries(subData.components).map(([key, component]) => `
+                        <div class="component-item" style="margin-bottom: 12px; padding: 10px; background: white; border-radius: 4px; border: 1px solid #ddd;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 12px; color: #333;">${component.title}</div>
+                                </div>
+                                <div style="font-size: 11px; color: #FF9800; font-weight: bold;">
+                                    Qty: ${component.quantity}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <button id="addMultiComponentSystemBtn" class="btn primary full-width" style="background: #FF9800; border-color: #FF9800;">
+                    <span class="material-icons" style="font-size: 16px; margin-right: 8px;">add_circle</span>
+                    Add Complete System
+                </button>
+                <div style="font-size: 10px; color: #666; text-align: center; margin-top: 8px;">
+                    This will create ${Object.values(subData.components).reduce((sum, comp) => sum + comp.quantity, 0)} labels grouped together
+                </div>
+            </div>
+        </div>
+    `;
+
+    const markControlsBox = document.querySelector('.mark-controls-box');
+    if (markControlsBox) {
+        markControlsBox.insertAdjacentHTML('afterend', componentsHTML);
+        
+        // Add system button
+        document.getElementById('addMultiComponentSystemBtn').addEventListener('click', function() {
+            addMultiComponentSystem(productKey, subProductKey);
+        });
+    }
+}
+
+let multiComponentGroups = {}; // Track grouped components
+
+function addMultiComponentSystem(productKey, subProductKey) {
+    const data = productData[productKey];
+    const subData = data.subProducts[subProductKey];
+    
+    if (!subData.components) return;
+    
+    const shape = markShapeEl.value;
+    let sizePercent = parseFloat(markSizeEl.value) || 4;
+    if (sizePercent <= 0) sizePercent = 4;
+    
+    const groupId = `group-${Date.now()}`;
+    const componentMarks = [];
+    const totalComponents = Object.values(subData.components).reduce((sum, comp) => sum + comp.quantity, 0);
+    
+    // Get next available label number
+    const existingMarks = marks.filter(mark => mark.seriesCode === 'T');
+    let nextNumber = 1;
+    if (existingMarks.length > 0) {
+        const existingNumbers = existingMarks.map(mark => {
+            const num = parseInt(mark.seriesLabel.substring(1));
+            return isNaN(num) ? 0 : num;
+        });
+        
+        while (existingNumbers.includes(nextNumber)) {
+            nextNumber++;
+        }
+    }
+    
+    let componentCounter = 0;
+    
+    Object.entries(subData.components).forEach(([componentKey, component]) => {
+        for (let i = 0; i < component.quantity; i++) {
+            const label = `T${nextNumber}`;
+            
+            const position = calculateGridPosition(
+                componentCounter + 1,
+                totalComponents
+            );
+            
+            if (imageNaturalWidth && imageNaturalHeight) {
+                const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
+                const centerX = imageNaturalWidth / 2 + position.xOffset;
+                const centerY = imageNaturalHeight / 2 + position.yOffset;
+                
+                const mark = createMultiComponentMark({
+                    x: centerX - (sizePixels / 2),
+                    y: centerY - (sizePixels / 2),
+                    size: sizePixels,
+                    shape: shape,
+                    productKey: productKey,
+                    subProductKey: subProductKey,
+                    component: component,
+                    componentIndex: i + 1,
+                    label: label,
+                    groupId: groupId,
+                    totalComponents: totalComponents
+                });
+                
+                componentMarks.push(mark);
+                componentCounter++;
+            }
+        }
+        nextNumber++;
+    });
+    
+    // Store the group
+    multiComponentGroups[groupId] = {
+        productKey: productKey,
+        subProductKey: subProductKey,
+        marks: componentMarks.map(m => m.id),
+        mainLabel: subData.title
+    };
+    
+    // Update series counter
+    seriesCounters['T'] = Math.max(seriesCounters['T'] || 0, 
+        componentMarks.length + (existingMarks.length > 0 ? Math.max(...existingMarks.map(m => {
+            const num = parseInt(m.seriesLabel.substring(1));
+            return isNaN(num) ? 0 : num;
+        })) : 0));
+    
+    // Update the marks list to show grouped
+    renderMarksList();
+    
+    showNotification(`Added ${subData.title} with ${componentMarks.length} components`, 'success');
+}
+
+function calculateGridPosition(index, total) {
+    // Simple grid positioning
+    const cols = Math.ceil(Math.sqrt(total));
+    const row = Math.floor((index - 1) / cols);
+    const col = (index - 1) % cols;
+    
+    const spacing = 100; // pixels spacing
+    return {
+        xOffset: (col - Math.floor(cols / 2)) * spacing,
+        yOffset: (row - Math.floor(total / cols / 2)) * spacing
+    };
+}
+
+function calculateGridPosition(index, total) {
+    // Simple grid positioning
+    const cols = Math.ceil(Math.sqrt(total));
+    const row = Math.floor((index - 1) / cols);
+    const col = (index - 1) % cols;
+    
+    const spacing = 100; // pixels spacing
+    return {
+        xOffset: (col - Math.floor(cols / 2)) * spacing,
+        yOffset: (row - Math.floor(total / cols / 2)) * spacing
+    };
+}
+
+function createMultiComponentMark(options) {
+    const {
+        x, y, size, shape, productKey, subProductKey, component,
+        componentIndex, label, groupId, totalComponents
+    } = options;
+    
+    const id = 'mark-' + (++markCounter);
+    
+    const subData = productData[productKey].subProducts[subProductKey];
+    
+    const el = document.createElement('div');
+    el.className = 'mark ' + shape;
+    el.dataset.id = id;
+    el.dataset.groupId = groupId;
+    el.dataset.size = size;
+    el.dataset.shape = shape;
+    
+    const badge = document.createElement('div');
+    badge.className = 'label-badge';
+    badge.textContent = label;
+    badge.style.backgroundColor = '#FF9800';
+    el.appendChild(badge);
+    
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    
+    const tooltipContent = document.createElement('div');
+    tooltipContent.className = 'tooltip-content';
+    
+    const tooltipTitle = document.createElement('div');
+    tooltipTitle.className = 'tooltip-title';
+    tooltipTitle.textContent = `${subData.title} - ${component.title}`;
+    tooltipTitle.style.color = '#FF9800';
+    
+    const tooltipModel = document.createElement('div');
+    tooltipModel.className = 'tooltip-model';
+    tooltipModel.textContent = `Component ${componentIndex} of ${component.quantity}`;
+    
+    tooltipContent.appendChild(tooltipTitle);
+    tooltipContent.appendChild(tooltipModel);
+    tooltip.appendChild(tooltipContent);
+    el.appendChild(tooltip);
+    
+    imgInner.appendChild(el);
+    
+    const markData = {
+        id,
+        x,
+        y,
+        size,
+        shape,
+        el,
+        seriesCode: 'T',
+        seriesLabel: label,
+        tooltip,
+        categoryName: subData.title,
+        modelName: component.title,
+        desc: `${subData.title} - ${component.title} (${componentIndex}/${component.quantity})`,
+        features: [],
+        imageSrc: subData.img,
+        isMultiComponent: true,
+        groupId: groupId,
+        componentType: component.title,
+        componentIndex: componentIndex,
+        totalComponents: totalComponents
+    };
+    
+    marks.push(markData);
+    
+    // Add dragging functionality
+    setupMarkDragging(el, markData);
+    
+    updateMarkPosition(markData);
+    orientTooltip(markData);
+    
+    return markData;
+}
+
 function updateMarkSelection() {
     marks.forEach(m => {
         m.el.classList.toggle('selected', m.id === selectedMarkId);
@@ -3450,37 +4428,197 @@ function renderMarksList() {
         return;
     }
 
+    // Group multi-component marks
+    const groupedMarks = {};
+    const regularMarks = [];
+    
     marks.forEach(m => {
-        const item = document.createElement('div');
-        item.className = 'mark-item';
-        item.classList.toggle('active', m.id === selectedMarkId);
+        if (m.groupId && multiComponentGroups[m.groupId]) {
+            if (!groupedMarks[m.groupId]) {
+                groupedMarks[m.groupId] = {
+                    group: multiComponentGroups[m.groupId],
+                    marks: [m]
+                };
+            } else {
+                groupedMarks[m.groupId].marks.push(m);
+            }
+        } else {
+            regularMarks.push(m);
+        }
+    });
 
-        const label = document.createElement('span');
-        label.textContent = m.seriesLabel;
-        item.appendChild(label);
-
+    // Render grouped marks
+    Object.values(groupedMarks).forEach(group => {
+        const groupItem = document.createElement('div');
+        groupItem.className = 'mark-item group-item';
+        groupItem.style.background = 'linear-gradient(135deg, #FFF3E0, #FFECB3)';
+        groupItem.style.borderLeft = '4px solid #FF9800';
+        
+        const groupHeader = document.createElement('div');
+        groupHeader.style.display = 'flex';
+        groupHeader.style.justifyContent = 'space-between';
+        groupHeader.style.alignItems = 'center';
+        groupHeader.style.width = '100%';
+        
+        const groupInfo = document.createElement('div');
+        groupInfo.style.flex = '1';
+        
+        const groupTitle = document.createElement('div');
+        groupTitle.style.fontWeight = '600';
+        groupTitle.style.fontSize = '12px';
+        groupTitle.style.color = '#333';
+        groupTitle.textContent = group.group.mainLabel;
+        
+        const groupSubtitle = document.createElement('div');
+        groupSubtitle.style.fontSize = '10px';
+        groupSubtitle.style.color = '#666';
+        groupSubtitle.textContent = `${group.marks.length} components`;
+        
+        groupInfo.appendChild(groupTitle);
+        groupInfo.appendChild(groupSubtitle);
+        
+        const groupActions = document.createElement('div');
+        groupActions.style.display = 'flex';
+        groupActions.style.gap = '4px';
+        
+        const expandBtn = document.createElement('button');
+        expandBtn.className = 'btn';
+        expandBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">expand_more</span>';
+        expandBtn.style.padding = '2px 4px';
+        expandBtn.style.minHeight = 'auto';
+        expandBtn.style.fontSize = '10px';
+        
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'btn';
-        deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
-        deleteBtn.style.marginLeft = '8px';
-        deleteBtn.style.padding = '4px 6px';
+        deleteBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">close</span>';
+        deleteBtn.style.padding = '2px 4px';
         deleteBtn.style.minHeight = 'auto';
-        deleteBtn.style.fontSize = '12px';
-        deleteBtn.addEventListener('click', (e) => {
+        deleteBtn.style.fontSize = '10px';
+        
+        expandBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            removeMark(m.id);
-        });
-        item.appendChild(deleteBtn);
-
-        item.addEventListener('click', (e) => {
-            if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
-                selectedMarkId = m.id;
-                updateMarkSelection();
-                openProductModal(m);
+            const componentList = groupItem.querySelector('.component-list');
+            if (componentList) {
+                const isHidden = componentList.style.display === 'none';
+                componentList.style.display = isHidden ? 'block' : 'none';
+                expandBtn.querySelector('.material-icons').textContent = 
+                    isHidden ? 'expand_less' : 'expand_more';
             }
         });
-        marksListEl.appendChild(item);
+        
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm(`Delete entire ${group.group.mainLabel}? This will remove all ${group.marks.length} components.`)) {
+                group.marks.forEach(mark => {
+                    removeMark(mark.id);
+                });
+                delete multiComponentGroups[group.group.id];
+            }
+        });
+        
+        groupActions.appendChild(expandBtn);
+        groupActions.appendChild(deleteBtn);
+        groupHeader.appendChild(groupInfo);
+        groupHeader.appendChild(groupActions);
+        
+        groupItem.appendChild(groupHeader);
+        
+        // Component list (hidden by default)
+        const componentList = document.createElement('div');
+        componentList.className = 'component-list';
+        componentList.style.display = 'none';
+        componentList.style.marginTop = '8px';
+        componentList.style.paddingLeft = '10px';
+        componentList.style.borderLeft = '2px dashed #FFB74D';
+        
+        group.marks.forEach(m => {
+            const compItem = document.createElement('div');
+            compItem.className = 'mark-item';
+            compItem.style.marginBottom = '2px';
+            compItem.style.padding = '4px 6px';
+            compItem.style.fontSize = '10px';
+            compItem.classList.toggle('active', m.id === selectedMarkId);
+            
+            const label = document.createElement('span');
+            label.textContent = `${m.seriesLabel} - ${m.componentType}`;
+            compItem.appendChild(label);
+            
+            const compDeleteBtn = document.createElement('button');
+            compDeleteBtn.className = 'btn';
+            compDeleteBtn.innerHTML = '<span class="material-icons" style="font-size:12px;">close</span>';
+            compDeleteBtn.style.marginLeft = '8px';
+            compDeleteBtn.style.padding = '1px 2px';
+            compDeleteBtn.style.minHeight = 'auto';
+            compDeleteBtn.style.fontSize = '9px';
+            compDeleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeMark(m.id);
+                // Remove from group
+                const index = group.marks.indexOf(m);
+                if (index > -1) {
+                    group.marks.splice(index, 1);
+                }
+                // Update group if empty
+                if (group.marks.length === 0) {
+                    delete multiComponentGroups[group.group.id];
+                    groupItem.remove();
+                }
+            });
+            
+            compItem.appendChild(compDeleteBtn);
+            
+            compItem.addEventListener('click', (e) => {
+                if (e.target !== compDeleteBtn && !compDeleteBtn.contains(e.target)) {
+                    selectedMarkId = m.id;
+                    updateMarkSelection();
+                    openProductModal(m);
+                }
+            });
+            
+            componentList.appendChild(compItem);
+        });
+        
+        groupItem.appendChild(componentList);
+        marksListEl.appendChild(groupItem);
     });
+
+    // Render regular marks
+// In the regular marks section (around line 1900-1950)
+// In the regularMarks.forEach loop:
+regularMarks.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'mark-item';
+    item.classList.toggle('active', m.id === selectedMarkId);
+
+    const label = document.createElement('span');
+    label.textContent = m.seriesLabel + (m.isTextLabel ? ` - ${m.text}` : '');
+    item.appendChild(label);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn';
+    deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
+    deleteBtn.style.marginLeft = '8px';
+    deleteBtn.style.padding = '4px 6px';
+    deleteBtn.style.minHeight = 'auto';
+    deleteBtn.style.fontSize = '12px';
+    deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeMark(m.id);
+    });
+    item.appendChild(deleteBtn);
+
+    item.addEventListener('click', (e) => {
+        if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
+            selectedMarkId = m.id;
+            updateMarkSelection();
+            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
+            if (!m.isTextLabel) {
+                openProductModal(m);
+            }
+        }
+    });
+    marksListEl.appendChild(item);
+});
 }
 
 /* ------------------------- ZOOMING ------------------------- */
@@ -4125,7 +5263,25 @@ function generateProductTable() {
     const dbBoxesTable = [];
     const networkDBBoxesTable = [];
 
+    // First, group multi-component marks
+    const groupedMultiComponent = {};
+    
+    // Group marks by their groupId
     marks.forEach(mark => {
+        if (mark.groupId && multiComponentGroups[mark.groupId]) {
+            if (!groupedMultiComponent[mark.groupId]) {
+                groupedMultiComponent[mark.groupId] = {
+                    group: multiComponentGroups[mark.groupId],
+                    marks: [mark],
+                    label: mark.seriesLabel // Use first label as main label
+                };
+            } else {
+                groupedMultiComponent[mark.groupId].marks.push(mark);
+            }
+            return; // Skip individual processing for grouped marks
+        }
+
+        // Rest of the code remains the same...
         const key = mark.seriesLabel;
         const category = mark.categoryName || 'Unknown';
         let model = mark.modelName || 'Unknown';
@@ -4141,7 +5297,7 @@ function generateProductTable() {
                 category: category,
                 brand: mark.brand || 'Not specified',
                 size: mark.sizeFt || 'Not specified',
-                model: `${mark.brand || ''} - ${mark.sizeFt || ''} ft`.trim(), // Ensure proper format
+                model: `${mark.brand || ''} - ${mark.sizeFt || ''} ft`.trim(),
                 quantity: 1,
                 selectedRelays: mark.selectedRelays || []
             });
@@ -4154,25 +5310,7 @@ function generateProductTable() {
                 category: category,
                 brand: mark.brand || 'Not specified',
                 size: mark.sizeFt || 'Not specified',
-                model: `${mark.brand || ''} - ${mark.sizeFt || ''} ft`.trim(), // Ensure proper format
-                quantity: 1,
-                routerBrand: mark.routerBrand || '',
-                routerModel: mark.routerModel || '',
-                routerQty: mark.routerQty || 1,
-                apBrand: mark.apBrand || '',
-                apModel: mark.apModel || '',
-                apQty: mark.apQty || 1
-            });
-            return;
-        }
-
-        if (mark.isNetworkDBBox) {
-            networkDBBoxesTable.push({
-                label: key,
-                category: category,
-                brand: mark.brand || 'Not specified',
-                size: mark.sizeFt || 'Not specified',
-                model: model,
+                model: `${mark.brand || ''} - ${mark.sizeFt || ''} ft`.trim(),
                 quantity: 1,
                 routerBrand: mark.routerBrand || '',
                 routerModel: mark.routerModel || '',
@@ -4215,8 +5353,36 @@ function generateProductTable() {
         }
     });
 
+    // Add grouped multi-component products as single entries in PDF
+    Object.values(groupedMultiComponent).forEach(group => {
+        const key = group.group.mainLabel || group.group.subProductKey;
+        const firstMark = group.marks[0];
+        const category = 'TREMBLAY SOUNDS';
+        
+        // Use the main product name (e.g., "7.1 Surround System") instead of component names
+        const productKey = group.group.productKey;
+        const subProductKey = group.group.subProductKey;
+        const mainProductName = productData[productKey]?.subProducts[subProductKey]?.title || key;
+        
+        if (!productMap.has(key)) {
+            productMap.set(key, {
+                label: group.label, // Use the label (e.g., T1)
+                category: category,
+                brand: 'Tremblay',
+                model: mainProductName, // Show main product name in PDF
+                quantity: 1,
+                isMultiComponent: true
+            });
+        }
+    });
+
     const mainProducts = Array.from(productMap.values())
-        .sort((a, b) => a.label.localeCompare(b.label));
+        .sort((a, b) => {
+            // Sort by label number
+            const numA = parseInt(a.label.substring(1)) || 0;
+            const numB = parseInt(b.label.substring(1)) || 0;
+            return numA - numB;
+        });
 
     return {
         mainProducts: mainProducts,
@@ -4253,13 +5419,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function saveProject() {
     try {
-        const btn = document.getElementById('saveProjectBtn');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">hourglass_empty</span> Saving...';
-        btn.disabled = true;
-
         const projectData = {
-            version: '2.1',
+            version: '2.3',
             timestamp: new Date().toISOString(),
             floorPlanImage: previewImage.src,
             marks: marks.map(mark => ({
@@ -4269,18 +5430,24 @@ function saveProject() {
                 size: mark.size,
                 shape: mark.shape,
                 seriesCode: mark.seriesCode,
-                seriesLabel: mark.seriesLabel,
+                seriesLabel: mark.seriesLabel,  // ✅ This is the key for wire connections
                 categoryName: mark.categoryName,
                 modelName: mark.modelName,
+                groupId: mark.groupId,
+                componentType: mark.componentType,
+                componentIndex: mark.componentIndex,
                 desc: mark.desc,
                 features: mark.features,
                 imageSrc: mark.imageSrc,
                 relayItems: mark.relayItems,
                 isDBBox: mark.isDBBox,
                 isNetworkDBBox: mark.isNetworkDBBox,
+                isTextLabel: mark.isTextLabel,
+                isMultiComponent: mark.isMultiComponent,
+                text: mark.text,
+                fontSize: mark.fontSize,
                 brand: mark.brand,
                 sizeFt: mark.sizeFt,
-                selectedModules: mark.selectedModules,
                 selectedRelays: mark.selectedRelays,
                 routerBrand: mark.routerBrand,
                 routerModel: mark.routerModel,
@@ -4288,21 +5455,24 @@ function saveProject() {
                 apBrand: mark.apBrand,
                 apModel: mark.apModel,
                 apQty: mark.apQty || 1,
-                selectedModels: mark.selectedModels,
-                productKey: currentProduct,
-                subProductKey: currentSubProduct
+                // ✅ REMOVE these redundant fields as they're not needed
+                // productKey: currentProduct,  // Remove
+                // subProductKey: currentSubProduct,  // Remove
+                originalId: mark.id  // ✅ Add this to track original ID
             })),
+            multiComponentGroups: multiComponentGroups,
             wires: wires.map(wire => ({
                 id: wire.id,
+                // ✅ Save BOTH ID and Label for double safety
                 startMarkId: wire.startMark.id,
                 endMarkId: wire.endMark.id,
-                startMarkLabel: wire.startMark.seriesLabel,
-                endMarkLabel: wire.endMark.seriesLabel,
+                startMarkLabel: wire.startMark.seriesLabel,  // ✅ This is what we'll use to reconnect
+                endMarkLabel: wire.endMark.seriesLabel,      // ✅ Labels don't change on reload
                 wireType: wire.wireType,
                 mode: wire.mode,
                 curveValue: wire.curveValue,
                 points: wire.points,
-                color: wire.color
+                color: wire.color || getWireTypeInfo(wire.wireType).color
             })),
             relayState: relayState,
             lastRelaySelectionLabel: lastRelaySelectionLabel,
@@ -4344,18 +5514,9 @@ function saveProject() {
 
         showNotification('Project saved successfully!', 'success');
 
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }, 1000);
-
     } catch (error) {
         console.error('Save error:', error);
         showNotification('Error saving project: ' + error.message, 'error');
-
-        const btn = document.getElementById('saveProjectBtn');
-        btn.innerHTML = '<span class="material-icons" style="font-size: 16px; margin-right: 8px;">save</span> SAVE PROJECT';
-        btn.disabled = false;
     }
 }
 
@@ -4386,6 +5547,7 @@ function loadProject(projectData) {
         return;
     }
 
+
     clearAllMarksAndWires();
 
     markCounter = 0;
@@ -4400,12 +5562,11 @@ function loadProject(projectData) {
         loadProjectData(projectData);
     }
 }
-
 function loadProjectData(projectData) {
     if (projectData.imageScale) {
         setScale(projectData.imageScale);
     }
-
+    
     if (projectData.dbBoxSpecs) {
         Object.keys(projectData.dbBoxSpecs).forEach(key => {
             if (productData[key]) {
@@ -4421,27 +5582,28 @@ function loadProjectData(projectData) {
             }
         });
     }
-
-    const markMap = new Map();
-
+    
+    if (projectData.multiComponentGroups) {
+        multiComponentGroups = projectData.multiComponentGroups;
+    }
+    
+    // ✅ Create TWO maps: one by ID and one by Label
+    const markIdMap = new Map();    // Maps original ID -> new mark
+    const markLabelMap = new Map(); // Maps seriesLabel -> new mark
+    
+    // First, load all marks
     projectData.marks.forEach(savedMark => {
-        let productDataForMark;
-        if (savedMark.productKey && productData[savedMark.productKey]) {
-            if (savedMark.subProductKey && productData[savedMark.productKey].subProducts) {
-                productDataForMark = productData[savedMark.productKey].subProducts[savedMark.subProductKey];
-            } else {
-                productDataForMark = productData[savedMark.productKey];
-            }
-        }
-
+        // Generate a NEW ID for the mark (don't use saved ID)
+        const newId = 'mark-' + (++markCounter);
+        
         const mark = {
-            id: savedMark.id || 'mark-' + (++markCounter),
+            id: newId,  // ✅ Use NEW ID
             x: savedMark.x,
             y: savedMark.y,
             size: savedMark.size,
             shape: savedMark.shape || 'circle',
             seriesCode: savedMark.seriesCode,
-            seriesLabel: savedMark.seriesLabel,
+            seriesLabel: savedMark.seriesLabel, // ✅ Keep the SAME series label
             categoryName: savedMark.categoryName,
             modelName: savedMark.modelName,
             desc: savedMark.desc,
@@ -4450,6 +5612,8 @@ function loadProjectData(projectData) {
             relayItems: savedMark.relayItems || [],
             isDBBox: savedMark.isDBBox || false,
             isNetworkDBBox: savedMark.isNetworkDBBox || false,
+            isTextLabel: savedMark.isTextLabel || false,
+            isMultiComponent: savedMark.isMultiComponent || false,
             brand: savedMark.brand || '',
             sizeFt: savedMark.sizeFt || '',
             selectedRelays: savedMark.selectedRelays || [],
@@ -4458,136 +5622,101 @@ function loadProjectData(projectData) {
             routerQty: savedMark.routerQty || 1,
             apBrand: savedMark.apBrand || '',
             apModel: savedMark.apModel || '',
-            apQty: savedMark.apQty || 1
+            apQty: savedMark.apQty || 1,
+            text: savedMark.text || '',
+            fontSize: savedMark.fontSize || 12,
+            isTremblay: savedMark.categoryName === 'TREMBLAY SOUNDS',
+            groupId: savedMark.groupId || null,
+            componentType: savedMark.componentType || '',
+            componentIndex: savedMark.componentIndex || 0
         };
 
+        // Update series counter
         if (!seriesCounters[mark.seriesCode]) {
             seriesCounters[mark.seriesCode] = 0;
         }
         const num = parseInt(mark.seriesLabel.substring(mark.seriesCode.length)) || 0;
         seriesCounters[mark.seriesCode] = Math.max(seriesCounters[mark.seriesCode], num);
 
+        // Create the element
         const el = document.createElement('div');
         el.className = 'mark ' + mark.shape;
         el.dataset.id = mark.id;
         el.dataset.size = mark.size;
         el.dataset.shape = mark.shape;
-
+        
+        if (mark.isTextLabel) {
+            el.dataset.isTextLabel = 'true';
+            el.style.backgroundColor = '#FFFFFF';
+            el.style.borderColor = '#667eea';
+            el.style.borderWidth = '2px';
+            el.style.borderStyle = 'solid';
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'center';
+            el.style.padding = '4px 8px';
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'label-text';
+            textSpan.textContent = mark.text || mark.modelName || '';
+            textSpan.style.color = '#000000';
+            textSpan.style.fontSize = mark.fontSize + 'px' || '12px';
+            textSpan.style.fontWeight = '600';
+            textSpan.style.textAlign = 'center';
+            textSpan.style.lineHeight = '1.2';
+            textSpan.style.whiteSpace = 'nowrap';
+            textSpan.style.overflow = 'hidden';
+            textSpan.style.textOverflow = 'ellipsis';
+            textSpan.style.maxWidth = '100px';
+            el.appendChild(textSpan);
+            
+            mark.labelElement = textSpan;
+        }
+        
         const badge = document.createElement('div');
         badge.className = 'label-badge';
         badge.textContent = mark.seriesLabel;
+        
+        if (mark.isTextLabel) {
+            badge.style.backgroundColor = '#667eea';
+            badge.style.color = '#FFFFFF';
+        } else if (mark.isTremblay) {
+            badge.style.backgroundColor = '#FF9800';
+        }
+        
         el.appendChild(badge);
-
+        
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
-
+        
         const tooltipContent = document.createElement('div');
         tooltipContent.className = 'tooltip-content';
-
+        
         const tooltipTitle = document.createElement('div');
         tooltipTitle.className = 'tooltip-title';
         tooltipTitle.textContent = mark.categoryName || 'Product';
-
+        if (mark.isTextLabel) {
+            tooltipTitle.style.color = '#667eea';
+        } else if (mark.isTremblay) {
+            tooltipTitle.style.color = '#FF9800';
+        }
+        
         const tooltipModel = document.createElement('div');
         tooltipModel.className = 'tooltip-model';
         tooltipModel.textContent = mark.modelName || '—';
-
+        
         tooltipContent.appendChild(tooltipTitle);
         tooltipContent.appendChild(tooltipModel);
         tooltip.appendChild(tooltipContent);
         el.appendChild(tooltip);
-
+        
         imgInner.appendChild(el);
-
-        let dragging = false;
-        let startX = 0, startY = 0;
-        let startMarkX = 0, startMarkY = 0;
-        let dragStarted = false;
-
-        function onPointerDown(ev) {
-            ev.stopPropagation();
-            ev.preventDefault();
-            el.setPointerCapture(ev.pointerId);
-            dragging = true;
-            dragStarted = false;
-            startX = ev.clientX;
-            startY = ev.clientY;
-            startMarkX = mark.x;
-            startMarkY = mark.y;
-            selectedMarkId = mark.id;
-            updateMarkSelection();
-            el.classList.add('selected');
-        }
-
-
-        function onPointerMove(ev) {
-            if (!dragging) return;
-
-            const dx = ev.clientX - startX;
-            const dy = ev.clientY - startY;
-
-            if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
-                dragStarted = true;
-            }
-
-            if (!dragStarted) return;
-
-            ev.preventDefault();
-            ev.stopPropagation();
-
-            const transform = getImageTransform();
-            if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
-
-            const imgRect = previewImage.getBoundingClientRect();
-            const scaleX = imageNaturalWidth / imgRect.width;
-            const scaleY = imageNaturalHeight / imgRect.height;
-
-            const imageDx = dx * scaleX;
-            const imageDy = dy * scaleY;
-
-            let newX = startMarkX + imageDx;
-            let newY = startMarkY + imageDy;
-
-            newX = Math.max(0, Math.min(imageNaturalWidth - mark.size, newX));
-            newY = Math.max(0, Math.min(imageNaturalHeight - mark.size, newY));
-
-            mark.x = newX;
-            mark.y = newY;
-
-            updateMarkPosition(mark);
-
-            // 🟢 FIX: Update ONLY wires connected to this mark
-            updateWiresConnectedToMark(mark);
-        }
-
-
-        function onPointerUp(ev) {
-            if (dragging) {
-                dragging = false;
-                dragStarted = false;
-                try {
-                    el.releasePointerCapture(ev.pointerId);
-                } catch (e) { }
-                el.classList.remove('selected');
-
-                if (!dragStarted && !isWireMode) {
-                    selectedMarkId = mark.id;
-                    updateMarkSelection();
-                    openProductModal(mark);
-                }
-            }
-        }
-
-        el.addEventListener('pointerdown', onPointerDown);
-        el.addEventListener('mouseenter', () => orientTooltip(mark));
-        document.addEventListener('pointermove', onPointerMove);
-        document.addEventListener('pointerup', onPointerUp);
-
+        
+        // Setup event listeners
         el.addEventListener('click', function (e) {
             e.stopPropagation();
 
             if (isWireMode && currentWireType && !e.defaultPrevented) {
-                // Handle wire selection
                 if (!wireStartMark) {
                     wireStartMark = mark;
                     showNotification(`First mark selected: ${mark.seriesLabel}. Now select second mark.`, 'info');
@@ -4609,80 +5738,112 @@ function loadProjectData(projectData) {
                 updatePointsList();
                 e.preventDefault();
             } else if (!isWireMode && !e.defaultPrevented) {
-                // Only open modal if not in wire mode and not dragging
-                if (!dragStarted) {
-                    selectedMarkId = mark.id;
-                    updateMarkSelection();
+                selectedMarkId = mark.id;
+                updateMarkSelection();
+                // Don't open modal for text labels
+                if (!mark.isTextLabel) {
                     openProductModal(mark);
                 }
             }
         });
-
+        
+        setupMarkDragging(el, mark);
+        
         mark.el = el;
         mark.tooltip = tooltip;
         marks.push(mark);
-        markMap.set(mark.id, mark);
-        markMap.set(mark.seriesLabel, mark);
+        
+        // ✅ Store in BOTH maps
+        markIdMap.set(savedMark.id, mark);          // Original ID -> new mark
+        markLabelMap.set(mark.seriesLabel, mark);   // Label -> new mark
     });
 
+    // Update all marks positions
     updateAllMarks();
     renderMarksList();
 
-    projectData.wires.forEach(savedWire => {
-        const startMark = markMap.get(savedWire.startMarkId) || markMap.get(savedWire.startMarkLabel);
-        const endMark = markMap.get(savedWire.endMarkId) || markMap.get(savedWire.endMarkLabel);
+    // Now, load all wires - Use LABELS to find marks, not IDs
+    if (projectData.wires && Array.isArray(projectData.wires)) {
+        console.log('Loading wires:', projectData.wires.length);
+        
+        projectData.wires.forEach(savedWire => {
+            // ✅ FIRST try to find marks by LABEL (most reliable)
+            let startMark = markLabelMap.get(savedWire.startMarkLabel);
+            let endMark = markLabelMap.get(savedWire.endMarkLabel);
+            
+            // If not found by label, try by ID (fallback)
+            if (!startMark) {
+                startMark = markIdMap.get(savedWire.startMarkId);
+                console.warn('Found start mark by ID instead of label:', savedWire.startMarkLabel);
+            }
+            
+            if (!endMark) {
+                endMark = markIdMap.get(savedWire.endMarkId);
+                console.warn('Found end mark by ID instead of label:', savedWire.endMarkLabel);
+            }
+            
+            if (!startMark || !endMark) {
+                console.warn('Could not find marks for wire:', {
+                    startLabel: savedWire.startMarkLabel,
+                    endLabel: savedWire.endMarkLabel,
+                    startId: savedWire.startMarkId,
+                    endId: savedWire.endMarkId
+                });
+                return;
+            }
+            
+            console.log('Creating wire between:', startMark.seriesLabel, 'and', endMark.seriesLabel);
+            
+            // Set current wire type for wire creation
+            const originalWireType = currentWireType;
+            currentWireType = savedWire.wireType || 'knx';
+            
+            let wireElement;
+            if (savedWire.mode === 'curve') {
+                wireElement = createWireElement(startMark, endMark, savedWire.curveValue || 0, false);
+            } else {
+                wireElement = createWireElementWithPoints(startMark, endMark, savedWire.points || [], false);
+            }
+            
+            // Restore original wire type
+            currentWireType = originalWireType;
+            
+            if (!wireElement) {
+                console.error('Failed to create wire element');
+                return;
+            }
+            
+            const wire = {
+                id: savedWire.id || `wire-${Date.now()}`,
+                startMark: startMark,
+                endMark: endMark,
+                element: wireElement,
+                mode: savedWire.mode || 'curve',
+                curveValue: savedWire.curveValue || 0,
+                points: savedWire.points || [],
+                wireType: savedWire.wireType || 'knx',
+                color: savedWire.color || getWireTypeInfo(savedWire.wireType || 'knx').color
+            };
+            
+            wires.push(wire);
+            
+            // Reattach event listeners
+            if (wireElement.path) {
+                wireElement.path.style.cursor = "pointer";
+                wireElement.path.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    selectWire(startMark, endMark, wire.wireType);
+                });
+                
+                // Reattach drag functionality
+                makeWireDraggable(wireElement.path, startMark, endMark);
+            }
+        });
+        
+        console.log('Wires loaded:', wires.length);
+    }
 
-        if (!startMark || !endMark) {
-            console.warn('Could not find marks for wire:', savedWire.startMarkLabel, savedWire.endMarkLabel);
-            return;
-        }
-
-        // Restore wire type
-        const originalWireType = savedWire.wireType || 'knx';
-
-        // Temporarily set currentWireType to create the wire with correct color
-        const tempWireType = currentWireType;
-        currentWireType = originalWireType;
-
-        let wireElement;
-        if (savedWire.mode === 'curve') {
-            wireElement = createWireElement(startMark, endMark, savedWire.curveValue, false);
-        } else {
-            wireElement = createWireElementWithPoints(startMark, endMark, savedWire.points, false);
-        }
-
-        // Restore original wire type
-        currentWireType = tempWireType;
-
-        if (!wireElement) return;
-
-        const wire = {
-            id: savedWire.id || `wire-${Date.now()}`,
-            startMark: startMark,
-            endMark: endMark,
-            element: wireElement,
-            mode: savedWire.mode,
-            curveValue: savedWire.curveValue,
-            points: savedWire.points || [],
-            wireType: originalWireType,
-            color: savedWire.color || getWireTypeInfo(originalWireType).color
-        };
-
-        wires.push(wire);
-
-        // IMPORTANT: Reattach event listeners to the wire
-        if (wireElement.path) {
-            wireElement.path.style.cursor = "pointer";
-            wireElement.path.addEventListener('click', function (e) {
-                e.stopPropagation();
-                selectWire(startMark, endMark, originalWireType);
-            });
-
-            // Reattach drag functionality
-            makeWireDraggable(wireElement.path, startMark, endMark);
-        }
-    });
-
+    // Restore other states
     if (projectData.relayState) {
         Object.assign(relayState, projectData.relayState);
         lastRelaySelectionLabel = projectData.lastRelaySelectionLabel || '';
@@ -4692,34 +5853,120 @@ function loadProjectData(projectData) {
     if (projectData.currentWireType) {
         currentWireType = projectData.currentWireType;
         isWireMode = projectData.isWireMode || false;
-
+        
         if (isWireMode && currentWireType) {
-            showWireControls();
-            document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"]').forEach(btn => {
-                const wireType = wireTypes.find(wt => wt.id === currentWireType);
-                if (wireType && btn.dataset.name === wireType.name) {
-                    btn.classList.add('active');
-                }
-            });
+            // Force a small delay to ensure DOM is ready
+            setTimeout(() => {
+                showWireControls();
+                updateWireSelectionLabels();
+                updateWiresList();
+            }, 100);
         }
     }
-
+    
+    // Restore product selection
     if (projectData.currentProduct) {
         setTimeout(() => {
             selectProduct(projectData.currentProduct, projectData.currentSubProduct);
             if (projectData.currentProduct === 'Z-WAVE RELAY') {
                 updateRelayOverlay();
             }
-        }, 100);
+        }, 150);
     }
 
+    // Update wires list if needed
     if (currentWireType) {
-        updateWiresList();
+        setTimeout(() => {
+            updateWiresList();
+        }, 200);
     }
-
-    showNotification(`Project loaded: ${projectData.marks.length} marks, ${projectData.wires.length} wires`, 'success');
+    
+    showNotification(`Project loaded: ${projectData.marks.length} marks, ${wires.length} wires`, 'success');
 }
 
+function setupMarkDragging(el, markData) {
+    let dragging = false;
+    let startX = 0, startY = 0;
+    let startMarkX = 0, startMarkY = 0;
+    let dragStarted = false;
+    
+    function onPointerDown(ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+        if (el.setPointerCapture) el.setPointerCapture(ev.pointerId);
+        dragging = true;
+        dragStarted = false;
+        startX = ev.clientX;
+        startY = ev.clientY;
+        startMarkX = markData.x;
+        startMarkY = markData.y;
+        selectedMarkId = markData.id;
+        updateMarkSelection();
+        el.classList.add('selected');
+    }
+    
+    function onPointerMove(ev) {
+        if (!dragging) return;
+        
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+        
+        if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+            dragStarted = true;
+        }
+        
+        if (!dragStarted) return;
+        
+        ev.preventDefault();
+        ev.stopPropagation();
+        
+        const transform = getImageTransform();
+        if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
+        
+        const imgRect = previewImage.getBoundingClientRect();
+        const scaleX = imageNaturalWidth / imgRect.width;
+        const scaleY = imageNaturalHeight / imgRect.height;
+        
+        const imageDx = dx * scaleX;
+        const imageDy = dy * scaleY;
+        
+        let newX = startMarkX + imageDx;
+        let newY = startMarkY + imageDy;
+        
+        newX = Math.max(0, Math.min(imageNaturalWidth - markData.size, newX));
+        newY = Math.max(0, Math.min(imageNaturalHeight - markData.size, newY));
+        
+        markData.x = newX;
+        markData.y = newY;
+        
+        updateMarkPosition(markData);
+        
+        // Update wires connected to this mark
+        updateWiresConnectedToMark(markData);
+    }
+    
+    function onPointerUp(ev) {
+        if (dragging) {
+            dragging = false;
+            dragStarted = false;
+            try {
+                if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
+            } catch (e) { }
+            el.classList.remove('selected');
+            
+            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
+            if (!dragStarted && !markData.isTextLabel && !isWireMode) {
+                selectedMarkId = markData.id;
+                updateMarkSelection();
+                openProductModal(markData);
+            }
+        }
+    }
+    
+    el.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+}
 function createNewProject() {
     if (confirm('Create new project? All unsaved changes will be lost.')) {
         clearAllMarksAndWires();
@@ -4727,4 +5974,146 @@ function createNewProject() {
         setScale(1);
         showNotification('New project created', 'success');
     }
+}
+
+function disableAllZoom() {
+    // Prevent keyboard zoom (Ctrl +, Ctrl -, Ctrl + mouse wheel)
+    document.addEventListener('keydown', function(e) {
+        // Windows/Linux: Ctrl + +/-/0
+        // Mac: Cmd + +/-/0
+        if ((e.ctrlKey || e.metaKey) && 
+            (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=' || 
+             e.code === 'Equal' || e.code === 'Minus' || e.code === 'NumpadAdd' || 
+             e.code === 'NumpadSubtract' || e.keyCode === 187 || e.keyCode === 189 || 
+             e.keyCode === 48)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+        
+        // Also prevent Ctrl + mouse wheel
+        if ((e.ctrlKey || e.metaKey) && 
+            (e.key === 'ZoomIn' || e.key === 'ZoomOut')) {
+            e.preventDefault();
+            return false;
+        }
+    }, { passive: false });
+
+    // Prevent mouse wheel zoom (Ctrl + mouse wheel)
+    document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }, { passive: false });
+
+    // Prevent touch zoom (pinch zoom)
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, { passive: false });
+
+    // Prevent double-tap zoom on mobile
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        lastTouchEnd = now;
+    }, { passive: false });
+
+    // Prevent browser zoom via viewport meta tag manipulation
+    const metaViewport = document.querySelector('meta[name="viewport"]');
+    if (metaViewport) {
+        // Set maximum-scale and user-scalable to prevent zoom
+        metaViewport.setAttribute('content', 
+            'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+    } else {
+        // Create meta viewport tag if it doesn't exist
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no';
+        document.head.appendChild(meta);
+    }
+
+    // CSS to disable text size adjustment
+    const style = document.createElement('style');
+    style.textContent = `
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            touch-action: manipulation;
+        }
+        
+        body {
+            zoom: reset !important;
+        }
+        
+        * {
+            max-height: 1000000px; /* Workaround for some browsers */
+        }
+        
+        /* Prevent iOS double-tap zoom */
+        a, button, input, label, select, textarea {
+            touch-action: manipulation;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Disable browser's zoom menu (context menu)
+    document.addEventListener('contextmenu', function(e) {
+        // You might want to be more specific here
+        // e.preventDefault();
+    });
+
+    // Listen for zoom events and reset if detected
+    let lastZoomLevel = window.devicePixelRatio;
+    window.addEventListener('resize', function() {
+        const currentZoom = window.devicePixelRatio;
+        if (Math.abs(currentZoom - lastZoomLevel) > 0.1) {
+            // Zoom detected, try to reset
+            document.body.style.zoom = 1 / currentZoom;
+            lastZoomLevel = currentZoom;
+        }
+    });
+
+    console.log('All zoom functions disabled');
+}
+
+// Call the function to disable zoom
+disableAllZoom();
+
+// Optional: If you want to re-enable zoom (for debugging or specific cases)
+function enableAllZoom() {
+    // Remove event listeners (this is a simplified version)
+    // In a real implementation, you'd need to keep references to the handlers
+    
+    // Reset viewport meta tag
+    const metaViewport = document.querySelector('meta[name="viewport"]');
+    if (metaViewport) {
+        metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+    }
+    
+    // Remove the CSS style
+    const zoomStyles = document.querySelectorAll('style');
+    zoomStyles.forEach(style => {
+        if (style.textContent.includes('text-size-adjust') || 
+            style.textContent.includes('touch-action')) {
+            style.remove();
+        }
+    });
+    
+    console.log('Zoom functions re-enabled');
 }
