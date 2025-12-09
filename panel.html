@@ -746,86 +746,92 @@
             width: 8px;
             height: 8px;
         }
-/* Ensure text labels have same styling */
-.mark[data-is-text-label="true"] {
-    /* Inherit all styles from .mark */
-}
 
-.mark[data-is-text-label="true"] .label-badge {
-    /* Same badge styling */
-    background-color: #667eea !important;
-}
+        /* Ensure text labels have same styling */
+        .mark[data-is-text-label="true"] {
+            /* Inherit all styles from .mark */
+        }
 
-.mark[data-is-text-label="true"] .tooltip-title {
-    color: #667eea !important;
-}
-/* Add this to your CSS */
-.mark {
-    z-index: 10;
-    position: absolute;
-}
+        .mark[data-is-text-label="true"] .label-badge {
+            /* Same badge styling */
+            background-color: #667eea !important;
+        }
 
-.mark:hover {
-    z-index: 100 !important;
-}
+        .mark[data-is-text-label="true"] .tooltip-title {
+            color: #667eea !important;
+        }
 
-.tooltip {
-    z-index: 1000 !important;
-    position: absolute;
-}
+        /* Add this to your CSS */
+        .mark {
+            z-index: 10;
+            position: absolute;
+        }
 
-/* Ensure tooltips are always on top */
-.mark .tooltip {
-    z-index: 1000 !important;
-}
+        .mark:hover {
+            z-index: 100 !important;
+        }
 
-/* Make sure marks have proper stacking context */
-.mark[data-is-text-label="true"] {
-    z-index: 10;
-}
+        .tooltip {
+            z-index: 1000 !important;
+            position: absolute;
+        }
 
-.mark.isTremblay {
-    z-index: 10;
-}
-/* Prevent modal from opening for multi-component marks */
-.mark[data-multi-component="true"] {
-    cursor: default !important;
-    pointer-events: none;
-}
+        /* Ensure tooltips are always on top */
+        .mark .tooltip {
+            z-index: 1000 !important;
+        }
 
-.mark[data-multi-component="true"] .label-badge {
-    pointer-events: auto;
-    cursor: move;
-}
+        /* Make sure marks have proper stacking context */
+        .mark[data-is-text-label="true"] {
+            z-index: 10;
+        }
 
-.mark[data-multi-component="true"] .tooltip {
-    pointer-events: auto;
-}
+        .mark.isTremblay {
+            z-index: 10;
+        }
 
-/* If you want to completely disable dragging for multi-component marks */
-.mark[data-multi-component="true"] {
-    user-select: none;
-    -webkit-user-drag: none;
-}
+        /* Prevent modal from opening for multi-component marks */
+        .mark[data-multi-component="true"] {
+            cursor: default !important;
+            pointer-events: none;
+        }
 
-/* Optional: Add visual indicator that it's not clickable */
-.mark[data-multi-component="true"]:hover {
-    box-shadow: none !important;
-    transform: none !important;
-}
-/* When dragging, bring to front */
-.mark.selected,
-.mark.dragging {
-    z-index: 1001 !important;
-}
+        .mark[data-multi-component="true"] .label-badge {
+            pointer-events: auto;
+            cursor: move;
+        }
 
-.mark.selected .tooltip,
-.mark:hover .tooltip {
-    z-index: 1002 !important;
-}
-#productModal{
-    z-index: 9999999 !important;
-}
+        .mark[data-multi-component="true"] .tooltip {
+            pointer-events: auto;
+        }
+
+        /* If you want to completely disable dragging for multi-component marks */
+        .mark[data-multi-component="true"] {
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Optional: Add visual indicator that it's not clickable */
+        .mark[data-multi-component="true"]:hover {
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        /* When dragging, bring to front */
+        .mark.selected,
+        .mark.dragging {
+            z-index: 1001 !important;
+        }
+
+        .mark.selected .tooltip,
+        .mark:hover .tooltip {
+            z-index: 1002 !important;
+        }
+
+        #productModal {
+            z-index: 9999999 !important;
+        }
+
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
         }

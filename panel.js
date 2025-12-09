@@ -325,7 +325,7 @@ const productData = {
         "7.2 SURROUND SYSTEM": {
             title: "7.1 Surround Sound System",
             desc: "7.1 channel home theater system",
-            img: "./images/tremblay/53.png",
+            img: "./images/tremblay/2.png",
             components: {
                 "SOUNDBAR": {
                     title: "Sound Bar",
@@ -344,7 +344,7 @@ const productData = {
         "5.1.2 DOLBY ATMOS": {
             title: "5.1.2 Dolby Atmos System",
             desc: "5.1.2 channel Dolby Atmos home theater",
-            img: "./images/tremblay/53.png",
+            img: "./images/tremblay/1.png",
             components: {
                 "LCR": {
                     title: "LCR Speaker",
@@ -367,7 +367,7 @@ const productData = {
         "7.1 SURROUND SYSTEM": {
             title: "5.1 Surround Sound System",
             desc: "5.1 channel home theater system",
-            img: "./images/tremblay/53.png",
+            img: "./images/tremblay/1.png",
             components: {
                 "SOUNDBAR": {
                     title: "Sound Bar",

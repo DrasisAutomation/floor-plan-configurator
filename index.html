@@ -496,8 +496,84 @@
         height: fit-content; /* Let the container grow with content */
     }
 }
+.logo-img {
+    height: 48px;
+    width: 48px;
+    background: linear-gradient(135deg, #2a5bd7 0%, #1e4ac4 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
 
+/* Video Modal Styles */
+.video-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+}
 
+.modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+}
+
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    background: rgba(0,0,0,0.5);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-modal:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+    }
+}
     </style>
 </head>
 <body>
@@ -506,15 +582,25 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-home-automation"></i>
-                    </div>
+                    
+                    <img class="logo-img" src="DomoticsLogo.png" alt="">
                     <div class="logo-text">Domotics<span>Designer</span></div>
                 </div>
             </div>
         </div>
     </header>
-
+<!-- Video Modal -->
+<div id="videoModal" class="video-modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="video-container">
+            <video id="demoVideo" controls>
+                <source src="DomoticsDesignerDemoVideo.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+</div>
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
@@ -527,9 +613,9 @@
                         <a href="home.html" class="btn-primary">
                             <i class="fa-solid fa-compass-drafting"></i> Start Designing now
                         </a>
-                        <a href="#" class="btn-secondary">
-                            <i class="fas fa-video"></i> Watch Demo
-                        </a>
+                        <a href="DomoticsDesignerDemoVideo.mp4" class="btn-secondary" target="_blank">
+    <i class="fas fa-video"></i> Watch Demo
+</a>
                     </div>
                 </div>
                 
@@ -855,6 +941,46 @@
         //         this.style.animationPlayState = 'running';
         //     });
         // });
+
+        // Video Modal Functionality
+const videoBtn = document.getElementById('videoDemoBtn');
+const videoModal = document.getElementById('videoModal');
+const closeModal = document.querySelector('.close-modal');
+const demoVideo = document.getElementById('demoVideo');
+
+if (videoBtn) {
+    videoBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        videoModal.style.display = 'flex';
+        demoVideo.play();
+    });
+}
+
+if (closeModal) {
+    closeModal.addEventListener('click', function() {
+        videoModal.style.display = 'none';
+        demoVideo.pause();
+        demoVideo.currentTime = 0;
+    });
+}
+
+// Close modal when clicking outside video
+videoModal.addEventListener('click', function(e) {
+    if (e.target === videoModal) {
+        videoModal.style.display = 'none';
+        demoVideo.pause();
+        demoVideo.currentTime = 0;
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && videoModal.style.display === 'flex') {
+        videoModal.style.display = 'none';
+        demoVideo.pause();
+        demoVideo.currentTime = 0;
+    }
+});
     </script>
 </body>
 </html>

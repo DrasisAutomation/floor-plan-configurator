@@ -13,6 +13,9 @@ body {
     overflow: hidden;
 }
 
+#export-to-configurator{
+    margin-top: 10px;
+}
 /* Stylish device warning screen */
 #device-warning {
     display: none;
