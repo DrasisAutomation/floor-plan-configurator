@@ -26,7 +26,8 @@ const appState = {
     resizeHandle: null,
     nextJointId: 1,
     lastPlacedFurnitureType: null,
-    selectedFurnitureType: null
+    selectedFurnitureType: null,
+    flipDirection: true // Add flip state
 };
 
 // Furniture images configuration
@@ -81,6 +82,7 @@ const furnitureHeight = document.getElementById('furniture-height');
 const furnitureRotation = document.getElementById('furniture-rotation');
 const rotationValue = document.getElementById('rotation-value');
 const rotate90Btn = document.getElementById('rotate-90-btn');
+const flipDoorBtn = document.getElementById('flip-door-btn'); // Add flip button
 
 // Size scale slider
 const furnitureScale = document.getElementById('furniture-scale');
@@ -184,6 +186,9 @@ function initCanvas() {
     // Add rotation button event
     rotate90Btn.addEventListener('click', rotateFurniture90);
     
+    // Add flip button event
+    flipDoorBtn.addEventListener('click', flipFurniture);
+    
     // Add delete button events
     deleteWallBtn.addEventListener('click', deleteSelectedWall);
     deleteFurnitureBtn.addEventListener('click', deleteSelectedFurniture);
@@ -214,6 +219,16 @@ function initCanvas() {
     
     // Start animation loop
     requestAnimationFrame(render);
+}
+
+// Flip furniture horizontally
+function flipFurniture() {
+    if (appState.selectedType === 'furniture' && appState.selectedItem) {
+        const furniture = appState.selectedItem;
+        furniture.flipDirection = !furniture.flipDirection;
+        saveToHistory();
+        operationStatus.textContent = `${furniture.type} ${furniture.flipDirection ? 'vertically flipped' : 'unflipped'}`;
+    }
 }
 
 // Update furniture scale
@@ -704,6 +719,15 @@ function handleKeyDown(e) {
         return false;
     }
     
+    // Handle flip: F key
+    if (e.key === 'f' || e.key === 'F') {
+        if (appState.selectedType === 'furniture' && appState.selectedItem) {
+            e.preventDefault();
+            flipFurniture();
+            return false;
+        }
+    }
+    
     // Handle other keys
     if (e.code === 'Space') {
         spacePressed = true;
@@ -863,7 +887,8 @@ function addFurniture(type, x, y, width, height) {
         width: width,
         height: height,
         rotation: 0,
-        originalSize: { width: width, height: height } // Store original size
+        originalSize: { width: width, height: height },
+        flipDirection: false // Add flip state
     };
     
     appState.furniture.push(furniture);
@@ -1125,6 +1150,14 @@ function updateFurniturePropertiesPanel() {
     } else {
         furnitureScale.value = 100;
         scaleValue.textContent = '100%';
+    }
+    
+    // Show/hide flip button based on furniture type
+    if (furniture.type === 'door' || furniture.type === 'window') {
+        flipDoorBtn.style.display = 'block';
+        flipDoorBtn.textContent = furniture.flipDirection ? 'Unflip Vertical' : 'Flip Vertical';
+    } else {
+        flipDoorBtn.style.display = 'none';
     }
 }
 
@@ -1393,6 +1426,10 @@ function drawFurnitureOnCanvas(ctx, furniture, offsetX, offsetY) {
     ctx.translate(furniture.x - offsetX, furniture.y - offsetY);
     ctx.rotate(furniture.rotation * Math.PI / 180);
     
+    // Apply flip if needed
+if (furniture.flipDirection) {
+    ctx.scale(1, -1);
+}
     const img = loadedImages[furniture.type];
     
     if (img && img.complete) {
@@ -1416,14 +1453,17 @@ function drawFurnitureOnCanvas(ctx, furniture, offsetX, offsetY) {
             offsetYImg = 0;
         }
         
-        // Draw image centered in the square
-        ctx.drawImage(
-            img, 
-            -furniture.width/2 + offsetXImg, 
-            -furniture.height/2 + offsetYImg, 
-            renderWidth, 
-            renderHeight
-        );
+        // Adjust offset for flipped items
+const finalOffsetY = furniture.flipDirection ? -offsetYImg : offsetYImg;
+
+// Draw image centered in the square
+ctx.drawImage(
+    img, 
+    -furniture.width/2 + offsetXImg, 
+    -furniture.height/2 + finalOffsetY, 
+    renderWidth, 
+    renderHeight
+);
     } else {
         // Fallback to colored rectangle
         const colors = {
@@ -1446,7 +1486,7 @@ function drawFurnitureOnCanvas(ctx, furniture, offsetX, offsetY) {
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(furniture.type, 0, 0);
+        ctx.fillText(furniture.type + (furniture.flipDirection ? ' (Flipped)' : ''), 0, 0);
     }
     
     ctx.restore();
@@ -1670,6 +1710,11 @@ function drawFurniture(furniture) {
     ctx.translate(furniture.x, furniture.y);
     ctx.rotate(furniture.rotation * Math.PI / 180);
     
+    // Apply flip if needed
+if (furniture.flipDirection) {
+    ctx.scale(1, -1);
+}
+    
     const img = loadedImages[furniture.type];
     
     if (img && img.complete) {
@@ -1693,14 +1738,17 @@ function drawFurniture(furniture) {
             offsetY = 0;
         }
         
-        // Draw image centered in the square
-        ctx.drawImage(
-            img, 
-            -furniture.width/2 + offsetX, 
-            -furniture.height/2 + offsetY, 
-            renderWidth, 
-            renderHeight
-        );
+        // Adjust offset for flipped items
+const finalOffsetY = furniture.flipDirection ? -offsetY : offsetY;
+
+// Draw image centered in the square
+ctx.drawImage(
+    img, 
+    -furniture.width/2 + offsetX, 
+    -furniture.height/2 + finalOffsetY, 
+    renderWidth, 
+    renderHeight
+);
     } else {
         // Fallback to colored rectangle if image not loaded
         const colors = {
@@ -1725,7 +1773,7 @@ function drawFurniture(furniture) {
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(furniture.type, 0, 0);
+        ctx.fillText(furniture.type + (furniture.flipDirection ? ' (Flipped)' : ''), 0, 0);
     }
     
     ctx.restore();
@@ -1987,6 +2035,10 @@ function drawFurnitureOnExportCanvas(ctx, furniture, offsetX, offsetY) {
     ctx.translate(furniture.x - offsetX, furniture.y - offsetY);
     ctx.rotate(furniture.rotation * Math.PI / 180);
     
+    // Apply flip if needed
+if (furniture.flipDirection) {
+    ctx.scale(1, -1);
+}
     const img = loadedImages[furniture.type];
     
     if (img && img.complete) {
@@ -2010,14 +2062,17 @@ function drawFurnitureOnExportCanvas(ctx, furniture, offsetX, offsetY) {
             offsetYImg = 0;
         }
         
-        // Draw image centered in the square
-        ctx.drawImage(
-            img, 
-            -furniture.width/2 + offsetXImg, 
-            -furniture.height/2 + offsetYImg, 
-            renderWidth, 
-            renderHeight
-        );
+        // Adjust offset for flipped items
+const finalOffsetY = furniture.flipDirection ? -offsetYImg : offsetYImg;
+
+// Draw image centered in the square
+ctx.drawImage(
+    img, 
+    -furniture.width/2 + offsetXImg, 
+    -furniture.height/2 + finalOffsetY, 
+    renderWidth, 
+    renderHeight
+);
     } else {
         // Fallback to colored rectangle
         const colors = {
@@ -2040,7 +2095,7 @@ function drawFurnitureOnExportCanvas(ctx, furniture, offsetX, offsetY) {
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(furniture.type, 0, 0);
+        ctx.fillText(furniture.type + (furniture.flipDirection ? ' (Flipped)' : ''), 0, 0);
     }
     
     ctx.restore();
