@@ -323,8 +323,8 @@ const productData = {
                 }
             },
             "7.2 SURROUND SYSTEM": {
-                title: "7.1 Surround Sound System",
-                desc: "7.1 channel home theater system",
+                title: "7.2 Surround Sound System",
+                desc: "7.2 channel home theater system",
                 img: "./images/tremblay/2.png",
                 components: {
                     "SOUNDBAR": {
@@ -365,8 +365,8 @@ const productData = {
                 }
             },
             "7.1 SURROUND SYSTEM": {
-                title: "5.1 Surround Sound System",
-                desc: "5.1 channel home theater system",
+                title: "7.1 Surround Sound System",
+                desc: "7.1 channel home theater system",
                 img: "./images/tremblay/1.png",
                 components: {
                     "SOUNDBAR": {
@@ -496,7 +496,7 @@ const productData = {
         title: "Emitter",
         desc: "RF/IR emitter devices for remote control automation.",
         isEmitter: true, // Custom flag to identify emitter products
-        img: "./images/emitter/placeholder.png" // You'll need to add this image
+        img: "./images/irblaster/59.png" // You'll need to add this image
     },
     "TEXT": {
         title: "Text Label",
