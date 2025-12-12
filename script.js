@@ -31,6 +31,7 @@ const appState = {
 };
 
 // Furniture images configuration
+// Furniture images configuration
 const furnitureImages = {
     door: 'images/furniture/2.png',
     window: 'images/furniture/1.png',
@@ -38,7 +39,10 @@ const furnitureImages = {
     table: 'images/furniture/4.png',
     bed: 'images/furniture/5.png',
     tv: 'images/furniture/6.png',
-    ac: 'images/furniture/ac.png'  // Add this line
+    ac: 'images/furniture/ac.png',
+    toilet: 'images/furniture/8.png',     // Add this
+    basin: 'images/furniture/9.png',       // Add this
+    bathtub: 'images/furniture/7.png'    // Add this
 };
 
 // Preloaded images
@@ -971,11 +975,13 @@ function getDefaultFurnitureSize(type) {
         table: { width: 100, height: 100 },
         bed: { width: 120, height: 120 },
         tv: { width: 80, height: 80 },
-        ac: { width: 60, height: 60 }  // Add this line
+        ac: { width: 60, height: 60 },
+        toilet: { width: 60, height: 90 },      // Add this
+        basin: { width: 60, height: 60 },       // Add this
+        bathtub: { width: 120, height: 80 }     // Add this
     };
     return sizes[type] || { width: 100, height: 100 };
 }
-
 // Snapping functions
 function snapToPoint(x, y) {
     // Check all wall endpoints for snapping
@@ -1468,15 +1474,19 @@ function drawFurnitureOnCanvas(ctx, furniture, offsetX, offsetY) {
         );
     } else {
         // Fallback to colored rectangle
-        const colors = {
-            door: '#8B4513',
-            window: '#87CEEB',
-            sofa: '#9b59b6',
-            table: '#d35400',
-            bed: '#3498db',
-            tv: '#2c3e50',
-            ac: '#27ae60'  // Add this line (green color for AC)
-        };
+// In both drawFurniture and drawFurnitureOnCanvas functions
+const colors = {
+    door: '#8B4513',
+    window: '#87CEEB',
+    sofa: '#9b59b6',
+    table: '#d35400',
+    bed: '#3498db',
+    tv: '#2c3e50',
+    ac: '#27ae60',
+    toilet: '#A9A9A9',     // Dark gray for toilet
+    basin: '#87CEEB',      // Light blue for basin
+    bathtub: '#4682B4'     // Steel blue for bathtub
+};
 
         ctx.fillStyle = colors[furniture.type] || '#95a5a6';
         ctx.fillRect(-furniture.width / 2, -furniture.height / 2, furniture.width, furniture.height);
