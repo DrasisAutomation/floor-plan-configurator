@@ -1957,15 +1957,15 @@ function selectProduct(productKey, subProductKey = null) {
 
         // Add text-specific feature
         const featureLi = document.createElement('li');
-        featureLi.textContent = 'Custom text annotations';
+        featureLi.textContent = 'Plain text annotations (no background/border)';
         pFeatures.appendChild(featureLi);
 
         const featureLi2 = document.createElement('li');
-        featureLi2.textContent = 'Serial numbering: TX1, TX2, TX3...';
+        featureLi2.textContent = 'Max 15 characters';
         pFeatures.appendChild(featureLi2);
 
         const featureLi3 = document.createElement('li');
-        featureLi3.textContent = 'Same styling as product labels';
+        featureLi3.textContent = 'Drag to move, no modal on click';
         pFeatures.appendChild(featureLi3);
 
         // Clear pMeta
@@ -2031,33 +2031,34 @@ function createTextLabelControls() {
         <div class="mark-controls-box" id="textLabelControls" style="margin-top: 20px; border-color: #667eea;">
             <h3 style="color: #667eea; margin-bottom: 15px;">
                 <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">text_fields</span>
-                Text Label
+                Plain Text Label
             </h3>
             
             <div class="form-group">
-                <label style="color: #667eea; font-weight: 500;">Text Content</label>
+                <label style="color: #667eea; font-weight: 500;">Text Content <span style="color: #999; font-size: 11px;">(Max 15 chars)</span></label>
                 <input type="text" 
                        id="textLabelInput" 
                        class="form-control" 
-                       placeholder="Enter label text (e.g., Living Room, Entrance)"
-                       maxlength="30"
+                       placeholder="Enter text (e.g., Living Room)"
+                       maxlength="15"
                        style="border-color: #667eea; margin-bottom: 10px;">
                 <div style="font-size: 11px; color: #666; margin-top: 4px;">
                     <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
-                    Max 30 characters. Press Enter or click Add Mark
+                    Plain black text with no background or border
                 </div>
             </div>
             
             <div style="margin-top: 15px; padding: 12px; background: #f0f4ff; border-radius: 6px; border: 1px solid #c3dafe;">
                 <div style="font-size: 12px; color: #667eea; margin-bottom: 4px;">
                     <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
-                    How to add text labels:
+                    Plain Text Labels:
                 </div>
                 <div style="font-size: 11px; color: #555;">
-                    1. Enter text in the field above<br>
-                    2. Click "Add Mark" button<br>
-                    3. Click on floor plan where you want the label<br>
-                    4. Labels are numbered TX1, TX2, TX3...
+                    1. Just black text, no background or border<br>
+                    2. Max 15 characters<br>
+                    3. Drag to move - cursor follows smoothly<br>
+                    4. No modal opens when clicked<br>
+                    5. Shows as plain text in marks list
                 </div>
             </div>
         </div>
@@ -2070,6 +2071,16 @@ function createTextLabelControls() {
         // Add Enter key support to text input
         const textInput = document.getElementById('textLabelInput');
         if (textInput) {
+            textInput.addEventListener('input', function () {
+                // Show character count
+                const charCount = this.value.length;
+                if (charCount >= 12) {
+                    this.style.borderColor = '#ff9800';
+                } else {
+                    this.style.borderColor = '#667eea';
+                }
+            });
+
             textInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     const shape = markShapeEl.value;
@@ -2083,6 +2094,7 @@ function createTextLabelControls() {
 
                         addTextLabel(this.value.trim(), shape, sizePixels);
                         this.value = '';
+                        this.focus();
                     }
                 }
             });
@@ -2094,7 +2106,6 @@ function createTextLabelControls() {
         }
     }
 }
-
 // Add this function to create text marks
 function addTextMark(text) {
     const shape = markShapeEl.value;
@@ -2257,85 +2268,86 @@ function addTextLabel(text, shape, sizePixels) {
         return;
     }
 
+    // Limit text to 15 characters
+    const displayText = text.trim().substring(0, 15);
+
     // Center the label on the image
     const centerX = imageNaturalWidth / 2;
     const centerY = imageNaturalHeight / 2;
 
-    // Create the text mark - EXACTLY LIKE OTHER PRODUCTS
+    // Create the text mark WITHOUT series code
     const id = 'mark-' + (++markCounter);
-    const { seriesCode, label } = nextSeriesLabel('TEXT');
 
     const el = document.createElement('div');
-    el.className = 'mark ' + shape;
+    el.className = 'mark text-label';
     el.dataset.id = id;
     el.dataset.size = sizePixels;
     el.dataset.shape = shape;
     el.dataset.isTextLabel = true;
 
-    // ✅ SAME STYLING AS OTHER PRODUCTS
-    // No custom styling - use default CSS classes
+    // Create text span - PLAIN TEXT WITH NO STYLING
+    const textSpan = document.createElement('span');
+    textSpan.className = 'text-label-content';
+    textSpan.textContent = displayText;
+    textSpan.style.cssText = `
+        color: #000000;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+        cursor: move;
+        display: block;
+        line-height: 1;
+    `;
 
-    const badge = document.createElement('div');
-    badge.className = 'label-badge';
-    badge.textContent = label;
-    // ✅ Same badge styling as other products
-    el.appendChild(badge);
+    // NO BACKGROUND, NO BORDER - JUST PLAIN TEXT
+    el.style.cssText = `
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        display: inline-block;
+        cursor: move;
+        padding: 0 !important;
+        margin: 0 !important;
+    `;
 
-    const tooltip = document.createElement('div');
-    tooltip.className = 'tooltip';
-
-    const tooltipContent = document.createElement('div');
-    tooltipContent.className = 'tooltip-content';
-
-    const tooltipTitle = document.createElement('div');
-    tooltipTitle.className = 'tooltip-title';
-    tooltipTitle.textContent = 'Text Label'; // Fixed category name
-
-    const tooltipModel = document.createElement('div');
-    tooltipModel.className = 'tooltip-model';
-    tooltipModel.textContent = text; // The actual text content
-
-    tooltipContent.appendChild(tooltipTitle);
-    tooltipContent.appendChild(tooltipModel);
-    tooltip.appendChild(tooltipContent);
-    el.appendChild(tooltip);
-
+    el.appendChild(textSpan);
     imgInner.appendChild(el);
 
     const markData = {
         id,
-        x: centerX - (sizePixels / 2),
-        y: centerY - (sizePixels / 2),
+        x: centerX,
+        y: centerY,
         size: sizePixels,
         shape,
         el,
-        seriesCode,
-        seriesLabel: label,
-        tooltip,
-        categoryName: 'Text Label', // Fixed category
-        modelName: text, // The text content as model name
-        desc: `Text Label: ${text}`,
+        seriesCode: '',
+        seriesLabel: '', // Empty label for text
+        tooltip: null,
+        categoryName: 'Text Label',
+        modelName: displayText,
+        desc: `Text Label: ${displayText}`,
         features: ['Custom text annotation'],
-        imageSrc: previewImage.src, // Use floor plan image
+        imageSrc: previewImage.src,
         isTextLabel: true,
-        text: text
+        text: displayText
     };
 
     marks.push(markData);
 
-    // ✅ SAME EVENT HANDLING AS OTHER PRODUCTS
+    // Add click event for text labels - NO MODAL
     el.addEventListener('click', function (e) {
         e.stopPropagation();
 
         if (isWireMode && currentWireType && !e.defaultPrevented) {
-            // Wire selection logic (same as other products)
+            // Wire selection logic
             if (!wireStartMark) {
                 wireStartMark = markData;
-                showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
+                showNotification(`First mark selected: "${displayText}". Now select second mark.`, 'info');
             } else if (!wireEndMark && wireStartMark !== markData) {
                 wireEndMark = markData;
                 const wireTypeInfo = getWireTypeInfo(currentWireType);
-                showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
+                showNotification(`Second mark selected: "${displayText}". ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
             } else if (wireStartMark === markData) {
                 wireStartMark = null;
                 wireEndMark = null;
@@ -2350,25 +2362,126 @@ function addTextLabel(text, shape, sizePixels) {
             updatePointsList();
             e.preventDefault();
         } else if (!isWireMode && !e.defaultPrevented) {
-            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
             selectedMarkId = id;
             updateMarkSelection();
-            // Do NOT call openProductModal(markData);
+            // Don't open modal for text labels
         }
     });
 
-    // ✅ SAME DRAGGING FUNCTIONALITY
-    setupMarkDragging(el, markData);
+    // Setup proper dragging for text label
+    setupTextLabelDragging(el, markData);
 
     updateMarkPosition(markData);
     updateMarkSelection();
     renderMarksList();
 
-    showNotification(`Text label "${text}" added as ${label}`, 'success');
+    showNotification(`Text label "${displayText}" added`, 'success');
 
     return markData;
 }
+function setupTextLabelDragging(el, markData) {
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let startMarkX = 0, startMarkY = 0;
+    let isPointerDown = false;
 
+    function onPointerDown(ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        if (el.setPointerCapture) el.setPointerCapture(ev.pointerId);
+        isPointerDown = true;
+        startX = ev.clientX;
+        startY = ev.clientY;
+        startMarkX = markData.x;
+        startMarkY = markData.y;
+        selectedMarkId = markData.id;
+        updateMarkSelection();
+
+        // Add a slight visual feedback for dragging
+        el.style.cursor = 'grabbing';
+        if (markData.textEl) {
+            markData.textEl.style.textShadow = '0 0 2px rgba(0,0,0,0.1)';
+        }
+    }
+
+    function onPointerMove(ev) {
+        if (!isPointerDown) return;
+
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+
+        // Start dragging only after minimal movement to avoid accidental drags
+        if (!isDragging && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+            isDragging = true;
+        }
+
+        if (!isDragging) return;
+
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const transform = getImageTransform();
+        if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
+
+        const imgRect = previewImage.getBoundingClientRect();
+
+        // Calculate scale more accurately
+        const scaleX = imageNaturalWidth / imgRect.width;
+        const scaleY = imageNaturalHeight / imgRect.height;
+
+        const imageDx = dx * scaleX;
+        const imageDy = dy * scaleY;
+
+        let newX = startMarkX + imageDx;
+        let newY = startMarkY + imageDy;
+
+        // Constrain to image bounds
+        newX = Math.max(0, Math.min(imageNaturalWidth - 10, newX));
+        newY = Math.max(0, Math.min(imageNaturalHeight - 10, newY));
+
+        markData.x = newX;
+        markData.y = newY;
+
+        updateMarkPosition(markData);
+    }
+
+    function onPointerUp(ev) {
+        if (isPointerDown) {
+            isPointerDown = false;
+            isDragging = false;
+
+            try {
+                if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
+            } catch (e) { }
+
+            // Reset cursor and visual effects
+            el.style.cursor = 'move';
+            if (markData.textEl) {
+                markData.textEl.style.textShadow = '';
+            }
+
+            // Don't open modal for text labels even on click
+            selectedMarkId = markData.id;
+            updateMarkSelection();
+        }
+    }
+
+    // Store reference to text element for styling during drag
+    markData.textEl = el.querySelector('.text-label-content');
+
+    // Set initial cursor
+    el.style.cursor = 'move';
+
+    el.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+
+    // Prevent text selection while dragging
+    el.addEventListener('selectstart', (e) => {
+        e.preventDefault();
+    });
+}
 function createTextMark(options) {
     const { x, y, size, shape, text, fontSize } = options;
 
@@ -3790,12 +3903,28 @@ function updateMarkPosition(mark) {
 
     const x = mark.x * transform.scaleX + transform.imgOffsetX;
     const y = mark.y * transform.scaleY + transform.imgOffsetY;
-    const size = mark.size * transform.scaleX;
 
-    mark.el.style.left = x + 'px';
-    mark.el.style.top = y + 'px';
-    mark.el.style.width = size + 'px';
-    mark.el.style.height = size + 'px';
+    // For text labels, use the center point
+    if (mark.isTextLabel) {
+        // Get text width for proper centering
+        const textWidth = mark.el.offsetWidth || 50;
+        const textHeight = mark.el.offsetHeight || 20;
+
+        mark.el.style.left = (x - textWidth / 2) + 'px';
+        mark.el.style.top = (y - textHeight / 2) + 'px';
+
+        // Remove width/height constraints for text labels
+        mark.el.style.width = 'auto';
+        mark.el.style.height = 'auto';
+        mark.el.style.transform = 'none';
+    } else {
+        const size = mark.size * transform.scaleX;
+        mark.el.style.left = x + 'px';
+        mark.el.style.top = y + 'px';
+        mark.el.style.width = size + 'px';
+        mark.el.style.height = size + 'px';
+    }
+
     orientTooltip(mark);
 }
 
@@ -4163,16 +4292,20 @@ function createMark({ x, y, size, shape }) {
     function onPointerUp(ev) {
         if (dragging) {
             dragging = false;
-            dragStarted = false;
             try {
                 el.releasePointerCapture(ev.pointerId);
             } catch (e) { }
             el.classList.remove('selected');
 
+            // FIX: Only open modal if NO dragging occurred (just a click)
+            // Remove the check for dragStarted and only check if actual movement happened
             if (!dragStarted && !isWireMode) {
                 selectedMarkId = id;
                 updateMarkSelection();
-                openProductModal(markData);
+                // Don't open modal for text labels or emitters
+                if (!data.isDBBox && !data.isNetworkDBBox && !markData.isTextLabel && !isEmitter) {
+                    openProductModal(markData);
+                }
             }
         }
     }
@@ -4520,12 +4653,12 @@ function createMultiComponentMark(options) {
     function onPointerUp(ev) {
         if (dragging) {
             dragging = false;
-            dragStarted = false;
             try {
                 if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
             } catch (e) { }
             el.classList.remove('selected');
 
+            // FIX: Only open modal if NO dragging occurred (just a click)
             if (!dragStarted && !isWireMode) {
                 selectedMarkId = id;
                 updateMarkSelection();
@@ -4787,13 +4920,23 @@ function renderMarksList() {
     // Render regular marks
     // In the regular marks section (around line 1900-1950)
     // In the regularMarks.forEach loop:
+    // In the renderMarksList function, update the regularMarks.forEach loop:
+    // In the renderMarksList function, update the regularMarks.forEach loop:
     regularMarks.forEach(m => {
         const item = document.createElement('div');
         item.className = 'mark-item';
         item.classList.toggle('active', m.id === selectedMarkId);
 
         const label = document.createElement('span');
-        label.textContent = m.seriesLabel + (m.isTextLabel ? ` - ${m.text}` : '');
+        // Show just the text content for text labels
+        if (m.isTextLabel) {
+            label.textContent = `"${m.text}"`;
+            label.style.color = '#000000'; // Black text
+            label.style.fontWeight = 'normal';
+            label.style.fontStyle = 'normal';
+        } else {
+            label.textContent = m.seriesLabel;
+        }
         item.appendChild(label);
 
         const deleteBtn = document.createElement('button');
@@ -4813,7 +4956,7 @@ function renderMarksList() {
             if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
                 selectedMarkId = m.id;
                 updateMarkSelection();
-                // Don't open modal for text labels or emitters
+                // Don't open modal for text labels
                 if (!m.isTextLabel && !m.isEmitter) {
                     openProductModal(m);
                 }
@@ -5005,6 +5148,36 @@ style.textContent = `
         outline: none;
         border-color: #2196F3;
         box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    }
+    .text-label {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        min-width: auto !important;
+        min-height: auto !important;
+        display: inline-block !important;
+    }
+    
+    .text-label-content {
+        font-family: Arial, sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #000000 !important;
+        text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+        white-space: nowrap !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        pointer-events: none !important;
+    }
+    
+    .mark.text-label:hover .text-label-content {
+        text-shadow: 0 0 3px rgba(102, 126, 234, 0.3);
+    }
+    
+    .mark.text-label.dragging .text-label-content {
+        text-shadow: 0 0 4px rgba(102, 126, 234, 0.5);
     }
 `;
 document.head.appendChild(style);
@@ -6192,18 +6365,18 @@ function setupMarkDragging(el, markData) {
     function onPointerUp(ev) {
         if (dragging) {
             dragging = false;
-            dragStarted = false;
             try {
                 if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
             } catch (e) { }
             el.classList.remove('selected');
 
-            // Don't open modal for text labels
-            if (!dragStarted && !markData.isTextLabel && !isWireMode) {
+            // FIX: Only open modal if we didn't drag (just clicked)
+            if (!dragStarted && !isWireMode && !markData.isTextLabel && !markData.isEmitter) {
                 selectedMarkId = markData.id;
                 updateMarkSelection();
                 openProductModal(markData);
             }
+            dragStarted = false;
         }
     }
 
@@ -6364,4 +6537,3 @@ function enableAllZoom() {
 
     console.log('Zoom functions re-enabled');
 }
-

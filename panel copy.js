@@ -1,4 +1,3 @@
-
 const PRODUCT_ORDER = [
     "DOOR LOCK",
     "PROCESSOR",
@@ -12,7 +11,8 @@ const PRODUCT_ORDER = [
     "Z-WAVE RELAY",
     "CURTAIN MOTORS",
     "SENSORS",
-    "IR BLASTER - ZMOTE", // ADD THIS LINE
+    "IR BLASTER - ZMOTE",
+    "EMITTER", // ADD THIS LINE - NEW EMITTER CATEGORY
     "AUTOMATION DISTRIBUTION BOX",
     "NETWORK DISTRIBUTION BOX",
     "TEXT"
@@ -118,6 +118,7 @@ function getSeriesCode(productKey) {
     if (productKey === 'Z-WAVE RELAY') return 'R';
     if (productKey === 'TREMBLAY SOUNDS') return 'T'; // Already has 'T'
     if (productKey === 'IR BLASTER - ZMOTE') return 'I';
+    if (productKey === 'EMITTER') return 'E';
     if (productKey === 'TEXT') return 'TX';
     if (productKey === 'AUTOMATION DISTRIBUTION BOX') return 'ADB';
     if (productKey === 'NETWORK DISTRIBUTION BOX') return 'NDB';
@@ -212,28 +213,28 @@ function clearAllMarksAndWires() {
 
 function nextSeriesLabel(productKey) {
     const code = getSeriesCode(productKey);
-    
+
     if (!seriesCounters[code]) {
         seriesCounters[code] = 0;
     }
-    
+
     // Find the next available number
     const existingMarks = marks.filter(mark => mark.seriesCode === code);
     let nextNum = 1;
-    
+
     if (existingMarks.length > 0) {
         const existingNumbers = existingMarks.map(mark => {
             const num = parseInt(mark.seriesLabel.substring(code.length));
             return isNaN(num) ? 0 : num;
         });
-        
+
         while (existingNumbers.includes(nextNum)) {
             nextNum++;
         }
     } else {
         nextNum = seriesCounters[code] + 1;
     }
-    
+
     seriesCounters[code] = Math.max(seriesCounters[code], nextNum);
     return { seriesCode: code, label: `${code}${nextNum}` };
 }
@@ -888,7 +889,7 @@ function populateModal(mark) {
         const sizeEl = document.createElement('div');
         sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
         modalProductDesc.appendChild(sizeEl);
-        
+
         // Add relay details if any - as bullet points
         if (mark.selectedRelays && mark.selectedRelays.length > 0) {
             const relayHeader = document.createElement('div');
@@ -896,7 +897,7 @@ function populateModal(mark) {
             relayHeader.style.marginTop = '8px';
             relayHeader.style.fontWeight = 'bold';
             modalProductDesc.appendChild(relayHeader);
-            
+
             mark.selectedRelays.forEach(item => {
                 const relayItem = document.createElement('div');
                 relayItem.textContent = `• ${item.name} x${item.quantity}`;
@@ -917,7 +918,7 @@ function populateModal(mark) {
         const sizeEl = document.createElement('div');
         sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
         modalProductDesc.appendChild(sizeEl);
-        
+
         // Add router details if any - as bullet point
         if (mark.routerBrand || mark.routerModel) {
             const routerEl = document.createElement('div');
@@ -925,7 +926,7 @@ function populateModal(mark) {
             routerEl.style.marginTop = '8px';
             modalProductDesc.appendChild(routerEl);
         }
-        
+
         // Add access point details if any - as bullet point
         if (mark.apBrand || mark.apModel) {
             const apEl = document.createElement('div');
@@ -938,7 +939,7 @@ function populateModal(mark) {
         const descEl = document.createElement('div');
         descEl.textContent = mark.desc || '';
         modalProductDesc.appendChild(descEl);
-        
+
         // For Z-Wave Relay, show relay items
         if (mark.relayItems && mark.relayItems.length > 0) {
             const relayHeader = document.createElement('div');
@@ -946,7 +947,7 @@ function populateModal(mark) {
             relayHeader.style.marginTop = '8px';
             relayHeader.style.fontWeight = 'bold';
             modalProductDesc.appendChild(relayHeader);
-            
+
             mark.relayItems.forEach(item => {
                 const relayItem = document.createElement('div');
                 relayItem.textContent = `• ${item.name} x${item.quantity}`;
@@ -955,7 +956,7 @@ function populateModal(mark) {
             });
         }
     }
-    
+
     const imageSrc = mark.imageSrc || previewImage.src;
     if (imageSrc) {
         modalProductImage.src = imageSrc;
@@ -963,11 +964,11 @@ function populateModal(mark) {
     } else {
         modalProductImage.style.display = 'none';
     }
-    
+
     modalProductFeatures.innerHTML = '';
     // For DB Boxes, don't show features in modal
     if (!mark.isDBBox && !mark.isNetworkDBBox) {
-        const featureList = (mark.features && mark.features.length ? mark.features : ['Immersive Audio Experience','Flexible Speaker Placement','Seamless Connectivity & Control','Expandable & Future-Ready System']).slice(0, 12);
+        const featureList = (mark.features && mark.features.length ? mark.features : ['Immersive Audio Experience', 'Flexible Speaker Placement', 'Seamless Connectivity & Control', 'Expandable & Future-Ready System']).slice(0, 12);
         featureList.forEach(feature => {
             const li = document.createElement('li');
             li.textContent = feature;
@@ -1005,7 +1006,7 @@ function buildList() {
         wireItem.style.cursor = 'pointer';
         wireItem.style.padding = '12px 16px';
         wireItem.style.margin = '4px 0';
-        
+
         wireItem.innerHTML = `
             <div class="tab-title" style="color: ${wireType.color}; font-weight: 600; position: relative; z-index: 2;">
                 <span class="material-icons" style="font-size: 18px; margin-right: 8px; vertical-align: middle;">${wireType.icon}</span>
@@ -1015,25 +1016,25 @@ function buildList() {
                 <span class="material-icons" style="font-size:20px;color:${wireType.color}">add_link</span>
             </div>
         `;
-        
+
         // Add click event directly to the tab-btn
         wireItem.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            
+
             // Get the actual clicked element
             let target = e.target;
             while (target && !target.classList.contains('tab-btn')) {
                 target = target.parentElement;
             }
-            
+
             if (target) {
                 currentWireType = wireType.id;
                 isWireMode = true;
 
-document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"], .tab-btn[data-name^="SPEAKER_WIRE"]').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.name === wireType.name);
-});
+                document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"], .tab-btn[data-name^="SPEAKER_WIRE"]').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.name === wireType.name);
+                });
 
                 document.querySelectorAll('.tab-btn[data-name]').forEach(btn => {
                     if (!btn.dataset.name.includes('WIRE')) {
@@ -1045,7 +1046,7 @@ document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^=
                 showNotification(`${wireType.title} Mode: Select two marks to connect them`, 'info');
             }
         });
-        
+
         productListEl.appendChild(wireItem);
     });
 
@@ -1080,17 +1081,17 @@ document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^=
 
         if (productData[key].subProducts && !productData[key].isDBBox && !productData[key].isNetworkDBBox) {
             right.innerHTML = '<span class="material-icons" style="font-size:20px;color:var(--muted)">expand_more</span>';
-            
+
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 // Get the actual clicked element
                 let target = e.target;
                 while (target && !target.classList.contains('tab-btn')) {
                     target = target.parentElement;
                 }
-                
+
                 if (target) {
                     const existing = item.nextElementSibling;
                     if (existing && existing.classList.contains('sub-product-list')) {
@@ -1106,13 +1107,13 @@ document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^=
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 // Get the actual clicked element
                 let target = e.target;
                 while (target && !target.classList.contains('tab-btn')) {
                     target = target.parentElement;
                 }
-                
+
                 if (target) {
                     selectProduct(key);
                 }
@@ -1223,22 +1224,22 @@ function selectProduct(productKey, subProductKey = null) {
     });
 
     // Clean up text input when switching away from TEXT
-if (currentProduct !== productKey && currentProduct === 'TEXT') {
-    // Remove text instruction
-    const textInstruction = document.querySelector('.text-instruction');
-    if (textInstruction) {
-        textInstruction.remove();
+    if (currentProduct !== productKey && currentProduct === 'TEXT') {
+        // Remove text instruction
+        const textInstruction = document.querySelector('.text-instruction');
+        if (textInstruction) {
+            textInstruction.remove();
+        }
+
+        // Remove text controls
+        const textControls = document.getElementById('textLabelControls');
+        if (textControls) {
+            textControls.remove();
+        }
+
+        // Restore product image display
+        productImage.style.display = 'block';
     }
-    
-    // Remove text controls
-    const textControls = document.getElementById('textLabelControls');
-    if (textControls) {
-        textControls.remove();
-    }
-    
-    // Restore product image display
-    productImage.style.display = 'block';
-}
 
     let data = productData[productKey];
     let title = data.title || productKey;
@@ -1250,6 +1251,7 @@ if (currentProduct !== productKey && currentProduct === 'TEXT') {
     const isNetworkDBBox = data.isNetworkDBBox || false;
     const isTextLabel = data.isTextLabel || false;
     const isMultiComponent = data.isMultiComponent || false;
+    const isEmitter = data.isEmitter || false;
 
     if (isDBBox) {
         title = data.title;
@@ -1313,12 +1315,59 @@ if (currentProduct !== productKey && currentProduct === 'TEXT') {
         buildRelayOptions();
         productImageOverlay.style.display = 'block';
         updateRelayOverlay();
-        
+
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
         document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+
+    } else if (isEmitter) { // ADD THIS ELSE IF BLOCK
+        // For EMITTER - Show clean interface similar to TEXT
+        pTitle.textContent = data.title;
+        pDesc.textContent = data.desc;
+
+        // Hide product image if not available
+        if (data.img) {
+            productImage.src = data.img;
+            productImage.style.display = 'block';
+        } else {
+            productImage.style.display = 'none';
+        }
+
+        // Hide features section
+        featuresSection.style.display = 'none';
+        relayControlsEl.style.display = 'none';
+        productImageOverlay.style.display = 'none';
+        productImageOverlay.textContent = '';
+
+        // Hide other controls
+        document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
+        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
+        document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
+        document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+
+        // Clear features
+        pFeatures.innerHTML = '';
+
+        // Add emitter-specific features
+        const featureLi = document.createElement('li');
+        featureLi.textContent = 'RF/IR emitter device';
+        pFeatures.appendChild(featureLi);
+
+        const featureLi2 = document.createElement('li');
+        featureLi2.textContent = 'Serial numbering: E1, E2, E3...';
+        pFeatures.appendChild(featureLi2);
+
+        const featureLi3 = document.createElement('li');
+        featureLi3.textContent = 'No modal popup on click';
+        pFeatures.appendChild(featureLi3);
+
+        // Clear pMeta
+        pMeta.innerHTML = '';
+
+        resetRelayPreview();
+        lastRelaySelectionLabel = '';
 
     } else if (isDBBox) {
         relayControlsEl.style.display = 'none';
@@ -1329,7 +1378,7 @@ if (currentProduct !== productKey && currentProduct === 'TEXT') {
         lastRelaySelectionLabel = '';
 
         createAutomationDBBoxControls();
-        
+
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
@@ -1351,7 +1400,7 @@ if (currentProduct !== productKey && currentProduct === 'TEXT') {
         lastRelaySelectionLabel = '';
 
         createNetworkDBBoxControls();
-        
+
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
@@ -1365,44 +1414,44 @@ if (currentProduct !== productKey && currentProduct === 'TEXT') {
             });
         }
     } else if (isTextLabel) {
-    // For TEXT labels - Show clean interface
-    pTitle.textContent = "Text Label";
-    pDesc.textContent = "Add custom text annotations to the floor plan";
-    
-    // Hide product image
-    productImage.style.display = 'none';
-    productImageOverlay.style.display = 'none';
-    
-    // Hide features section
-    featuresSection.style.display = 'none';
-    relayControlsEl.style.display = 'none';
-    
-    // Remove existing special controls
-    document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
-    document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
-    
-    // Clear features
-    pFeatures.innerHTML = '';
-    
-    // Add text-specific feature
-    const featureLi = document.createElement('li');
-    featureLi.textContent = 'Custom text annotations';
-    pFeatures.appendChild(featureLi);
-    
-    const featureLi2 = document.createElement('li');
-    featureLi2.textContent = 'Serial numbering: TX1, TX2, TX3...';
-    pFeatures.appendChild(featureLi2);
-    
-    const featureLi3 = document.createElement('li');
-    featureLi3.textContent = 'Same styling as product labels';
-    pFeatures.appendChild(featureLi3);
-    
-    // Clear pMeta
-    pMeta.innerHTML = '';
-    
-    // Create text input controls
-    createTextLabelControls();
-} else if (isMultiComponent && subProductKey) {
+        // For TEXT labels - Show clean interface
+        pTitle.textContent = "Text Label";
+        pDesc.textContent = "Add custom text annotations to the floor plan";
+
+        // Hide product image
+        productImage.style.display = 'none';
+        productImageOverlay.style.display = 'none';
+
+        // Hide features section
+        featuresSection.style.display = 'none';
+        relayControlsEl.style.display = 'none';
+
+        // Remove existing special controls
+        document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
+        document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+
+        // Clear features
+        pFeatures.innerHTML = '';
+
+        // Add text-specific feature
+        const featureLi = document.createElement('li');
+        featureLi.textContent = 'Plain text annotations (no background/border)';
+        pFeatures.appendChild(featureLi);
+
+        const featureLi2 = document.createElement('li');
+        featureLi2.textContent = 'Max 15 characters';
+        pFeatures.appendChild(featureLi2);
+
+        const featureLi3 = document.createElement('li');
+        featureLi3.textContent = 'Drag to move, no modal on click';
+        pFeatures.appendChild(featureLi3);
+
+        // Clear pMeta
+        pMeta.innerHTML = '';
+
+        // Create text input controls
+        createTextLabelControls();
+    } else if (isMultiComponent && subProductKey) {
         relayControlsEl.style.display = 'none';
         featuresSection.style.display = 'none';
         productImageOverlay.style.display = 'none';
@@ -1411,7 +1460,7 @@ if (currentProduct !== productKey && currentProduct === 'TEXT') {
         lastRelaySelectionLabel = '';
 
         createMultiComponentControls(productKey, subProductKey);
-        
+
         // Hide other controls
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
@@ -1460,62 +1509,74 @@ function createTextLabelControls() {
         <div class="mark-controls-box" id="textLabelControls" style="margin-top: 20px; border-color: #667eea;">
             <h3 style="color: #667eea; margin-bottom: 15px;">
                 <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">text_fields</span>
-                Text Label
+                Plain Text Label
             </h3>
             
             <div class="form-group">
-                <label style="color: #667eea; font-weight: 500;">Text Content</label>
+                <label style="color: #667eea; font-weight: 500;">Text Content <span style="color: #999; font-size: 11px;">(Max 15 chars)</span></label>
                 <input type="text" 
                        id="textLabelInput" 
                        class="form-control" 
-                       placeholder="Enter label text (e.g., Living Room, Entrance)"
-                       maxlength="30"
+                       placeholder="Enter text (e.g., Living Room)"
+                       maxlength="15"
                        style="border-color: #667eea; margin-bottom: 10px;">
                 <div style="font-size: 11px; color: #666; margin-top: 4px;">
                     <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
-                    Max 30 characters. Press Enter or click Add Mark
+                    Plain black text with no background or border
                 </div>
             </div>
             
             <div style="margin-top: 15px; padding: 12px; background: #f0f4ff; border-radius: 6px; border: 1px solid #c3dafe;">
                 <div style="font-size: 12px; color: #667eea; margin-bottom: 4px;">
                     <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
-                    How to add text labels:
+                    Plain Text Labels:
                 </div>
                 <div style="font-size: 11px; color: #555;">
-                    1. Enter text in the field above<br>
-                    2. Click "Add Mark" button<br>
-                    3. Click on floor plan where you want the label<br>
-                    4. Labels are numbered TX1, TX2, TX3...
+                    1. Just black text, no background or border<br>
+                    2. Max 15 characters<br>
+                    3. Drag to move - cursor follows smoothly<br>
+                    4. No modal opens when clicked<br>
+                    5. Shows as plain text in marks list
                 </div>
             </div>
         </div>
     `;
-    
+
     const markControlsBox = document.querySelector('.mark-controls-box');
     if (markControlsBox) {
         markControlsBox.insertAdjacentHTML('afterend', textControlsHTML);
-        
+
         // Add Enter key support to text input
         const textInput = document.getElementById('textLabelInput');
         if (textInput) {
-            textInput.addEventListener('keypress', function(e) {
+            textInput.addEventListener('input', function () {
+                // Show character count
+                const charCount = this.value.length;
+                if (charCount >= 12) {
+                    this.style.borderColor = '#ff9800';
+                } else {
+                    this.style.borderColor = '#667eea';
+                }
+            });
+
+            textInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     const shape = markShapeEl.value;
                     let sizePercent = parseFloat(markSizeEl.value) || 4;
                     if (sizePercent <= 0) sizePercent = 4;
-                    
+
                     if (imageNaturalWidth && imageNaturalHeight) {
                         const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
                         const centerX = imageNaturalWidth / 2;
                         const centerY = imageNaturalHeight / 2;
-                        
+
                         addTextLabel(this.value.trim(), shape, sizePixels);
                         this.value = '';
+                        this.focus();
                     }
                 }
             });
-            
+
             // Focus the input when TEXT category is selected
             setTimeout(() => {
                 textInput.focus();
@@ -1523,18 +1584,17 @@ function createTextLabelControls() {
         }
     }
 }
-
 // Add this function to create text marks
 function addTextMark(text) {
     const shape = markShapeEl.value;
     let sizePercent = parseFloat(markSizeEl.value) || 4;
     if (sizePercent <= 0) sizePercent = 4;
-    
+
     if (imageNaturalWidth && imageNaturalHeight) {
         const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
         const centerX = imageNaturalWidth / 2;
         const centerY = imageNaturalHeight / 2;
-        
+
         createTextMark({
             x: centerX - (sizePixels / 2),
             y: centerY - (sizePixels / 2),
@@ -1549,13 +1609,13 @@ function addTextMark(text) {
 function createTextMark({ x, y, size, shape, text }) {
     const id = 'mark-' + (++markCounter);
     const { seriesCode, label } = nextSeriesLabel('TEXT');
-    
+
     const el = document.createElement('div');
     el.className = 'mark ' + shape;
     el.dataset.id = id;
     el.dataset.size = size;
     el.dataset.shape = shape;
-    
+
     // Style for text label
     el.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
     el.style.borderColor = '#667eea';
@@ -1566,7 +1626,7 @@ function createTextMark({ x, y, size, shape, text }) {
     el.style.justifyContent = 'center';
     el.style.padding = '6px';
     el.style.cursor = 'move';
-    
+
     const textSpan = document.createElement('span');
     textSpan.className = 'label-text';
     textSpan.textContent = text;
@@ -1579,27 +1639,27 @@ function createTextMark({ x, y, size, shape, text }) {
     textSpan.style.overflow = 'hidden';
     textSpan.style.textOverflow = 'ellipsis';
     textSpan.style.maxWidth = '100px';
-    
+
     el.appendChild(textSpan);
-    
+
     const badge = document.createElement('div');
     badge.className = 'label-badge';
     badge.textContent = label;
     badge.style.backgroundColor = '#667eea';
     badge.style.color = '#FFFFFF';
     el.appendChild(badge);
-    
+
     // Add hover effect
-    el.addEventListener('mouseenter', function() {
+    el.addEventListener('mouseenter', function () {
         this.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.2)';
     });
-    
-    el.addEventListener('mouseleave', function() {
+
+    el.addEventListener('mouseleave', function () {
         this.style.boxShadow = '';
     });
-    
+
     imgInner.appendChild(el);
-    
+
     const markData = {
         id,
         x,
@@ -1619,25 +1679,25 @@ function createTextMark({ x, y, size, shape, text }) {
         text: text,
         labelElement: textSpan
     };
-    
+
     marks.push(markData);
-    
+
     // Add click event - just for selection, no modal
-    el.addEventListener('click', function(e) {
+    el.addEventListener('click', function (e) {
         e.stopPropagation();
         selectedMarkId = id;
         updateMarkSelection();
         // No modal opens for text labels
     });
-    
+
     // Add dragging functionality
     setupMarkDragging(el, markData);
-    
+
     updateMarkPosition(markData);
     updateMarkSelection();
-    
+
     showNotification(`Text label "${text}" added as ${label}`, 'success');
-    
+
     return markData;
 }
 
@@ -1648,27 +1708,27 @@ function attachTextLabelEvents() {
     const fontSizeSlider = document.getElementById('textFontSize');
     const fontSizeValue = document.getElementById('fontSizeValue');
     const addTextBtn = document.getElementById('addTextLabelBtn');
-    
+
     // Font size slider
     if (fontSizeSlider && fontSizeValue) {
-        fontSizeSlider.addEventListener('input', function() {
+        fontSizeSlider.addEventListener('input', function () {
             fontSizeValue.textContent = this.value;
         });
     }
-    
+
     // Add text label button
     if (addTextBtn) {
-        addTextBtn.addEventListener('click', function() {
+        addTextBtn.addEventListener('click', function () {
             if (!textInput.value.trim()) {
                 showNotification('Please enter text for the label', 'error');
                 return;
             }
-            
+
             addTextLabel(
                 textInput.value.trim(),
                 parseInt(fontSizeSlider.value)
             );
-            
+
             // Clear input
             textInput.value = '';
         });
@@ -1680,91 +1740,92 @@ function addTextLabel(text, shape, sizePixels) {
         showNotification('Please enter text for the label', 'error');
         return;
     }
-    
+
     if (!imageNaturalWidth || !imageNaturalHeight) {
         showNotification('Please wait for floor plan to load', 'error');
         return;
     }
-    
+
+    // Limit text to 15 characters
+    const displayText = text.trim().substring(0, 15);
+
     // Center the label on the image
     const centerX = imageNaturalWidth / 2;
     const centerY = imageNaturalHeight / 2;
-    
-    // Create the text mark - EXACTLY LIKE OTHER PRODUCTS
+
+    // Create the text mark WITHOUT series code
     const id = 'mark-' + (++markCounter);
-    const { seriesCode, label } = nextSeriesLabel('TEXT');
-    
+
     const el = document.createElement('div');
-    el.className = 'mark ' + shape;
+    el.className = 'mark text-label';
     el.dataset.id = id;
     el.dataset.size = sizePixels;
     el.dataset.shape = shape;
     el.dataset.isTextLabel = true;
-    
-    // ✅ SAME STYLING AS OTHER PRODUCTS
-    // No custom styling - use default CSS classes
-    
-    const badge = document.createElement('div');
-    badge.className = 'label-badge';
-    badge.textContent = label;
-    // ✅ Same badge styling as other products
-    el.appendChild(badge);
-    
-    const tooltip = document.createElement('div');
-    tooltip.className = 'tooltip';
-    
-    const tooltipContent = document.createElement('div');
-    tooltipContent.className = 'tooltip-content';
-    
-    const tooltipTitle = document.createElement('div');
-    tooltipTitle.className = 'tooltip-title';
-    tooltipTitle.textContent = 'Text Label'; // Fixed category name
-    
-    const tooltipModel = document.createElement('div');
-    tooltipModel.className = 'tooltip-model';
-    tooltipModel.textContent = text; // The actual text content
-    
-    tooltipContent.appendChild(tooltipTitle);
-    tooltipContent.appendChild(tooltipModel);
-    tooltip.appendChild(tooltipContent);
-    el.appendChild(tooltip);
-    
+
+    // Create text span - PLAIN TEXT WITH NO STYLING
+    const textSpan = document.createElement('span');
+    textSpan.className = 'text-label-content';
+    textSpan.textContent = displayText;
+    textSpan.style.cssText = `
+        color: #000000;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+        cursor: move;
+        display: block;
+        line-height: 1;
+    `;
+
+    // NO BACKGROUND, NO BORDER - JUST PLAIN TEXT
+    el.style.cssText = `
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        display: inline-block;
+        cursor: move;
+        padding: 0 !important;
+        margin: 0 !important;
+    `;
+
+    el.appendChild(textSpan);
     imgInner.appendChild(el);
-    
+
     const markData = {
         id,
-        x: centerX - (sizePixels / 2),
-        y: centerY - (sizePixels / 2),
+        x: centerX,
+        y: centerY,
         size: sizePixels,
         shape,
         el,
-        seriesCode,
-        seriesLabel: label,
-        tooltip,
-        categoryName: 'Text Label', // Fixed category
-        modelName: text, // The text content as model name
-        desc: `Text Label: ${text}`,
+        seriesCode: '',
+        seriesLabel: '', // Empty label for text
+        tooltip: null,
+        categoryName: 'Text Label',
+        modelName: displayText,
+        desc: `Text Label: ${displayText}`,
         features: ['Custom text annotation'],
-        imageSrc: previewImage.src, // Use floor plan image
+        imageSrc: previewImage.src,
         isTextLabel: true,
-        text: text
+        text: displayText
     };
-    
+
     marks.push(markData);
-    
-    // ✅ SAME EVENT HANDLING AS OTHER PRODUCTS
-    el.addEventListener('click', function(e) {
+
+    // Add click event for text labels - NO MODAL
+    el.addEventListener('click', function (e) {
         e.stopPropagation();
-        
+
         if (isWireMode && currentWireType && !e.defaultPrevented) {
-            // Wire selection logic (same as other products)
+            // Wire selection logic
             if (!wireStartMark) {
                 wireStartMark = markData;
-                showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
+                showNotification(`First mark selected: "${displayText}". Now select second mark.`, 'info');
             } else if (!wireEndMark && wireStartMark !== markData) {
                 wireEndMark = markData;
                 const wireTypeInfo = getWireTypeInfo(currentWireType);
-                showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
+                showNotification(`Second mark selected: "${displayText}". ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
             } else if (wireStartMark === markData) {
                 wireStartMark = null;
                 wireEndMark = null;
@@ -1779,38 +1840,139 @@ function addTextLabel(text, shape, sizePixels) {
             updatePointsList();
             e.preventDefault();
         } else if (!isWireMode && !e.defaultPrevented) {
-            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
             selectedMarkId = id;
             updateMarkSelection();
-            // Do NOT call openProductModal(markData);
+            // Don't open modal for text labels
         }
     });
-    
-    // ✅ SAME DRAGGING FUNCTIONALITY
-    setupMarkDragging(el, markData);
-    
+
+    // Setup proper dragging for text label
+    setupTextLabelDragging(el, markData);
+
     updateMarkPosition(markData);
     updateMarkSelection();
     renderMarksList();
-    
-    showNotification(`Text label "${text}" added as ${label}`, 'success');
-    
+
+    showNotification(`Text label "${displayText}" added`, 'success');
+
     return markData;
 }
+function setupTextLabelDragging(el, markData) {
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let startMarkX = 0, startMarkY = 0;
+    let isPointerDown = false;
 
+    function onPointerDown(ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        if (el.setPointerCapture) el.setPointerCapture(ev.pointerId);
+        isPointerDown = true;
+        startX = ev.clientX;
+        startY = ev.clientY;
+        startMarkX = markData.x;
+        startMarkY = markData.y;
+        selectedMarkId = markData.id;
+        updateMarkSelection();
+
+        // Add a slight visual feedback for dragging
+        el.style.cursor = 'grabbing';
+        if (markData.textEl) {
+            markData.textEl.style.textShadow = '0 0 2px rgba(0,0,0,0.1)';
+        }
+    }
+
+    function onPointerMove(ev) {
+        if (!isPointerDown) return;
+
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+
+        // Start dragging only after minimal movement to avoid accidental drags
+        if (!isDragging && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+            isDragging = true;
+        }
+
+        if (!isDragging) return;
+
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const transform = getImageTransform();
+        if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
+
+        const imgRect = previewImage.getBoundingClientRect();
+
+        // Calculate scale more accurately
+        const scaleX = imageNaturalWidth / imgRect.width;
+        const scaleY = imageNaturalHeight / imgRect.height;
+
+        const imageDx = dx * scaleX;
+        const imageDy = dy * scaleY;
+
+        let newX = startMarkX + imageDx;
+        let newY = startMarkY + imageDy;
+
+        // Constrain to image bounds
+        newX = Math.max(0, Math.min(imageNaturalWidth - 10, newX));
+        newY = Math.max(0, Math.min(imageNaturalHeight - 10, newY));
+
+        markData.x = newX;
+        markData.y = newY;
+
+        updateMarkPosition(markData);
+    }
+
+    function onPointerUp(ev) {
+        if (isPointerDown) {
+            isPointerDown = false;
+            isDragging = false;
+
+            try {
+                if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
+            } catch (e) { }
+
+            // Reset cursor and visual effects
+            el.style.cursor = 'move';
+            if (markData.textEl) {
+                markData.textEl.style.textShadow = '';
+            }
+
+            // Don't open modal for text labels even on click
+            selectedMarkId = markData.id;
+            updateMarkSelection();
+        }
+    }
+
+    // Store reference to text element for styling during drag
+    markData.textEl = el.querySelector('.text-label-content');
+
+    // Set initial cursor
+    el.style.cursor = 'move';
+
+    el.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+
+    // Prevent text selection while dragging
+    el.addEventListener('selectstart', (e) => {
+        e.preventDefault();
+    });
+}
 function createTextMark(options) {
     const { x, y, size, shape, text, fontSize } = options;
-    
+
     const id = 'mark-' + (++markCounter);
     const { seriesCode, label } = nextSeriesLabel('TEXT');
-    
+
     const el = document.createElement('div');
     el.className = 'mark ' + shape;
     el.dataset.id = id;
     el.dataset.size = size;
     el.dataset.shape = shape;
     el.dataset.isTextLabel = true;
-    
+
     // Style for text label
     el.style.backgroundColor = '#FFFFFF';
     el.style.borderColor = '#607D8B';
@@ -1820,7 +1982,7 @@ function createTextMark(options) {
     el.style.alignItems = 'center';
     el.style.justifyContent = 'center';
     el.style.padding = '4px 8px';
-    
+
     const textSpan = document.createElement('span');
     textSpan.className = 'label-text';
     textSpan.textContent = text;
@@ -1832,18 +1994,18 @@ function createTextMark(options) {
     textSpan.style.whiteSpace = 'nowrap';
     textSpan.style.overflow = 'hidden';
     textSpan.style.textOverflow = 'ellipsis';
-    
+
     el.appendChild(textSpan);
-    
+
     const badge = document.createElement('div');
     badge.className = 'label-badge';
     badge.textContent = label;
     badge.style.backgroundColor = '#607D8B';
     badge.style.color = '#FFFFFF';
     el.appendChild(badge);
-    
+
     imgInner.appendChild(el);
-    
+
     const markData = {
         id,
         x,
@@ -1864,25 +2026,25 @@ function createTextMark(options) {
         fontSize: fontSize,
         labelElement: textSpan
     };
-    
+
     marks.push(markData);
-    
+
     // Add click event to open modal
-    el.addEventListener('click', function(e) {
+    el.addEventListener('click', function (e) {
         e.stopPropagation();
         selectedMarkId = id;
         updateMarkSelection();
         openTextLabelModal(markData);
     });
-    
+
     // Add dragging functionality
     setupMarkDragging(el, markData);
-    
+
     updateMarkPosition(markData);
     updateMarkSelection();
-    
+
     showNotification(`Text label "${text}" added`, 'success');
-    
+
     return markData;
 }
 /* ------------------------- WIRE MAPPING FUNCTIONS ------------------------- */
@@ -3082,7 +3244,7 @@ function clearWireSelection() {
     hideWireControls();
 
     showNotification('Wire selection cleared', 'info');
-}   
+}
 
 /* ------------------------- MARKS & DRAGGING ------------------------- */
 const marksListEl = document.getElementById('marksList');
@@ -3219,12 +3381,28 @@ function updateMarkPosition(mark) {
 
     const x = mark.x * transform.scaleX + transform.imgOffsetX;
     const y = mark.y * transform.scaleY + transform.imgOffsetY;
-    const size = mark.size * transform.scaleX;
 
-    mark.el.style.left = x + 'px';
-    mark.el.style.top = y + 'px';
-    mark.el.style.width = size + 'px';
-    mark.el.style.height = size + 'px';
+    // For text labels, use the center point
+    if (mark.isTextLabel) {
+        // Get text width for proper centering
+        const textWidth = mark.el.offsetWidth || 50;
+        const textHeight = mark.el.offsetHeight || 20;
+
+        mark.el.style.left = (x - textWidth / 2) + 'px';
+        mark.el.style.top = (y - textHeight / 2) + 'px';
+
+        // Remove width/height constraints for text labels
+        mark.el.style.width = 'auto';
+        mark.el.style.height = 'auto';
+        mark.el.style.transform = 'none';
+    } else {
+        const size = mark.size * transform.scaleX;
+        mark.el.style.left = x + 'px';
+        mark.el.style.top = y + 'px';
+        mark.el.style.width = size + 'px';
+        mark.el.style.height = size + 'px';
+    }
+
     orientTooltip(mark);
 }
 
@@ -3264,9 +3442,9 @@ addMarkBtn.addEventListener('click', () => {
         alert('Please select a product first');
         return;
     }
-    
+
     const data = productData[currentProduct];
-    
+
     // Handle TEXT labels
     if (currentProduct === 'TEXT') {
         const textInput = document.getElementById('textLabelInput');
@@ -3274,18 +3452,18 @@ addMarkBtn.addEventListener('click', () => {
             showNotification('Please wait for text input to load', 'error');
             return;
         }
-        
+
         const text = textInput.value.trim();
         if (!text) {
             showNotification('Please enter text for the label', 'error');
             textInput.focus();
             return;
         }
-        
+
         const shape = markShapeEl.value;
         let sizePercent = parseFloat(markSizeEl.value) || 4;
         if (sizePercent <= 0) sizePercent = 4;
-        
+
         if (imageNaturalWidth && imageNaturalHeight) {
             const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
             addTextLabel(text, shape, sizePixels);
@@ -3296,7 +3474,7 @@ addMarkBtn.addEventListener('click', () => {
         }
         return;
     }
-    
+
     // Handle other products (original logic)
     if (data.subProducts && !data.isDBBox && !data.isNetworkDBBox && currentProduct !== 'Z-WAVE RELAY' && !currentSubProduct) {
         alert('Please select a model first');
@@ -3346,6 +3524,9 @@ function createMark({ x, y, size, shape }) {
         alert('Select a model before adding a label');
         return;
     }
+
+    // ADD THIS CHECK FOR EMITTER
+    const isEmitter = data.isEmitter || false;
 
     let relayItems = [];
     if (currentProduct === 'Z-WAVE RELAY') {
@@ -3412,6 +3593,10 @@ function createMark({ x, y, size, shape }) {
         modelName = relayItems.length === 1 ? relayItems[0].name : `${relayItems.length} modules selected`;
         featuresList = relayItems.map(item => `${item.name} — Qty ${item.quantity}`);
         descText = productDataForMark?.desc || fallbackProduct.desc || '';
+    } else if (isEmitter) { // ADD THIS ELSE IF BLOCK
+        modelName = data.title || 'Emitter';
+        featuresList = ['RF/IR emitter device'];
+        descText = data.desc || 'Emitter device';
     } else {
         modelName = productDataForMark?.title || fallbackProduct.title || '';
         featuresList = (productDataForMark?.features || fallbackProduct.features || []).slice();
@@ -3471,6 +3656,7 @@ function createMark({ x, y, size, shape }) {
         sizeFt: sizeFt,
         isDBBox: data.isDBBox || false,
         isNetworkDBBox: data.isNetworkDBBox || false,
+        isEmitter: isEmitter, // ADD THIS LINE
         selectedModules: selectedModules,
         selectedRelays: selectedRelays,
         selectedModels: selectedModels,
@@ -3489,6 +3675,7 @@ function createMark({ x, y, size, shape }) {
         e.stopPropagation();
 
         if (isWireMode && currentWireType && !e.defaultPrevented) {
+            // Unified wire selection logic for ALL marks
             if (!wireStartMark) {
                 wireStartMark = markData;
                 showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
@@ -3514,7 +3701,10 @@ function createMark({ x, y, size, shape }) {
             if (!dragStarted) {
                 selectedMarkId = id;
                 updateMarkSelection();
-                openProductModal(markData);
+                // Don't open modal for text labels or emitters
+                if (!data.isDBBox && !data.isNetworkDBBox && !markData.isTextLabel && !isEmitter) {
+                    openProductModal(markData);
+                }
             }
         }
     });
@@ -3619,7 +3809,7 @@ function createMultiComponentControls(productKey, subProductKey) {
     // Hide features section
     featuresSection.style.display = 'none';
     relayControlsEl.style.display = 'none';
-    
+
     // Create controls for multi-component system
     const componentsHTML = `
         <div class="mark-controls-box" id="multiComponentControls" style="margin-top: 20px; border-color: #FF9800;">
@@ -3674,9 +3864,9 @@ function createMultiComponentControls(productKey, subProductKey) {
     const markControlsBox = document.querySelector('.mark-controls-box');
     if (markControlsBox) {
         markControlsBox.insertAdjacentHTML('afterend', componentsHTML);
-        
+
         // Add system button
-        document.getElementById('addMultiComponentSystemBtn').addEventListener('click', function() {
+        document.getElementById('addMultiComponentSystemBtn').addEventListener('click', function () {
             addMultiComponentSystem(productKey, subProductKey);
         });
     }
@@ -3687,17 +3877,17 @@ let multiComponentGroups = {}; // Track grouped components
 function addMultiComponentSystem(productKey, subProductKey) {
     const data = productData[productKey];
     const subData = data.subProducts[subProductKey];
-    
+
     if (!subData.components) return;
-    
+
     const shape = markShapeEl.value;
     let sizePercent = parseFloat(markSizeEl.value) || 4;
     if (sizePercent <= 0) sizePercent = 4;
-    
+
     const groupId = `group-${Date.now()}`;
     const componentMarks = [];
     const totalComponents = Object.values(subData.components).reduce((sum, comp) => sum + comp.quantity, 0);
-    
+
     // Get next available label number
     const existingMarks = marks.filter(mark => mark.seriesCode === 'T');
     let nextNumber = 1;
@@ -3706,28 +3896,28 @@ function addMultiComponentSystem(productKey, subProductKey) {
             const num = parseInt(mark.seriesLabel.substring(1));
             return isNaN(num) ? 0 : num;
         });
-        
+
         while (existingNumbers.includes(nextNumber)) {
             nextNumber++;
         }
     }
-    
+
     let componentCounter = 0;
-    
+
     Object.entries(subData.components).forEach(([componentKey, component]) => {
         for (let i = 0; i < component.quantity; i++) {
             const label = `T${nextNumber}`;
-            
+
             const position = calculateGridPosition(
                 componentCounter + 1,
                 totalComponents
             );
-            
+
             if (imageNaturalWidth && imageNaturalHeight) {
                 const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
                 const centerX = imageNaturalWidth / 2 + position.xOffset;
                 const centerY = imageNaturalHeight / 2 + position.yOffset;
-                
+
                 const mark = createMultiComponentMark({
                     x: centerX - (sizePixels / 2),
                     y: centerY - (sizePixels / 2),
@@ -3741,14 +3931,14 @@ function addMultiComponentSystem(productKey, subProductKey) {
                     groupId: groupId,
                     totalComponents: totalComponents
                 });
-                
+
                 componentMarks.push(mark);
                 componentCounter++;
             }
         }
         nextNumber++;
     });
-    
+
     // Store the group
     multiComponentGroups[groupId] = {
         productKey: productKey,
@@ -3756,17 +3946,17 @@ function addMultiComponentSystem(productKey, subProductKey) {
         marks: componentMarks.map(m => m.id),
         mainLabel: subData.title
     };
-    
+
     // Update series counter
-    seriesCounters['T'] = Math.max(seriesCounters['T'] || 0, 
+    seriesCounters['T'] = Math.max(seriesCounters['T'] || 0,
         componentMarks.length + (existingMarks.length > 0 ? Math.max(...existingMarks.map(m => {
             const num = parseInt(m.seriesLabel.substring(1));
             return isNaN(num) ? 0 : num;
         })) : 0));
-    
+
     // Update the marks list to show grouped
     renderMarksList();
-    
+
     showNotification(`Added ${subData.title} with ${componentMarks.length} components`, 'success');
 }
 
@@ -3775,7 +3965,7 @@ function calculateGridPosition(index, total) {
     const cols = Math.ceil(Math.sqrt(total));
     const row = Math.floor((index - 1) / cols);
     const col = (index - 1) % cols;
-    
+
     const spacing = 100; // pixels spacing
     return {
         xOffset: (col - Math.floor(cols / 2)) * spacing,
@@ -3788,7 +3978,7 @@ function calculateGridPosition(index, total) {
     const cols = Math.ceil(Math.sqrt(total));
     const row = Math.floor((index - 1) / cols);
     const col = (index - 1) % cols;
-    
+
     const spacing = 100; // pixels spacing
     return {
         xOffset: (col - Math.floor(cols / 2)) * spacing,
@@ -3799,48 +3989,55 @@ function calculateGridPosition(index, total) {
 function createMultiComponentMark(options) {
     const {
         x, y, size, shape, productKey, subProductKey, component,
-        componentIndex, label, groupId, totalComponents
+        componentIndex, label, groupId, totalComponents, originalId // Add originalId parameter
     } = options;
-    
-    const id = 'mark-' + (++markCounter);
-    
+
+    // Use originalId if provided, otherwise generate new ID
+    const id = originalId || 'mark-' + (++markCounter);
+
+    // Update markCounter if we're generating a new ID
+    if (!originalId) {
+        markCounter = Math.max(markCounter, parseInt(id.split('-')[1]) || markCounter);
+    }
+
     const subData = productData[productKey].subProducts[subProductKey];
-    
+
     const el = document.createElement('div');
     el.className = 'mark ' + shape;
     el.dataset.id = id;
     el.dataset.groupId = groupId;
     el.dataset.size = size;
     el.dataset.shape = shape;
-    
+    el.dataset.seriesLabel = label; // Store seriesLabel in dataset for easy access
+
     const badge = document.createElement('div');
     badge.className = 'label-badge';
     badge.textContent = label;
     badge.style.backgroundColor = '#FF9800';
     el.appendChild(badge);
-    
+
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
-    
+
     const tooltipContent = document.createElement('div');
     tooltipContent.className = 'tooltip-content';
-    
+
     const tooltipTitle = document.createElement('div');
     tooltipTitle.className = 'tooltip-title';
     tooltipTitle.textContent = `${subData.title} - ${component.title}`;
     tooltipTitle.style.color = '#FF9800';
-    
+
     const tooltipModel = document.createElement('div');
     tooltipModel.className = 'tooltip-model';
     tooltipModel.textContent = `Component ${componentIndex} of ${component.quantity}`;
-    
+
     tooltipContent.appendChild(tooltipTitle);
     tooltipContent.appendChild(tooltipModel);
     tooltip.appendChild(tooltipContent);
     el.appendChild(tooltip);
-    
+
     imgInner.appendChild(el);
-    
+
     const markData = {
         id,
         x,
@@ -3860,17 +4057,135 @@ function createMultiComponentMark(options) {
         groupId: groupId,
         componentType: component.title,
         componentIndex: componentIndex,
-        totalComponents: totalComponents
+        totalComponents: totalComponents,
+        originalId: originalId || id // Store original ID
     };
-    
+
     marks.push(markData);
-    
+
     // Add dragging functionality
-    setupMarkDragging(el, markData);
-    
+    let dragging = false;
+    let startX = 0, startY = 0;
+    let startMarkX = 0, startMarkY = 0;
+    let dragStarted = false;
+
+    function onPointerDown(ev) {
+        ev.stopPropagation();
+        ev.preventDefault();
+        if (el.setPointerCapture) el.setPointerCapture(ev.pointerId);
+        dragging = true;
+        dragStarted = false;
+        startX = ev.clientX;
+        startY = ev.clientY;
+        startMarkX = markData.x;
+        startMarkY = markData.y;
+        selectedMarkId = id;
+        updateMarkSelection();
+        el.classList.add('selected');
+    }
+
+    function onPointerMove(ev) {
+        if (!dragging) return;
+
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+
+        if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+            dragStarted = true;
+        }
+
+        if (!dragStarted) return;
+
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const transform = getImageTransform();
+        if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
+
+        const imgRect = previewImage.getBoundingClientRect();
+        const scaleX = imageNaturalWidth / imgRect.width;
+        const scaleY = imageNaturalHeight / imgRect.height;
+
+        const imageDx = dx * scaleX;
+        const imageDy = dy * scaleY;
+
+        let newX = startMarkX + imageDx;
+        let newY = startMarkY + imageDy;
+
+        newX = Math.max(0, Math.min(imageNaturalWidth - markData.size, newX));
+        newY = Math.max(0, Math.min(imageNaturalHeight - markData.size, newY));
+
+        markData.x = newX;
+        markData.y = newY;
+
+        updateMarkPosition(markData);
+
+        // Update wires connected to this mark
+        updateWiresConnectedToMark(markData);
+    }
+
+    function onPointerUp(ev) {
+        if (dragging) {
+            dragging = false;
+            dragStarted = false;
+            try {
+                if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
+            } catch (e) { }
+            el.classList.remove('selected');
+
+            if (!dragStarted && !isWireMode) {
+                selectedMarkId = id;
+                updateMarkSelection();
+                openProductModal(markData);
+            }
+        }
+    }
+
+    el.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+
+    // Add click event with wire handling
+    el.addEventListener('click', function (e) {
+        e.stopPropagation();
+
+        if (isWireMode && currentWireType && !e.defaultPrevented) {
+            // Unified wire selection logic for ALL marks (including multi-component)
+            if (!wireStartMark) {
+                wireStartMark = markData;
+                showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
+            } else if (!wireEndMark && wireStartMark !== markData) {
+                wireEndMark = markData;
+                const wireTypeInfo = getWireTypeInfo(currentWireType);
+                showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
+            } else if (wireStartMark === markData) {
+                wireStartMark = null;
+                wireEndMark = null;
+                wirePoints = [];
+                showNotification('First mark selection cleared.', 'info');
+            } else if (wireEndMark === markData) {
+                wireEndMark = null;
+                wirePoints = [];
+                showNotification('Second mark selection cleared.', 'info');
+            }
+            updateWireSelectionLabels();
+            updatePointsList();
+            e.preventDefault();
+        } else if (!isWireMode && !e.defaultPrevented) {
+            // Only open modal if not in wire mode and not dragging
+            if (!dragStarted) {
+                selectedMarkId = id;
+                updateMarkSelection();
+                openProductModal(markData);
+            }
+        }
+    });
+
+    el.addEventListener('mouseenter', () => orientTooltip(markData));
+
     updateMarkPosition(markData);
     orientTooltip(markData);
-    
+
     return markData;
 }
 
@@ -3925,7 +4240,7 @@ function renderMarksList() {
     // Group multi-component marks
     const groupedMarks = {};
     const regularMarks = [];
-    
+
     marks.forEach(m => {
         if (m.groupId && multiComponentGroups[m.groupId]) {
             if (!groupedMarks[m.groupId]) {
@@ -3947,59 +4262,59 @@ function renderMarksList() {
         groupItem.className = 'mark-item group-item';
         groupItem.style.background = 'linear-gradient(135deg, #FFF3E0, #FFECB3)';
         groupItem.style.borderLeft = '4px solid #FF9800';
-        
+
         const groupHeader = document.createElement('div');
         groupHeader.style.display = 'flex';
         groupHeader.style.justifyContent = 'space-between';
         groupHeader.style.alignItems = 'center';
         groupHeader.style.width = '100%';
-        
+
         const groupInfo = document.createElement('div');
         groupInfo.style.flex = '1';
-        
+
         const groupTitle = document.createElement('div');
         groupTitle.style.fontWeight = '600';
         groupTitle.style.fontSize = '12px';
         groupTitle.style.color = '#333';
         groupTitle.textContent = group.group.mainLabel;
-        
+
         const groupSubtitle = document.createElement('div');
         groupSubtitle.style.fontSize = '10px';
         groupSubtitle.style.color = '#666';
         groupSubtitle.textContent = `${group.marks.length} components`;
-        
+
         groupInfo.appendChild(groupTitle);
         groupInfo.appendChild(groupSubtitle);
-        
+
         const groupActions = document.createElement('div');
         groupActions.style.display = 'flex';
         groupActions.style.gap = '4px';
-        
+
         const expandBtn = document.createElement('button');
         expandBtn.className = 'btn';
         expandBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">expand_more</span>';
         expandBtn.style.padding = '2px 4px';
         expandBtn.style.minHeight = 'auto';
         expandBtn.style.fontSize = '10px';
-        
+
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'btn';
         deleteBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">close</span>';
         deleteBtn.style.padding = '2px 4px';
         deleteBtn.style.minHeight = 'auto';
         deleteBtn.style.fontSize = '10px';
-        
+
         expandBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const componentList = groupItem.querySelector('.component-list');
             if (componentList) {
                 const isHidden = componentList.style.display === 'none';
                 componentList.style.display = isHidden ? 'block' : 'none';
-                expandBtn.querySelector('.material-icons').textContent = 
+                expandBtn.querySelector('.material-icons').textContent =
                     isHidden ? 'expand_less' : 'expand_more';
             }
         });
-        
+
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (confirm(`Delete entire ${group.group.mainLabel}? This will remove all ${group.marks.length} components.`)) {
@@ -4009,14 +4324,14 @@ function renderMarksList() {
                 delete multiComponentGroups[group.group.id];
             }
         });
-        
+
         groupActions.appendChild(expandBtn);
         groupActions.appendChild(deleteBtn);
         groupHeader.appendChild(groupInfo);
         groupHeader.appendChild(groupActions);
-        
+
         groupItem.appendChild(groupHeader);
-        
+
         // Component list (hidden by default)
         const componentList = document.createElement('div');
         componentList.className = 'component-list';
@@ -4024,7 +4339,7 @@ function renderMarksList() {
         componentList.style.marginTop = '8px';
         componentList.style.paddingLeft = '10px';
         componentList.style.borderLeft = '2px dashed #FFB74D';
-        
+
         group.marks.forEach(m => {
             const compItem = document.createElement('div');
             compItem.className = 'mark-item';
@@ -4032,11 +4347,11 @@ function renderMarksList() {
             compItem.style.padding = '4px 6px';
             compItem.style.fontSize = '10px';
             compItem.classList.toggle('active', m.id === selectedMarkId);
-            
+
             const label = document.createElement('span');
             label.textContent = `${m.seriesLabel} - ${m.componentType}`;
             compItem.appendChild(label);
-            
+
             const compDeleteBtn = document.createElement('button');
             compDeleteBtn.className = 'btn';
             compDeleteBtn.innerHTML = '<span class="material-icons" style="font-size:12px;">close</span>';
@@ -4058,9 +4373,9 @@ function renderMarksList() {
                     groupItem.remove();
                 }
             });
-            
+
             compItem.appendChild(compDeleteBtn);
-            
+
             compItem.addEventListener('click', (e) => {
                 if (e.target !== compDeleteBtn && !compDeleteBtn.contains(e.target)) {
                     selectedMarkId = m.id;
@@ -4068,51 +4383,61 @@ function renderMarksList() {
                     openProductModal(m);
                 }
             });
-            
+
             componentList.appendChild(compItem);
         });
-        
+
         groupItem.appendChild(componentList);
         marksListEl.appendChild(groupItem);
     });
 
     // Render regular marks
-// In the regular marks section (around line 1900-1950)
-// In the regularMarks.forEach loop:
-regularMarks.forEach(m => {
-    const item = document.createElement('div');
-    item.className = 'mark-item';
-    item.classList.toggle('active', m.id === selectedMarkId);
+    // In the regular marks section (around line 1900-1950)
+    // In the regularMarks.forEach loop:
+    // In the renderMarksList function, update the regularMarks.forEach loop:
+    // In the renderMarksList function, update the regularMarks.forEach loop:
+    regularMarks.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'mark-item';
+        item.classList.toggle('active', m.id === selectedMarkId);
 
-    const label = document.createElement('span');
-    label.textContent = m.seriesLabel + (m.isTextLabel ? ` - ${m.text}` : '');
-    item.appendChild(label);
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'btn';
-    deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
-    deleteBtn.style.marginLeft = '8px';
-    deleteBtn.style.padding = '4px 6px';
-    deleteBtn.style.minHeight = 'auto';
-    deleteBtn.style.fontSize = '12px';
-    deleteBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        removeMark(m.id);
-    });
-    item.appendChild(deleteBtn);
-
-    item.addEventListener('click', (e) => {
-        if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
-            selectedMarkId = m.id;
-            updateMarkSelection();
-            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
-            if (!m.isTextLabel) {
-                openProductModal(m);
-            }
+        const label = document.createElement('span');
+        // Show just the text content for text labels
+        if (m.isTextLabel) {
+            label.textContent = `"${m.text}"`;
+            label.style.color = '#000000'; // Black text
+            label.style.fontWeight = 'normal';
+            label.style.fontStyle = 'normal';
+        } else {
+            label.textContent = m.seriesLabel;
         }
+        item.appendChild(label);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn';
+        deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
+        deleteBtn.style.marginLeft = '8px';
+        deleteBtn.style.padding = '4px 6px';
+        deleteBtn.style.minHeight = 'auto';
+        deleteBtn.style.fontSize = '12px';
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeMark(m.id);
+        });
+        item.appendChild(deleteBtn);
+
+        item.addEventListener('click', (e) => {
+            if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
+                selectedMarkId = m.id;
+                updateMarkSelection();
+                // Don't open modal for text labels
+                if (!m.isTextLabel && !m.isEmitter) {
+                    openProductModal(m);
+                }
+            }
+        });
+        marksListEl.appendChild(item);
     });
-    marksListEl.appendChild(item);
-});
 }
 
 /* ------------------------- ZOOMING ------------------------- */
@@ -4298,6 +4623,36 @@ style.textContent = `
         border-color: #2196F3;
         box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
     }
+    .text-label {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        min-width: auto !important;
+        min-height: auto !important;
+        display: inline-block !important;
+    }
+    
+    .text-label-content {
+        font-family: Arial, sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #000000 !important;
+        text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+        white-space: nowrap !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        pointer-events: none !important;
+    }
+    
+    .mark.text-label:hover .text-label-content {
+        text-shadow: 0 0 3px rgba(102, 126, 234, 0.3);
+    }
+    
+    .mark.text-label.dragging .text-label-content {
+        text-shadow: 0 0 4px rgba(102, 126, 234, 0.5);
+    }
 `;
 document.head.appendChild(style);
 
@@ -4466,7 +4821,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 },
                 columnStyles: {
                     0: { cellWidth: 15, halign: 'center' },
-                    1: { cellWidth: 60, halign: 'center'}, // Type column
+                    1: { cellWidth: 60, halign: 'center' }, // Type column
                     2: { cellWidth: 30, halign: 'center' },
                     3: { cellWidth: 20, halign: 'center' },
                     4: { cellWidth: 40, halign: 'left' },
@@ -4546,7 +4901,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 },
                 columnStyles: {
                     0: { cellWidth: 15, halign: 'center' },
-                    1: { cellWidth: 60, halign: 'center'}, // Type column
+                    1: { cellWidth: 60, halign: 'center' }, // Type column
                     2: { cellWidth: 30, halign: 'center' },
                     3: { cellWidth: 20, halign: 'center' },
                     4: { cellWidth: 40, halign: 'left' },
@@ -4759,7 +5114,7 @@ function generateProductTable() {
 
     // First, group multi-component marks
     const groupedMultiComponent = {};
-    
+
     // Group marks by their groupId
     marks.forEach(mark => {
         if (mark.groupId && multiComponentGroups[mark.groupId]) {
@@ -4784,7 +5139,7 @@ function generateProductTable() {
         if (mark.categoryName && productData[mark.categoryName]) {
             brand = productData[mark.categoryName].brand || brand;
         }
-
+        if (mark.isEmitter) return;
         if (mark.isDBBox) {
             dbBoxesTable.push({
                 label: key,
@@ -4852,12 +5207,12 @@ function generateProductTable() {
         const key = group.group.mainLabel || group.group.subProductKey;
         const firstMark = group.marks[0];
         const category = 'TREMBLAY SOUNDS';
-        
+
         // Use the main product name (e.g., "7.1 Surround System") instead of component names
         const productKey = group.group.productKey;
         const subProductKey = group.group.subProductKey;
         const mainProductName = productData[productKey]?.subProducts[subProductKey]?.title || key;
-        
+
         if (!productMap.has(key)) {
             productMap.set(key, {
                 label: group.label, // Use the label (e.g., T1)
@@ -4885,6 +5240,7 @@ function generateProductTable() {
     };
 }
 
+/* ------------------------- PROJECT SAVE/LOAD FUNCTIONS ------------------------- */
 /* ------------------------- PROJECT SAVE/LOAD FUNCTIONS ------------------------- */
 document.addEventListener('DOMContentLoaded', function () {
     const saveProjectBtn = document.getElementById('saveProjectBtn');
@@ -4924,12 +5280,16 @@ function saveProject() {
                 size: mark.size,
                 shape: mark.shape,
                 seriesCode: mark.seriesCode,
-                seriesLabel: mark.seriesLabel,  // ✅ This is the key for wire connections
+                seriesLabel: mark.seriesLabel,
                 categoryName: mark.categoryName,
                 modelName: mark.modelName,
                 groupId: mark.groupId,
                 componentType: mark.componentType,
                 componentIndex: mark.componentIndex,
+                // Add a unique identifier for multi-component marks
+                componentUniqueKey: mark.isMultiComponent ?
+                    `${mark.seriesLabel}_${mark.componentType}_${mark.componentIndex}` :
+                    mark.seriesLabel,
                 desc: mark.desc,
                 features: mark.features,
                 imageSrc: mark.imageSrc,
@@ -4949,24 +5309,28 @@ function saveProject() {
                 apBrand: mark.apBrand,
                 apModel: mark.apModel,
                 apQty: mark.apQty || 1,
-                // ✅ REMOVE these redundant fields as they're not needed
-                // productKey: currentProduct,  // Remove
-                // subProductKey: currentSubProduct,  // Remove
-                originalId: mark.id  // ✅ Add this to track original ID
+                originalId: mark.id
             })),
             multiComponentGroups: multiComponentGroups,
-wires: wires.map(wire => ({
-    id: wire.id,
-    startMarkId: wire.startMark.id,
-    endMarkId: wire.endMark.id,
-    startMarkLabel: wire.startMark.seriesLabel,
-    endMarkLabel: wire.endMark.seriesLabel,
-    wireType: wire.wireType, // This should save all wire types including 'speaker'
-    mode: wire.mode,
-    curveValue: wire.curveValue,
-    points: wire.points,
-    color: wire.color || getWireTypeInfo(wire.wireType).color
-})),
+            wires: wires.map(wire => ({
+                id: wire.id,
+                startMarkId: wire.startMark.id,
+                endMarkId: wire.endMark.id,
+                startMarkLabel: wire.startMark.seriesLabel,
+                endMarkLabel: wire.endMark.seriesLabel,
+                // Save component unique keys for multi-component marks
+                startMarkComponentKey: wire.startMark.isMultiComponent ?
+                    `${wire.startMark.seriesLabel}_${wire.startMark.componentType}_${wire.startMark.componentIndex}` :
+                    wire.startMark.seriesLabel,
+                endMarkComponentKey: wire.endMark.isMultiComponent ?
+                    `${wire.endMark.seriesLabel}_${wire.endMark.componentType}_${wire.endMark.componentIndex}` :
+                    wire.endMark.seriesLabel,
+                wireType: wire.wireType,
+                mode: wire.mode,
+                curveValue: wire.curveValue,
+                points: wire.points,
+                color: wire.color || getWireTypeInfo(wire.wireType).color
+            })),
             relayState: relayState,
             lastRelaySelectionLabel: lastRelaySelectionLabel,
             currentProduct: currentProduct,
@@ -5040,7 +5404,6 @@ function loadProject(projectData) {
         return;
     }
 
-
     clearAllMarksAndWires();
 
     markCounter = 0;
@@ -5055,11 +5418,12 @@ function loadProject(projectData) {
         loadProjectData(projectData);
     }
 }
+
 function loadProjectData(projectData) {
     if (projectData.imageScale) {
         setScale(projectData.imageScale);
     }
-    
+
     if (projectData.dbBoxSpecs) {
         Object.keys(projectData.dbBoxSpecs).forEach(key => {
             if (productData[key]) {
@@ -5075,28 +5439,30 @@ function loadProjectData(projectData) {
             }
         });
     }
-    
+
     if (projectData.multiComponentGroups) {
         multiComponentGroups = projectData.multiComponentGroups;
     }
-    
-    // ✅ Create TWO maps: one by ID and one by Label
-    const markIdMap = new Map();    // Maps original ID -> new mark
-    const markLabelMap = new Map(); // Maps seriesLabel -> new mark
-    
+
+    // ✅ Create THREE maps for different lookup methods
+    const markIdMap = new Map();          // Original ID -> new mark
+    const markLabelMap = new Map();       // seriesLabel -> new mark (for regular marks)
+    const markComponentKeyMap = new Map(); // componentUniqueKey -> new mark (for multi-component)
+
     // First, load all marks
     projectData.marks.forEach(savedMark => {
-        // Generate a NEW ID for the mark (don't use saved ID)
+        // Generate a NEW ID for the mark
         const newId = 'mark-' + (++markCounter);
-        
+
+        // Create mark data object
         const mark = {
-            id: newId,  // ✅ Use NEW ID
+            id: newId,
             x: savedMark.x,
             y: savedMark.y,
             size: savedMark.size,
             shape: savedMark.shape || 'circle',
             seriesCode: savedMark.seriesCode,
-            seriesLabel: savedMark.seriesLabel, // ✅ Keep the SAME series label
+            seriesLabel: savedMark.seriesLabel,
             categoryName: savedMark.categoryName,
             modelName: savedMark.modelName,
             desc: savedMark.desc,
@@ -5121,7 +5487,8 @@ function loadProjectData(projectData) {
             isTremblay: savedMark.categoryName === 'TREMBLAY SOUNDS',
             groupId: savedMark.groupId || null,
             componentType: savedMark.componentType || '',
-            componentIndex: savedMark.componentIndex || 0
+            componentIndex: savedMark.componentIndex || 0,
+            componentUniqueKey: savedMark.componentUniqueKey || savedMark.seriesLabel
         };
 
         // Update series counter
@@ -5137,7 +5504,15 @@ function loadProjectData(projectData) {
         el.dataset.id = mark.id;
         el.dataset.size = mark.size;
         el.dataset.shape = mark.shape;
-        
+        el.dataset.seriesLabel = mark.seriesLabel;
+
+        // Store component unique key in dataset for multi-component marks
+        if (mark.isMultiComponent) {
+            el.dataset.componentUniqueKey = mark.componentUniqueKey;
+            el.dataset.componentType = mark.componentType;
+            el.dataset.componentIndex = mark.componentIndex;
+        }
+
         if (mark.isTextLabel) {
             el.dataset.isTextLabel = 'true';
             el.style.backgroundColor = '#FFFFFF';
@@ -5148,7 +5523,7 @@ function loadProjectData(projectData) {
             el.style.alignItems = 'center';
             el.style.justifyContent = 'center';
             el.style.padding = '4px 8px';
-            
+
             const textSpan = document.createElement('span');
             textSpan.className = 'label-text';
             textSpan.textContent = mark.text || mark.modelName || '';
@@ -5162,155 +5537,173 @@ function loadProjectData(projectData) {
             textSpan.style.textOverflow = 'ellipsis';
             textSpan.style.maxWidth = '100px';
             el.appendChild(textSpan);
-            
+
             mark.labelElement = textSpan;
         }
-        
+
         const badge = document.createElement('div');
         badge.className = 'label-badge';
         badge.textContent = mark.seriesLabel;
-        
+
         if (mark.isTextLabel) {
             badge.style.backgroundColor = '#667eea';
             badge.style.color = '#FFFFFF';
-        } else if (mark.isTremblay) {
+        } else if (mark.isTremblay || mark.isMultiComponent) {
             badge.style.backgroundColor = '#FF9800';
         }
-        
+
         el.appendChild(badge);
-        
+
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
-        
+
         const tooltipContent = document.createElement('div');
         tooltipContent.className = 'tooltip-content';
-        
+
         const tooltipTitle = document.createElement('div');
         tooltipTitle.className = 'tooltip-title';
         tooltipTitle.textContent = mark.categoryName || 'Product';
         if (mark.isTextLabel) {
             tooltipTitle.style.color = '#667eea';
-        } else if (mark.isTremblay) {
+        } else if (mark.isTremblay || mark.isMultiComponent) {
             tooltipTitle.style.color = '#FF9800';
         }
-        
+
         const tooltipModel = document.createElement('div');
         tooltipModel.className = 'tooltip-model';
         tooltipModel.textContent = mark.modelName || '—';
-        
+
         tooltipContent.appendChild(tooltipTitle);
         tooltipContent.appendChild(tooltipModel);
         tooltip.appendChild(tooltipContent);
         el.appendChild(tooltip);
-        
-        imgInner.appendChild(el);
-        
-        // Setup event listeners
-el.addEventListener('click', function (e) {
-    e.stopPropagation();
 
-    if (isWireMode && currentWireType && !e.defaultPrevented) {
-        // Wire selection logic should work for ALL marks including multi-component
-        if (!wireStartMark) {
-            wireStartMark = markData;
-            showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
-        } else if (!wireEndMark && wireStartMark !== markData) {
-            wireEndMark = markData;
-            const wireTypeInfo = getWireTypeInfo(currentWireType);
-            showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
-        } else if (wireStartMark === markData) {
-            wireStartMark = null;
-            wireEndMark = null;
-            wirePoints = [];
-            showNotification('First mark selection cleared.', 'info');
-        } else if (wireEndMark === markData) {
-            wireEndMark = null;
-            wirePoints = [];
-            showNotification('Second mark selection cleared.', 'info');
-        }
-        updateWireSelectionLabels();
-        updatePointsList();
-        e.preventDefault();
-    } else if (!isWireMode && !e.defaultPrevented) {
-        // Only open modal if not in wire mode and not dragging
-        if (!dragStarted) {
-            selectedMarkId = id;
-            updateMarkSelection();
-            
-            // Don't open modal for text labels, but do for multi-component items
-            if (!markData.isTextLabel) {
-                openProductModal(markData);
+        imgInner.appendChild(el);
+
+        // Setup event listeners
+        el.addEventListener('click', function (e) {
+            e.stopPropagation();
+
+            if (isWireMode && currentWireType && !e.defaultPrevented) {
+                // Use the mark object from closure
+                if (!wireStartMark) {
+                    wireStartMark = mark;
+                    showNotification(`First mark selected: ${mark.seriesLabel}. Now select second mark.`, 'info');
+                } else if (!wireEndMark && wireStartMark !== mark) {
+                    wireEndMark = mark;
+                    const wireTypeInfo = getWireTypeInfo(currentWireType);
+                    showNotification(`Second mark selected: ${mark.seriesLabel}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
+                } else if (wireStartMark === mark) {
+                    wireStartMark = null;
+                    wireEndMark = null;
+                    wirePoints = [];
+                    showNotification('First mark selection cleared.', 'info');
+                } else if (wireEndMark === mark) {
+                    wireEndMark = null;
+                    wirePoints = [];
+                    showNotification('Second mark selection cleared.', 'info');
+                }
+                updateWireSelectionLabels();
+                updatePointsList();
+                e.preventDefault();
+            } else if (!isWireMode && !e.defaultPrevented) {
+                // Only open modal if not in wire mode
+                selectedMarkId = mark.id;
+                updateMarkSelection();
+
+                // Don't open modal for text labels
+                if (!mark.isTextLabel) {
+                    openProductModal(mark);
+                }
             }
-        }
-    }
-});
-        
+        });
+
+        // Setup dragging
         setupMarkDragging(el, mark);
-        
+
         mark.el = el;
         mark.tooltip = tooltip;
         marks.push(mark);
-        
-        // ✅ Store in BOTH maps
+
+        // Store in all maps
         markIdMap.set(savedMark.id, mark);          // Original ID -> new mark
         markLabelMap.set(mark.seriesLabel, mark);   // Label -> new mark
+
+        // For multi-component marks, also store by componentUniqueKey
+        if (mark.isMultiComponent && mark.componentUniqueKey) {
+            markComponentKeyMap.set(mark.componentUniqueKey, mark);
+        }
     });
 
     // Update all marks positions
     updateAllMarks();
     renderMarksList();
 
-    // Now, load all wires - Use LABELS to find marks, not IDs
+    // Now, load all wires with improved matching logic
     if (projectData.wires && Array.isArray(projectData.wires)) {
         console.log('Loading wires:', projectData.wires.length);
-        
+
         projectData.wires.forEach(savedWire => {
-            // ✅ FIRST try to find marks by LABEL (most reliable)
-            let startMark = markLabelMap.get(savedWire.startMarkLabel);
-            let endMark = markLabelMap.get(savedWire.endMarkLabel);
-            
-            // If not found by label, try by ID (fallback)
+            let startMark = null;
+            let endMark = null;
+
+            // FIRST: Try to find marks by componentUniqueKey (for multi-component marks)
+            if (savedWire.startMarkComponentKey) {
+                startMark = markComponentKeyMap.get(savedWire.startMarkComponentKey);
+            }
+            if (savedWire.endMarkComponentKey) {
+                endMark = markComponentKeyMap.get(savedWire.endMarkComponentKey);
+            }
+
+            // SECOND: If not found by component key, try by seriesLabel
+            if (!startMark) {
+                startMark = markLabelMap.get(savedWire.startMarkLabel);
+            }
+            if (!endMark) {
+                endMark = markLabelMap.get(savedWire.endMarkLabel);
+            }
+
+            // THIRD: If still not found, try by ID (fallback)
             if (!startMark) {
                 startMark = markIdMap.get(savedWire.startMarkId);
-                console.warn('Found start mark by ID instead of label:', savedWire.startMarkLabel);
+                if (startMark) console.warn('Found start mark by ID instead of label:', savedWire.startMarkLabel);
             }
-            
             if (!endMark) {
                 endMark = markIdMap.get(savedWire.endMarkId);
-                console.warn('Found end mark by ID instead of label:', savedWire.endMarkLabel);
+                if (endMark) console.warn('Found end mark by ID instead of label:', savedWire.endMarkLabel);
             }
-            
+
             if (!startMark || !endMark) {
                 console.warn('Could not find marks for wire:', {
                     startLabel: savedWire.startMarkLabel,
                     endLabel: savedWire.endMarkLabel,
-                    startId: savedWire.startMarkId,
-                    endId: savedWire.endMarkId
+                    startComponentKey: savedWire.startMarkComponentKey,
+                    endComponentKey: savedWire.endMarkComponentKey
                 });
                 return;
             }
-            
+
             console.log('Creating wire between:', startMark.seriesLabel, 'and', endMark.seriesLabel);
-            
+
             // Set current wire type for wire creation
             const originalWireType = currentWireType;
             currentWireType = savedWire.wireType || 'knx';
-            
+
             let wireElement;
             if (savedWire.mode === 'curve') {
                 wireElement = createWireElement(startMark, endMark, savedWire.curveValue || 0, false);
             } else {
                 wireElement = createWireElementWithPoints(startMark, endMark, savedWire.points || [], false);
             }
-            
+
             // Restore original wire type
             currentWireType = originalWireType;
-            
+
             if (!wireElement) {
                 console.error('Failed to create wire element');
                 return;
             }
-            
+
             const wire = {
                 id: savedWire.id || `wire-${Date.now()}`,
                 startMark: startMark,
@@ -5322,9 +5715,9 @@ el.addEventListener('click', function (e) {
                 wireType: savedWire.wireType || 'knx',
                 color: savedWire.color || getWireTypeInfo(savedWire.wireType || 'knx').color
             };
-            
+
             wires.push(wire);
-            
+
             // Reattach event listeners
             if (wireElement.path) {
                 wireElement.path.style.cursor = "pointer";
@@ -5332,12 +5725,12 @@ el.addEventListener('click', function (e) {
                     e.stopPropagation();
                     selectWire(startMark, endMark, wire.wireType);
                 });
-                
+
                 // Reattach drag functionality
                 makeWireDraggable(wireElement.path, startMark, endMark);
             }
         });
-        
+
         console.log('Wires loaded:', wires.length);
     }
 
@@ -5351,7 +5744,7 @@ el.addEventListener('click', function (e) {
     if (projectData.currentWireType) {
         currentWireType = projectData.currentWireType;
         isWireMode = projectData.isWireMode || false;
-        
+
         if (isWireMode && currentWireType) {
             // Force a small delay to ensure DOM is ready
             setTimeout(() => {
@@ -5361,7 +5754,7 @@ el.addEventListener('click', function (e) {
             }, 100);
         }
     }
-    
+
     // Restore product selection
     if (projectData.currentProduct) {
         setTimeout(() => {
@@ -5378,7 +5771,7 @@ el.addEventListener('click', function (e) {
             updateWiresList();
         }, 200);
     }
-    
+
     showNotification(`Project loaded: ${projectData.marks.length} marks, ${wires.length} wires`, 'success');
 }
 
@@ -5387,7 +5780,7 @@ function setupMarkDragging(el, markData) {
     let startX = 0, startY = 0;
     let startMarkX = 0, startMarkY = 0;
     let dragStarted = false;
-    
+
     function onPointerDown(ev) {
         ev.stopPropagation();
         ev.preventDefault();
@@ -5402,69 +5795,70 @@ function setupMarkDragging(el, markData) {
         updateMarkSelection();
         el.classList.add('selected');
     }
-    
+
     function onPointerMove(ev) {
         if (!dragging) return;
-        
+
         const dx = ev.clientX - startX;
         const dy = ev.clientY - startY;
-        
+
         if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
             dragStarted = true;
         }
-        
+
         if (!dragStarted) return;
-        
+
         ev.preventDefault();
         ev.stopPropagation();
-        
+
         const transform = getImageTransform();
         if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
-        
+
         const imgRect = previewImage.getBoundingClientRect();
         const scaleX = imageNaturalWidth / imgRect.width;
         const scaleY = imageNaturalHeight / imgRect.height;
-        
+
         const imageDx = dx * scaleX;
         const imageDy = dy * scaleY;
-        
+
         let newX = startMarkX + imageDx;
         let newY = startMarkY + imageDy;
-        
+
         newX = Math.max(0, Math.min(imageNaturalWidth - markData.size, newX));
         newY = Math.max(0, Math.min(imageNaturalHeight - markData.size, newY));
-        
+
         markData.x = newX;
         markData.y = newY;
-        
+
         updateMarkPosition(markData);
-        
+
         // Update wires connected to this mark
         updateWiresConnectedToMark(markData);
     }
-    
+
     function onPointerUp(ev) {
         if (dragging) {
             dragging = false;
-            dragStarted = false;
             try {
                 if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
             } catch (e) { }
             el.classList.remove('selected');
-            
-            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
-            if (!dragStarted && !markData.isTextLabel && !isWireMode) {
+
+            // FIX: Only open modal if we didn't drag (just clicked)
+            if (!dragStarted && !isWireMode && !markData.isTextLabel && !markData.isEmitter) {
                 selectedMarkId = markData.id;
                 updateMarkSelection();
                 openProductModal(markData);
             }
+            dragStarted = false;
         }
     }
-    
+
     el.addEventListener('pointerdown', onPointerDown);
     document.addEventListener('pointermove', onPointerMove);
     document.addEventListener('pointerup', onPointerUp);
 }
+
 function createNewProject() {
     if (confirm('Create new project? All unsaved changes will be lost.')) {
         clearAllMarksAndWires();
@@ -5474,23 +5868,25 @@ function createNewProject() {
     }
 }
 
+// The rest of your disableAllZoom function remains the same...
+
 function disableAllZoom() {
     // Prevent keyboard zoom (Ctrl +, Ctrl -, Ctrl + mouse wheel)
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         // Windows/Linux: Ctrl + +/-/0
         // Mac: Cmd + +/-/0
-        if ((e.ctrlKey || e.metaKey) && 
-            (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=' || 
-             e.code === 'Equal' || e.code === 'Minus' || e.code === 'NumpadAdd' || 
-             e.code === 'NumpadSubtract' || e.keyCode === 187 || e.keyCode === 189 || 
-             e.keyCode === 48)) {
+        if ((e.ctrlKey || e.metaKey) &&
+            (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=' ||
+                e.code === 'Equal' || e.code === 'Minus' || e.code === 'NumpadAdd' ||
+                e.code === 'NumpadSubtract' || e.keyCode === 187 || e.keyCode === 189 ||
+                e.keyCode === 48)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
-        
+
         // Also prevent Ctrl + mouse wheel
-        if ((e.ctrlKey || e.metaKey) && 
+        if ((e.ctrlKey || e.metaKey) &&
             (e.key === 'ZoomIn' || e.key === 'ZoomOut')) {
             e.preventDefault();
             return false;
@@ -5498,7 +5894,7 @@ function disableAllZoom() {
     }, { passive: false });
 
     // Prevent mouse wheel zoom (Ctrl + mouse wheel)
-    document.addEventListener('wheel', function(e) {
+    document.addEventListener('wheel', function (e) {
         if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
             e.stopPropagation();
@@ -5507,14 +5903,14 @@ function disableAllZoom() {
     }, { passive: false });
 
     // Prevent touch zoom (pinch zoom)
-    document.addEventListener('touchstart', function(e) {
+    document.addEventListener('touchstart', function (e) {
         if (e.touches.length > 1) {
             e.preventDefault();
             e.stopPropagation();
         }
     }, { passive: false });
 
-    document.addEventListener('touchmove', function(e) {
+    document.addEventListener('touchmove', function (e) {
         if (e.touches.length > 1) {
             e.preventDefault();
             e.stopPropagation();
@@ -5523,7 +5919,7 @@ function disableAllZoom() {
 
     // Prevent double-tap zoom on mobile
     let lastTouchEnd = 0;
-    document.addEventListener('touchend', function(e) {
+    document.addEventListener('touchend', function (e) {
         const now = Date.now();
         if (now - lastTouchEnd <= 300) {
             e.preventDefault();
@@ -5536,7 +5932,7 @@ function disableAllZoom() {
     const metaViewport = document.querySelector('meta[name="viewport"]');
     if (metaViewport) {
         // Set maximum-scale and user-scalable to prevent zoom
-        metaViewport.setAttribute('content', 
+        metaViewport.setAttribute('content',
             'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no');
     } else {
         // Create meta viewport tag if it doesn't exist
@@ -5571,14 +5967,14 @@ function disableAllZoom() {
     document.head.appendChild(style);
 
     // Disable browser's zoom menu (context menu)
-    document.addEventListener('contextmenu', function(e) {
+    document.addEventListener('contextmenu', function (e) {
         // You might want to be more specific here
         // e.preventDefault();
     });
 
     // Listen for zoom events and reset if detected
     let lastZoomLevel = window.devicePixelRatio;
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         const currentZoom = window.devicePixelRatio;
         if (Math.abs(currentZoom - lastZoomLevel) > 0.1) {
             // Zoom detected, try to reset
@@ -5597,22 +5993,21 @@ disableAllZoom();
 function enableAllZoom() {
     // Remove event listeners (this is a simplified version)
     // In a real implementation, you'd need to keep references to the handlers
-    
+
     // Reset viewport meta tag
     const metaViewport = document.querySelector('meta[name="viewport"]');
     if (metaViewport) {
         metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
     }
-    
+
     // Remove the CSS style
     const zoomStyles = document.querySelectorAll('style');
     zoomStyles.forEach(style => {
-        if (style.textContent.includes('text-size-adjust') || 
+        if (style.textContent.includes('text-size-adjust') ||
             style.textContent.includes('touch-action')) {
             style.remove();
         }
     });
-    
+
     console.log('Zoom functions re-enabled');
 }
-

@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="DomoticsLogo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Automation Design Planner</title>
     <link rel="stylesheet" href="style.css">
@@ -21,20 +22,20 @@
         <div class="warning-box">
             <div class="warning-icon">⚠️</div>
             <h2>Please Use a Laptop or Desktop</h2>
-            <p>This Automation Design Suite works only on larger screens.</p>
+            <p>This Domotics Designer Tool works only on larger screens.</p>
         </div>
     </div>
 
     <div class="app-container">
         <div class="top-bar">
             <div class="app-title">
-                <h1>Automation Design Suite</h1>
+                <h1>Domotics Designer</h1>
             </div>
             <div class="controls">
                 <button class="control-btn" id="new-plan">New Plan</button>
                 <button class="control-btn" id="save-plan">Save Plan</button>
                 <button class="control-btn" id="load-plan">Load Plan</button>
-                <button class="control-btn" id="download-json">Download JSON</button>
+                <button style="display: none;" class="control-btn" id="download-json">Download JSON</button>
                 <button class="control-btn" id="export-png">Export PNG</button>
                 <button class="control-btn" id="undo-btn">Undo</button>
                 <button class="control-btn" id="redo-btn">Redo</button>
@@ -78,7 +79,7 @@
                 </div>
 
                 <div class="tool-section">
-                    <h3>Furniture</h3>
+                    <h3>Interior Items</h3>
                     <div class="furniture-item" data-type="door">
                         <div class="furniture-icon">
                             <img src="images/furniture/2.png" alt="Door"
