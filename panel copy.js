@@ -1,524 +1,3 @@
-/* ------------------------- PRODUCT DATA ------------------------- */
-const productData = {
-    "DOOR LOCK": {
-        title: "Door Lock",
-        desc: "Smart door locks with multiple access methods.",
-        subProducts: {
-            "DS811": {
-                title: "DS811",
-                desc: "Smart door lock with multiple access methods",
-                img: "./images/doorlock/7.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-            },
-            "DG10S": {
-                title: "DG10S",
-                desc: "Advanced smart door lock",
-                img: "./images/doorlock/8.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-            },
-            "DMSGSERIES": {
-                title: "DMSGSERIES",
-                desc: "Premium smart door lock series",
-                img: "./images/doorlock/9.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-            },
-            "DS605": {
-                title: "DS605",
-                desc: "Compact smart door lock",
-                img: "./images/doorlock/10.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-            },
-            "DS923MAX": {
-                title: "DS923MAX",
-                desc: "Maximum security door lock",
-                img: "./images/doorlock/11.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-            },
-            "DMFASL53": {
-                title: "DMFASL53",
-                desc: "Advanced fingerprint door lock",
-                img: "./images/doorlock/12.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-            },
-            "DMSASL54": {
-                title: "DMSASL54",
-                desc: "Smart access door lock",
-                img: "./images/doorlock/13.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-            },
-            "DS812": {
-                title: "DS812",
-                desc: "Multi-access door lock",
-                img: "./images/doorlock/14.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App", "Doorbell"]
-            },
-            "DMSSL56": {
-                title: "DMSSL56",
-                desc: "Smart lock with advanced features",
-                img: "./images/doorlock/15.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-            },
-            "DMRSL55": {
-                title: "DMRSL55",
-                desc: "Reliable smart door lock",
-                img: "./images/doorlock/16.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-            },
-            "DMSSL57": {
-                title: "DMSSL56",
-                desc: "Smart lock with advanced features",
-                img: "./images/doorlock/17.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-            },
-            "DMSSL58": {
-                title: "DMSSL58",
-                desc: "Secure smart lock system",
-                img: "./images/doorlock/18.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-            },
-            "DMFSL": {
-                title: "DMFSL",
-                desc: "Fingerprint smart lock",
-                img: "./images/doorlock/19.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-            },
-            "DMRSL59": {
-                title: "DMRSL59",
-                desc: "Advanced smart lock",
-                img: "./images/doorlock/20.png",
-                features: ["Fingerprint", "Password", "ID Card", "Key", "Mobile App"]
-            }
-        }
-    },
-    "PROCESSOR": {
-        title: "Processor",
-        desc: "High-performance automation processors.",
-        subProducts: {
-            "LUMI MINI": {
-                title: "LUMI MINI",
-                desc: "Intel N2830 Dual Core, 4GB RAM + 128GB SSD, dual USB 2.0 & 3.0 ports, compact aluminium body, Gigabit Ethernet & Wi-Fi.",
-                img: "./images/processor/21.png",
-                features: ["Intel N2830 Dual Core", "4GB RAM + 128GB SSD", "Dual USB 2.0 & 3.0 ports", "Compact aluminium body", "Gigabit Ethereum & Wi-Fi"]
-            },
-            "LUMI PLUS": {
-                title: "LUMI PLUS",
-                desc: "Intel N5105 (2.0–2.9 GHz), 8GB RAM + 128GB SSD, dual USB 2.0 & USB 3.0 ports, compact plastic body, Gigabit Ethernet & Wi-Fi.",
-                img: "./images/processor/22.png",
-                features: ["Intel N5105 (2.0–2.9 GHz)", "8GB RAM + 128GB SSD", "Dual USB 2.0 & USB 3.0 ports", "Compact plastic body", "Gigabit Ethereum & Wi-Fi"]
-            },
-            "LUMI ULTRA": {
-                title: "LUMI ULTRA",
-                desc: "Intel i7 (2.8–4.7 GHz), 16GB RAM + 256GB SSD, aluminium body, dual USB 2.0 & USB 3.0 ports, Gigabit Ethereum & Wi-Fi.",
-                img: "./images/processor/23.png",
-                features: ["Intel i7 (2.8–4.7 GHz)", "16GB RAM + 256GB SSD", "Aluminium body", "Dual USB 2.0 & USB 3.0 ports", "Gigabit Ethereum & Wi-Fi"]
-            }
-        }
-    },
-    "LUMI GLASS SERIES": {
-        title: "LUMI Glass Series",
-        desc: "Modular glass touch panels in multiple model sizes.",
-        subProducts: {
-            "2 MODEL": {
-                title: "2 MODEL",
-                desc: "Frame size 85×85×8 mm, fits 2M box, available in black & white glass colours.",
-                img: "./images/lumiglass/24.png",
-                features: ["Frame size 85×85×8 mm", "Fits 2M box", "Black & white glass colours"]
-            },
-            "4 MODEL": {
-                title: "4 MODEL",
-                desc: "Frame size 150×85×8 mm, 4M variants (2 Quads / 1 Quad + 1 Blank), fits 4M box, available in black & white glass colours.",
-                img: "./images/lumiglass/25.png",
-                features: ["Frame size 150×85×8 mm", "4M variants (2 Quads / 1 Quad + 1 Blank)", "Fits 4M box", "Black & white glass colours"]
-            },
-            "6 MODEL": {
-                title: "6 MODEL",
-                desc: "Frame size 220×85×8 mm, 6M variants (3 Quads / 2 Quads + 1 Blank / 1 Quad + 2 Blanks), fits 6M box, available in black & white glass colours.",
-                img: "./images/lumiglass/26.png",
-                features: ["Frame size 220×85×8 mm", "6M variants", "Fits 6M box", "Black & white glass colours"]
-            },
-            "8 MODEL": {
-                title: "8 MODEL",
-                desc: "Frame size 240×90×8 mm, 8M variants (3 Quads / 2 Quads + 1 Blank / 1 Quad + 2 Blanks), fits 8M box, available in black & white glass colours.",
-                img: "./images/lumiglass/26.png",
-                features: ["Frame size 240×90×8 mm", "8M variants", "Fits 8M box", "Black & white glass colours"]
-            },
-            "12 MODEL": {
-                title: "12 MODEL",
-                desc: "Frame size 220×155×8 mm, 12M variant (3 Quads + 3 Blanks), fits 12M box, available in black & white glass colours.",
-                img: "./images/lumiglass/27.png",
-                features: ["Frame size 220×155×8 mm", "12M variant (3 Quads + 3 Blanks)", "Fits 12M box", "Black & white glass colours"]
-            }
-        }
-    },
-    "ESCULT SERIES": {
-        title: "Escult Series",
-        desc: "Designer sculpted smart touch panels.",
-        subProducts: {
-            "2 MODEL": {
-                title: "2 MODEL",
-                desc: "Board size 114×86×9 mm, fits 2M box, available in 9 Colors and 27 Finish",
-                img: "./images/escultseries/28.png",
-                features: ["Board size 114×86×9 mm", "Fits 2M box", "9 Colors", "27 Finish"]
-            },
-            "4 MODEL": {
-                title: "4 MODEL",
-                desc: "Board size 174×86×9 mm, fits 4M box, available in 9 Colors and 27 Finish",
-                img: "./images/escultseries/29.png",
-                features: ["Board size 174×86×9 mm", "Fits 4M box", "9 Colors", "27 Finish"]
-            },
-            "6 MODEL": {
-                title: "6 MODEL",
-                desc: "Board size 250×86×9 mm, fits 6M box, available in 9 Colors and 27 Finish",
-                img: "./images/escultseries/30.png",
-                features: ["Board size 250×86×9 mm", "Fits 6M box", "9 Colors", "27 Finish"]
-            },
-            "8 MODEL": {
-                title: "8 MODEL",
-                desc: "Board size 250×86×9 mm, fits 8M box, available in 9 Colors and 27 Finish",
-                img: "./images/escultseries/30.png",
-                features: ["Board size 250×86×9 mm", "Fits 8M box", "9 Colors", "27 Finish"]
-            }
-        }
-    },
-    "WALL MOUNT DISPLAY": {
-        title: "Wall Mount Display",
-        desc: "Android-powered wall mount tablets.",
-        subProducts: {
-            "10\" POE ANDROID WALL MOUNT TABLET": {
-                title: "10\" POE ANDROID WALL MOUNT TABLET",
-                desc: "RK3566 Quad-core, Android 11, 4GB RAM + 16GB ROM, 10\" IPS display (800×1280, 500 nits), PoE & 12V power, USB-C & RS485, Wi-Fi/Bluetooth/Ethernet, durable metal body.",
-                img: "./images/walldisplay/37.png",
-                features: ["RK3566 Quad-core", "Android 11", "4GB RAM + 16GB ROM", "10\" IPS display (800×1280, 500 nits)", "PoE & 12V power", "USB-C & RS485", "Wi-Fi/Bluetooth/Ethernet", "Durable metal body"]
-            },
-            "4\" POE ANDROID WALL MOUNT TABLET": {
-                title: "4\" POE ANDROID WALL MOUNT TABLET",
-                desc: "RK3566 Quad-core, Android 11, 2GB RAM + 16GB ROM, 4\" IPS display (480×480), PoE & AC power, USB-C/RS485/Speaker/Mic, Wi-Fi/Bluetooth/Ethernet, durable in-wall design (White/Black).",
-                img: "./images/walldisplay/36.png",
-                features: ["RK3566 Quad-core", "Android 11", "2GB RAM + 16GB ROM", "4\" IPS display (480×480)", "PoE & AC power", "USB-C/RS485/Speaker/Mic", "Wi-Fi/Bluetooth/Ethernet", "Durable in-wall design (White/Black)"]
-            }
-        }
-    },
-    "TACTILE HEXA SERIES": {
-        title: "Tactile Hexa Series",
-        desc: "Premium tactile switches and controls.",
-        subProducts: {
-            "6 BUTTON KNX SWITCH": {
-                title: "6 BUTTON KNX SWITCH",
-                desc: "KNX BUS protocol, CNC metal build, 21–30 VDC input, max 90% humidity, 86×86×24 mm size, –5° to +45°C operating range, ETS-configurable backlight LED.",
-                img: "./images/hexaseries/38.png",
-                features: ["KNX BUS protocol", "CNC metal build", "21–30 VDC input", "Max 90% humidity", "86×86×24 mm size", "–5° to +45°C operating range", "ETS-configurable backlight LED"]
-            },
-            "MULTI SOCKET + 2 USB": {
-                title: "MULTI SOCKET + 2 USB",
-                desc: "CNC metal body, 230V AC input, max 90% humidity, 86×86×24 mm size, –5° to +45°C operating temperature.",
-                img: "./images/hexaseries/39.png",
-                features: ["CNC metal body", "230V AC input", "Max 90% humidity", "86×86×24 mm size", "–5° to +45°C operating temperature"]
-            },
-            "DND SWITCH": {
-                title: "DND SWITCH",
-                desc: "CNC metal, 230V AC, max 90% humidity, 86×86×24 mm, –5° to +45°C, features: Calling Bell, DND, Clean Room, Wait.",
-                img: "./images/hexaseries/40.png",
-                features: ["CNC metal", "230V AC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C", "Calling Bell", "DND", "Clean Room", "Wait"]
-            },
-            "RFIC CARD READER": {
-                title: "RFIC CARD READER",
-                desc: "CNC metal, 230V AC, max 90% humidity, 86×86×24 mm, –5° to +45°C, supports 13.56 MHz IC cards.",
-                img: "./images/hexaseries/41.png",
-                features: ["CNC metal", "230V AC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C", "Supports 13.56 MHz IC cards"]
-            },
-            "THERMOSTAT": {
-                title: "THERMOSTAT",
-                desc: "KNX protocol, aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
-                img: "./images/hexaseries/42.png",
-                features: ["KNX protocol", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
-            }
-        }
-    },
-    "DUO-QUAD SERIES": {
-        title: "Duo-Quad Series",
-        desc: "Advanced KNX control devices.",
-        subProducts: {
-            "8 BUTTON KNX SWITCH": {
-                title: "8 BUTTON KNX SWITCH",
-                desc: "KNX BUS device, CNC metal body, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to +45°C operating range.",
-                img: "./images/duoquad/43.png",
-                features: ["KNX BUS device", "CNC metal body", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C operating range"]
-            },
-            "8 BUTTON KNX SWITCH WITH 4 GANG RELAY": {
-                title: "8 BUTTON KNX SWITCH WITH 4 GANG RELAY",
-                desc: "KNX BUS 4×16A output module CNC metal, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to +45°C operating range.",
-                img: "./images/duoquad/44.png",
-                features: ["KNX BUS 4×16A output module", "CNC metal", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to +45°C operating range"]
-            },
-            "THERMOSTAT": {
-                title: "THERMOSTAT",
-                desc: "KNX device – aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
-                img: "./images/duoquad/45.png",
-                features: ["KNX device", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
-            },
-            "SOCKET": {
-                title: "SOCKET",
-                desc: "KNX protocol, aluminium CNC finish, 21–30 VDC, max 90% humidity, 86×86×24 mm, –5° to 45°C operating range.",
-                img: "./images/duoquad/46.png",
-                features: ["KNX protocol", "Aluminium CNC finish", "21–30 VDC", "Max 90% humidity", "86×86×24 mm", "–5° to 45°C operating range"]
-            }
-        }
-    },
-    "DOMOGENIE GLASS LITE SERIES": {
-        title: "Domogenie Glass Lite Series",
-        desc: "Tempered glass switch modules with RGB backlight.",
-        subProducts: {
-            "2 MODULE": {
-                title: "2 MODULE",
-                desc: "86×86×35.7 mm, 230V AC (N+L), 100W fan/dimmer, 30A relay, WiFi/ZigBee, tempered glass + aluminium frame, RGB backlight, black/white/custom options.",
-                img: "./images/domoglass/31.png",
-                features: ["86×86×35.7 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom options"]
-            },
-            "4 MODULE": {
-                title: "4 MODULE",
-                desc: "450×86×38.9 mm, tempered glass + aluminium frame, supports cast options.",
-                img: "./images/domoglass/32.png",
-                features: ["450×86×38.9 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
-            },
-            "6 MODULE": {
-                title: "6 MODULE",
-                desc: "234×86×37.2 mm tempered glass panel.",
-                img: "./images/domoglass/33.png",
-                features: ["234×86×37.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
-            },
-            "8 MODULE": {
-                title: "8 MODULE",
-                desc: "253×86×38.2 mm panel for premium installs.",
-                img: "./images/domoglass/34.png",
-                features: ["253×86×38.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
-            },
-            "12 MODULE": {
-                title: "12 MODULE",
-                desc: "237×152×37.2 mm, multi-module panel.",
-                img: "./images/domoglass/35.png",
-                features: ["237×152×37.2 mm", "230V AC (N+L)", "100W fan/dimmer", "30A relay", "WiFi/ZigBee", "Tempered glass + aluminium frame", "RGB backlight", "Black/white/custom glass w/ black/silver/gold frame"]
-            }
-        }
-    },
-    // In the productData object, replace the TREMBLAY SOUNDS section with:
-    // Replace the TREMBLAY SOUNDS section with:
-    "TREMBLAY SOUNDS": {
-        title: "Tremblay Sounds",
-        desc: "Premium audio solutions.",
-        isMultiComponent: true,
-        subProducts: {
-            "MULTIROOM AUDIO": {
-                title: "Multiroom Audio System",
-                desc: "In-ceiling streaming speaker system",
-                img: "./images/tremblay/53.png",
-                components: {
-                    "MASTER": {
-                        title: "Master Speaker",
-                        quantity: 1
-                    },
-                    "SLAVE": {
-                        title: "Slave Speaker",
-                        quantity: 1
-                    }
-                }
-            },
-            "7.2 SURROUND SYSTEM": {
-                title: "7.1 Surround Sound System",
-                desc: "7.1 channel home theater system",
-                img: "./images/tremblay/2.png",
-                components: {
-                    "SOUNDBAR": {
-                        title: "Sound Bar",
-                        quantity: 1
-                    },
-                    "SATELLITE": {
-                        title: "Satellite Speaker",
-                        quantity: 4
-                    },
-                    "SUBWOOFER": {
-                        title: "Subwoofer",
-                        quantity: 2
-                    }
-                }
-            },
-            "5.1.2 DOLBY ATMOS": {
-                title: "5.1.2 Dolby Atmos System",
-                desc: "5.1.2 channel Dolby Atmos home theater",
-                img: "./images/tremblay/1.png",
-                components: {
-                    "LCR": {
-                        title: "LCR Speaker",
-                        quantity: 3
-                    },
-                    "SURROUND": {
-                        title: "Surround Speaker",
-                        quantity: 2
-                    },
-                    "SUBWOOFER": {
-                        title: "Subwoofer",
-                        quantity: 1
-                    },
-                    "ATMOS": {
-                        title: "Atmos Speaker",
-                        quantity: 2
-                    }
-                }
-            },
-            "7.1 SURROUND SYSTEM": {
-                title: "5.1 Surround Sound System",
-                desc: "5.1 channel home theater system",
-                img: "./images/tremblay/1.png",
-                components: {
-                    "SOUNDBAR": {
-                        title: "Sound Bar",
-                        quantity: 1
-                    },
-                    "SATELLITE": {
-                        title: "Satellite Speaker",
-                        quantity: 4
-                    },
-                    "SUBWOOFER": {
-                        title: "Subwoofer",
-                        quantity: 1
-                    }
-                }
-            }
-        }
-    },
-    "Z-WAVE RELAY": {
-        title: "Z-Wave Relay",
-        desc: "Multi-channel relay modules and accessories.",
-        relay: true,
-        img: "./images/relay/47.png"
-    },
-    "CURTAIN MOTORS": {
-        title: "Curtain Motors",
-        desc: "Smart curtain motor systems.",
-        subProducts: {
-            "N+ KNX SERIES CURTAIN MOTOR": {
-                title: "N+ KNX SERIES CURTAIN MOTOR",
-                desc: "Dual KNX + 433MHz control, real-time feedback, works with all KNX devices, KNX 21–30VDC & 100–240V AC motor, 1.5 N·m torque, 50kg load, 13cm/s speed, 0.9–12m width, >4min runtime, <28dB noise, IP20, –10°C to +55°C.",
-                img: "./images/curtain/51.png",
-                features: ["Dual KNX + 433MHz control", "Real-time feedback", "Works with all KNX devices", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
-            },
-            "LUMI N+ 5 WIRE MOTOR": {
-                title: "LUMI N+ 5 WIRE MOTOR",
-                desc: "Dual KNX + RF control, real-time feedback, fully KNX compatible, KNX 21–30VDC & 100–240V AC motor, 1.5 N·m torque, 50kg load, 13cm/s speed, 0.9–12m width, >4min runtime, <28dB noise, IP20, –10°C to +55°C.",
-                img: "./images/curtain/52.png",
-                features: ["Dual KNX + RF control", "Real-time feedback", "Fully KNX compatible", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
-            }
-        }
-    },
-    "SENSORS": {
-        title: "Sensors",
-        desc: "Advanced detection and monitoring sensors for smart homes.",
-        subProducts: {
-            "FALL DETECTION SENSOR": {
-                title: "Fall Detection Sensor",
-                desc: "Advanced AI-powered fall detection sensor with emergency alert system.",
-                img: "./images/sensors/56.png",
-                features: ["AI-powered fall detection", "Emergency alert system", "24/7 monitoring", "Wi-Fi/Bluetooth connectivity", "Long battery life", "Water-resistant design"]
-            },
-            "HUMAN PRESENCE SENSOR": {
-                title: "Human Presence Sensor",
-                desc: "Microwave-based presence detection with high accuracy and wide coverage.",
-                img: "./images/sensors/55.png",
-                features: ["Microwave detection technology", "360° coverage", "Adjustable sensitivity", "Built-in temperature sensor", "Energy saving mode", "Easy installation"]
-            },
-            "OCCUPANCY SENSOR": {
-                title: "Occupancy Sensor",
-                desc: "Motion-based occupancy detection for lighting and HVAC control.",
-                img: "./images/sensors/54.png",
-                features: ["PIR motion detection", "Time-delay adjustment", "Lux level sensing", "Dual-technology option", "Ceiling/wall mount", "Energy compliance certified"]
-            }
-        }
-    },
-    // ADD THIS NEW CATEGORY - Add it with the other products before PRODUCT_ORDER
-    "IR BLASTER - ZMOTE": {
-        title: "IR Blaster - Zmote",
-        desc: "Universal infrared remote control devices for home automation.",
-        subProducts: {
-            "ZMOTE PRO LAN": {
-                title: "Zmote Pro LAN",
-                desc: "Ethernet-connected universal IR blaster with extended range and learning capability.",
-                img: "./images/irblaster/60.png", // You'll need to add this image
-                features: [
-                    "Ethernet connectivity",
-                    "Extended IR range (up to 15m)",
-                    "Learn IR codes from existing remotes",
-                    "Control up to 8 devices simultaneously",
-                    "REST API for integration",
-                    "Wide compatibility with AV equipment"
-                ]
-            },
-            "ZMOTE PRO WIFI": {
-                title: "Zmote Pro WiFi",
-                desc: "WiFi-enabled universal IR blaster with cloud integration.",
-                img: "./images/irblaster/61.png", // You'll need to add this image
-                features: [
-                    "WiFi connectivity (2.4GHz)",
-                    "Cloud-based remote access",
-                    "Mobile app control",
-                    "Schedule and timer functions",
-                    "Scene integration",
-                    "Works with Alexa/Google Home"
-                ]
-            },
-            "ZMOTE BLASTER PRO": {
-                title: "WiFi to IR",
-                desc: "Compact WiFi to infrared converter for legacy IR devices.",
-                img: "./images/irblaster/59.png", // You'll need to add this image
-                features: [
-                    "Compact size (45×45×15 mm)",
-                    "WiFi to IR conversion",
-                    "Low power consumption",
-                    "Easy setup via mobile app",
-                    "Support for multiple IR protocols",
-                    "Affordable solution for IR automation"
-                ]
-            },
-            "ZMOTE WIFI2IR": {
-                title: "WiFi to IR",
-                desc: "Compact WiFi to infrared converter for legacy IR devices.",
-                img: "./images/irblaster/58.png", // You'll need to add this image
-                features: [
-                    "Compact size (45×45×15 mm)",
-                    "WiFi to IR conversion",
-                    "Low power consumption",
-                    "Easy setup via mobile app",
-                    "Support for multiple IR protocols",
-                    "Affordable solution for IR automation"
-                ]
-            }
-        }
-    },
-    "EMITTER": {
-        title: "Emitter",
-        desc: "RF/IR emitter devices for remote control automation.",
-        isEmitter: true, // Custom flag to identify emitter products
-        img: "./images/emitter/placeholder.png" // You'll need to add this image
-    },
-    "TEXT": {
-        title: "Text Label",
-        desc: "Add custom text labels to the floor plan.",
-        isTextLabel: true,
-        img: "./images/text/placeholder.png" // You'll need to add this image
-    },
-    "AUTOMATION DISTRIBUTION BOX": {
-        title: "Automation Distribution Box",
-        desc: "Professional distribution boxes for automation system components.",
-        isDBBox: true,
-        img: "./images/db/1.png",
-        features: ["Modular design", "DIN rail mounting", "Transparent cover", "IP65 rated", "Wall mountable", "Cable management"]
-    },
-    "NETWORK DISTRIBUTION BOX": {
-        title: "Network Distribution Box",
-        desc: "Distribution boxes for network and communication equipment.",
-        isNetworkDBBox: true,
-        img: "./images/db/1.png",
-        features: ["Cable management", "Ventilation slots", "Wall mountable", "Lockable door", "Rack mount options"]
-    }
-};
 
 const PRODUCT_ORDER = [
     "DOOR LOCK",
@@ -533,8 +12,7 @@ const PRODUCT_ORDER = [
     "Z-WAVE RELAY",
     "CURTAIN MOTORS",
     "SENSORS",
-    "IR BLASTER - ZMOTE",
-    "EMITTER", // ADD THIS LINE - NEW EMITTER CATEGORY
+    "IR BLASTER - ZMOTE", // ADD THIS LINE
     "AUTOMATION DISTRIBUTION BOX",
     "NETWORK DISTRIBUTION BOX",
     "TEXT"
@@ -640,7 +118,6 @@ function getSeriesCode(productKey) {
     if (productKey === 'Z-WAVE RELAY') return 'R';
     if (productKey === 'TREMBLAY SOUNDS') return 'T'; // Already has 'T'
     if (productKey === 'IR BLASTER - ZMOTE') return 'I';
-    if (productKey === 'EMITTER') return 'E';
     if (productKey === 'TEXT') return 'TX';
     if (productKey === 'AUTOMATION DISTRIBUTION BOX') return 'ADB';
     if (productKey === 'NETWORK DISTRIBUTION BOX') return 'NDB';
@@ -735,28 +212,28 @@ function clearAllMarksAndWires() {
 
 function nextSeriesLabel(productKey) {
     const code = getSeriesCode(productKey);
-
+    
     if (!seriesCounters[code]) {
         seriesCounters[code] = 0;
     }
-
+    
     // Find the next available number
     const existingMarks = marks.filter(mark => mark.seriesCode === code);
     let nextNum = 1;
-
+    
     if (existingMarks.length > 0) {
         const existingNumbers = existingMarks.map(mark => {
             const num = parseInt(mark.seriesLabel.substring(code.length));
             return isNaN(num) ? 0 : num;
         });
-
+        
         while (existingNumbers.includes(nextNum)) {
             nextNum++;
         }
     } else {
         nextNum = seriesCounters[code] + 1;
     }
-
+    
     seriesCounters[code] = Math.max(seriesCounters[code], nextNum);
     return { seriesCode: code, label: `${code}${nextNum}` };
 }
@@ -1411,7 +888,7 @@ function populateModal(mark) {
         const sizeEl = document.createElement('div');
         sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
         modalProductDesc.appendChild(sizeEl);
-
+        
         // Add relay details if any - as bullet points
         if (mark.selectedRelays && mark.selectedRelays.length > 0) {
             const relayHeader = document.createElement('div');
@@ -1419,7 +896,7 @@ function populateModal(mark) {
             relayHeader.style.marginTop = '8px';
             relayHeader.style.fontWeight = 'bold';
             modalProductDesc.appendChild(relayHeader);
-
+            
             mark.selectedRelays.forEach(item => {
                 const relayItem = document.createElement('div');
                 relayItem.textContent = `• ${item.name} x${item.quantity}`;
@@ -1440,7 +917,7 @@ function populateModal(mark) {
         const sizeEl = document.createElement('div');
         sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
         modalProductDesc.appendChild(sizeEl);
-
+        
         // Add router details if any - as bullet point
         if (mark.routerBrand || mark.routerModel) {
             const routerEl = document.createElement('div');
@@ -1448,7 +925,7 @@ function populateModal(mark) {
             routerEl.style.marginTop = '8px';
             modalProductDesc.appendChild(routerEl);
         }
-
+        
         // Add access point details if any - as bullet point
         if (mark.apBrand || mark.apModel) {
             const apEl = document.createElement('div');
@@ -1461,7 +938,7 @@ function populateModal(mark) {
         const descEl = document.createElement('div');
         descEl.textContent = mark.desc || '';
         modalProductDesc.appendChild(descEl);
-
+        
         // For Z-Wave Relay, show relay items
         if (mark.relayItems && mark.relayItems.length > 0) {
             const relayHeader = document.createElement('div');
@@ -1469,7 +946,7 @@ function populateModal(mark) {
             relayHeader.style.marginTop = '8px';
             relayHeader.style.fontWeight = 'bold';
             modalProductDesc.appendChild(relayHeader);
-
+            
             mark.relayItems.forEach(item => {
                 const relayItem = document.createElement('div');
                 relayItem.textContent = `• ${item.name} x${item.quantity}`;
@@ -1478,7 +955,7 @@ function populateModal(mark) {
             });
         }
     }
-
+    
     const imageSrc = mark.imageSrc || previewImage.src;
     if (imageSrc) {
         modalProductImage.src = imageSrc;
@@ -1486,11 +963,11 @@ function populateModal(mark) {
     } else {
         modalProductImage.style.display = 'none';
     }
-
+    
     modalProductFeatures.innerHTML = '';
     // For DB Boxes, don't show features in modal
     if (!mark.isDBBox && !mark.isNetworkDBBox) {
-        const featureList = (mark.features && mark.features.length ? mark.features : ['Immersive Audio Experience', 'Flexible Speaker Placement', 'Seamless Connectivity & Control', 'Expandable & Future-Ready System']).slice(0, 12);
+        const featureList = (mark.features && mark.features.length ? mark.features : ['Immersive Audio Experience','Flexible Speaker Placement','Seamless Connectivity & Control','Expandable & Future-Ready System']).slice(0, 12);
         featureList.forEach(feature => {
             const li = document.createElement('li');
             li.textContent = feature;
@@ -1528,7 +1005,7 @@ function buildList() {
         wireItem.style.cursor = 'pointer';
         wireItem.style.padding = '12px 16px';
         wireItem.style.margin = '4px 0';
-
+        
         wireItem.innerHTML = `
             <div class="tab-title" style="color: ${wireType.color}; font-weight: 600; position: relative; z-index: 2;">
                 <span class="material-icons" style="font-size: 18px; margin-right: 8px; vertical-align: middle;">${wireType.icon}</span>
@@ -1538,25 +1015,25 @@ function buildList() {
                 <span class="material-icons" style="font-size:20px;color:${wireType.color}">add_link</span>
             </div>
         `;
-
+        
         // Add click event directly to the tab-btn
         wireItem.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-
+            
             // Get the actual clicked element
             let target = e.target;
             while (target && !target.classList.contains('tab-btn')) {
                 target = target.parentElement;
             }
-
+            
             if (target) {
                 currentWireType = wireType.id;
                 isWireMode = true;
 
-                document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"], .tab-btn[data-name^="SPEAKER_WIRE"]').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.name === wireType.name);
-                });
+document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"], .tab-btn[data-name^="SPEAKER_WIRE"]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.name === wireType.name);
+});
 
                 document.querySelectorAll('.tab-btn[data-name]').forEach(btn => {
                     if (!btn.dataset.name.includes('WIRE')) {
@@ -1568,7 +1045,7 @@ function buildList() {
                 showNotification(`${wireType.title} Mode: Select two marks to connect them`, 'info');
             }
         });
-
+        
         productListEl.appendChild(wireItem);
     });
 
@@ -1603,17 +1080,17 @@ function buildList() {
 
         if (productData[key].subProducts && !productData[key].isDBBox && !productData[key].isNetworkDBBox) {
             right.innerHTML = '<span class="material-icons" style="font-size:20px;color:var(--muted)">expand_more</span>';
-
+            
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-
+                
                 // Get the actual clicked element
                 let target = e.target;
                 while (target && !target.classList.contains('tab-btn')) {
                     target = target.parentElement;
                 }
-
+                
                 if (target) {
                     const existing = item.nextElementSibling;
                     if (existing && existing.classList.contains('sub-product-list')) {
@@ -1629,13 +1106,13 @@ function buildList() {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-
+                
                 // Get the actual clicked element
                 let target = e.target;
                 while (target && !target.classList.contains('tab-btn')) {
                     target = target.parentElement;
                 }
-
+                
                 if (target) {
                     selectProduct(key);
                 }
@@ -1746,22 +1223,22 @@ function selectProduct(productKey, subProductKey = null) {
     });
 
     // Clean up text input when switching away from TEXT
-    if (currentProduct !== productKey && currentProduct === 'TEXT') {
-        // Remove text instruction
-        const textInstruction = document.querySelector('.text-instruction');
-        if (textInstruction) {
-            textInstruction.remove();
-        }
-
-        // Remove text controls
-        const textControls = document.getElementById('textLabelControls');
-        if (textControls) {
-            textControls.remove();
-        }
-
-        // Restore product image display
-        productImage.style.display = 'block';
+if (currentProduct !== productKey && currentProduct === 'TEXT') {
+    // Remove text instruction
+    const textInstruction = document.querySelector('.text-instruction');
+    if (textInstruction) {
+        textInstruction.remove();
     }
+    
+    // Remove text controls
+    const textControls = document.getElementById('textLabelControls');
+    if (textControls) {
+        textControls.remove();
+    }
+    
+    // Restore product image display
+    productImage.style.display = 'block';
+}
 
     let data = productData[productKey];
     let title = data.title || productKey;
@@ -1773,7 +1250,6 @@ function selectProduct(productKey, subProductKey = null) {
     const isNetworkDBBox = data.isNetworkDBBox || false;
     const isTextLabel = data.isTextLabel || false;
     const isMultiComponent = data.isMultiComponent || false;
-    const isEmitter = data.isEmitter || false;
 
     if (isDBBox) {
         title = data.title;
@@ -1837,59 +1313,12 @@ function selectProduct(productKey, subProductKey = null) {
         buildRelayOptions();
         productImageOverlay.style.display = 'block';
         updateRelayOverlay();
-
+        
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
         document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
-
-    } else if (isEmitter) { // ADD THIS ELSE IF BLOCK
-        // For EMITTER - Show clean interface similar to TEXT
-        pTitle.textContent = data.title;
-        pDesc.textContent = data.desc;
-
-        // Hide product image if not available
-        if (data.img) {
-            productImage.src = data.img;
-            productImage.style.display = 'block';
-        } else {
-            productImage.style.display = 'none';
-        }
-
-        // Hide features section
-        featuresSection.style.display = 'none';
-        relayControlsEl.style.display = 'none';
-        productImageOverlay.style.display = 'none';
-        productImageOverlay.textContent = '';
-
-        // Hide other controls
-        document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
-        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
-        document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
-        document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
-
-        // Clear features
-        pFeatures.innerHTML = '';
-
-        // Add emitter-specific features
-        const featureLi = document.createElement('li');
-        featureLi.textContent = 'RF/IR emitter device';
-        pFeatures.appendChild(featureLi);
-
-        const featureLi2 = document.createElement('li');
-        featureLi2.textContent = 'Serial numbering: E1, E2, E3...';
-        pFeatures.appendChild(featureLi2);
-
-        const featureLi3 = document.createElement('li');
-        featureLi3.textContent = 'No modal popup on click';
-        pFeatures.appendChild(featureLi3);
-
-        // Clear pMeta
-        pMeta.innerHTML = '';
-
-        resetRelayPreview();
-        lastRelaySelectionLabel = '';
 
     } else if (isDBBox) {
         relayControlsEl.style.display = 'none';
@@ -1900,7 +1329,7 @@ function selectProduct(productKey, subProductKey = null) {
         lastRelaySelectionLabel = '';
 
         createAutomationDBBoxControls();
-
+        
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
@@ -1922,7 +1351,7 @@ function selectProduct(productKey, subProductKey = null) {
         lastRelaySelectionLabel = '';
 
         createNetworkDBBoxControls();
-
+        
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
@@ -1936,44 +1365,44 @@ function selectProduct(productKey, subProductKey = null) {
             });
         }
     } else if (isTextLabel) {
-        // For TEXT labels - Show clean interface
-        pTitle.textContent = "Text Label";
-        pDesc.textContent = "Add custom text annotations to the floor plan";
-
-        // Hide product image
-        productImage.style.display = 'none';
-        productImageOverlay.style.display = 'none';
-
-        // Hide features section
-        featuresSection.style.display = 'none';
-        relayControlsEl.style.display = 'none';
-
-        // Remove existing special controls
-        document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
-        document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
-
-        // Clear features
-        pFeatures.innerHTML = '';
-
-        // Add text-specific feature
-        const featureLi = document.createElement('li');
-        featureLi.textContent = 'Custom text annotations';
-        pFeatures.appendChild(featureLi);
-
-        const featureLi2 = document.createElement('li');
-        featureLi2.textContent = 'Serial numbering: TX1, TX2, TX3...';
-        pFeatures.appendChild(featureLi2);
-
-        const featureLi3 = document.createElement('li');
-        featureLi3.textContent = 'Same styling as product labels';
-        pFeatures.appendChild(featureLi3);
-
-        // Clear pMeta
-        pMeta.innerHTML = '';
-
-        // Create text input controls
-        createTextLabelControls();
-    } else if (isMultiComponent && subProductKey) {
+    // For TEXT labels - Show clean interface
+    pTitle.textContent = "Text Label";
+    pDesc.textContent = "Add custom text annotations to the floor plan";
+    
+    // Hide product image
+    productImage.style.display = 'none';
+    productImageOverlay.style.display = 'none';
+    
+    // Hide features section
+    featuresSection.style.display = 'none';
+    relayControlsEl.style.display = 'none';
+    
+    // Remove existing special controls
+    document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
+    document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+    
+    // Clear features
+    pFeatures.innerHTML = '';
+    
+    // Add text-specific feature
+    const featureLi = document.createElement('li');
+    featureLi.textContent = 'Custom text annotations';
+    pFeatures.appendChild(featureLi);
+    
+    const featureLi2 = document.createElement('li');
+    featureLi2.textContent = 'Serial numbering: TX1, TX2, TX3...';
+    pFeatures.appendChild(featureLi2);
+    
+    const featureLi3 = document.createElement('li');
+    featureLi3.textContent = 'Same styling as product labels';
+    pFeatures.appendChild(featureLi3);
+    
+    // Clear pMeta
+    pMeta.innerHTML = '';
+    
+    // Create text input controls
+    createTextLabelControls();
+} else if (isMultiComponent && subProductKey) {
         relayControlsEl.style.display = 'none';
         featuresSection.style.display = 'none';
         productImageOverlay.style.display = 'none';
@@ -1982,7 +1411,7 @@ function selectProduct(productKey, subProductKey = null) {
         lastRelaySelectionLabel = '';
 
         createMultiComponentControls(productKey, subProductKey);
-
+        
         // Hide other controls
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
@@ -2062,31 +1491,31 @@ function createTextLabelControls() {
             </div>
         </div>
     `;
-
+    
     const markControlsBox = document.querySelector('.mark-controls-box');
     if (markControlsBox) {
         markControlsBox.insertAdjacentHTML('afterend', textControlsHTML);
-
+        
         // Add Enter key support to text input
         const textInput = document.getElementById('textLabelInput');
         if (textInput) {
-            textInput.addEventListener('keypress', function (e) {
+            textInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     const shape = markShapeEl.value;
                     let sizePercent = parseFloat(markSizeEl.value) || 4;
                     if (sizePercent <= 0) sizePercent = 4;
-
+                    
                     if (imageNaturalWidth && imageNaturalHeight) {
                         const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
                         const centerX = imageNaturalWidth / 2;
                         const centerY = imageNaturalHeight / 2;
-
+                        
                         addTextLabel(this.value.trim(), shape, sizePixels);
                         this.value = '';
                     }
                 }
             });
-
+            
             // Focus the input when TEXT category is selected
             setTimeout(() => {
                 textInput.focus();
@@ -2100,12 +1529,12 @@ function addTextMark(text) {
     const shape = markShapeEl.value;
     let sizePercent = parseFloat(markSizeEl.value) || 4;
     if (sizePercent <= 0) sizePercent = 4;
-
+    
     if (imageNaturalWidth && imageNaturalHeight) {
         const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
         const centerX = imageNaturalWidth / 2;
         const centerY = imageNaturalHeight / 2;
-
+        
         createTextMark({
             x: centerX - (sizePixels / 2),
             y: centerY - (sizePixels / 2),
@@ -2120,13 +1549,13 @@ function addTextMark(text) {
 function createTextMark({ x, y, size, shape, text }) {
     const id = 'mark-' + (++markCounter);
     const { seriesCode, label } = nextSeriesLabel('TEXT');
-
+    
     const el = document.createElement('div');
     el.className = 'mark ' + shape;
     el.dataset.id = id;
     el.dataset.size = size;
     el.dataset.shape = shape;
-
+    
     // Style for text label
     el.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
     el.style.borderColor = '#667eea';
@@ -2137,7 +1566,7 @@ function createTextMark({ x, y, size, shape, text }) {
     el.style.justifyContent = 'center';
     el.style.padding = '6px';
     el.style.cursor = 'move';
-
+    
     const textSpan = document.createElement('span');
     textSpan.className = 'label-text';
     textSpan.textContent = text;
@@ -2150,27 +1579,27 @@ function createTextMark({ x, y, size, shape, text }) {
     textSpan.style.overflow = 'hidden';
     textSpan.style.textOverflow = 'ellipsis';
     textSpan.style.maxWidth = '100px';
-
+    
     el.appendChild(textSpan);
-
+    
     const badge = document.createElement('div');
     badge.className = 'label-badge';
     badge.textContent = label;
     badge.style.backgroundColor = '#667eea';
     badge.style.color = '#FFFFFF';
     el.appendChild(badge);
-
+    
     // Add hover effect
-    el.addEventListener('mouseenter', function () {
+    el.addEventListener('mouseenter', function() {
         this.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.2)';
     });
-
-    el.addEventListener('mouseleave', function () {
+    
+    el.addEventListener('mouseleave', function() {
         this.style.boxShadow = '';
     });
-
+    
     imgInner.appendChild(el);
-
+    
     const markData = {
         id,
         x,
@@ -2190,25 +1619,25 @@ function createTextMark({ x, y, size, shape, text }) {
         text: text,
         labelElement: textSpan
     };
-
+    
     marks.push(markData);
-
+    
     // Add click event - just for selection, no modal
-    el.addEventListener('click', function (e) {
+    el.addEventListener('click', function(e) {
         e.stopPropagation();
         selectedMarkId = id;
         updateMarkSelection();
         // No modal opens for text labels
     });
-
+    
     // Add dragging functionality
     setupMarkDragging(el, markData);
-
+    
     updateMarkPosition(markData);
     updateMarkSelection();
-
+    
     showNotification(`Text label "${text}" added as ${label}`, 'success');
-
+    
     return markData;
 }
 
@@ -2219,27 +1648,27 @@ function attachTextLabelEvents() {
     const fontSizeSlider = document.getElementById('textFontSize');
     const fontSizeValue = document.getElementById('fontSizeValue');
     const addTextBtn = document.getElementById('addTextLabelBtn');
-
+    
     // Font size slider
     if (fontSizeSlider && fontSizeValue) {
-        fontSizeSlider.addEventListener('input', function () {
+        fontSizeSlider.addEventListener('input', function() {
             fontSizeValue.textContent = this.value;
         });
     }
-
+    
     // Add text label button
     if (addTextBtn) {
-        addTextBtn.addEventListener('click', function () {
+        addTextBtn.addEventListener('click', function() {
             if (!textInput.value.trim()) {
                 showNotification('Please enter text for the label', 'error');
                 return;
             }
-
+            
             addTextLabel(
                 textInput.value.trim(),
                 parseInt(fontSizeSlider.value)
             );
-
+            
             // Clear input
             textInput.value = '';
         });
@@ -2251,57 +1680,57 @@ function addTextLabel(text, shape, sizePixels) {
         showNotification('Please enter text for the label', 'error');
         return;
     }
-
+    
     if (!imageNaturalWidth || !imageNaturalHeight) {
         showNotification('Please wait for floor plan to load', 'error');
         return;
     }
-
+    
     // Center the label on the image
     const centerX = imageNaturalWidth / 2;
     const centerY = imageNaturalHeight / 2;
-
+    
     // Create the text mark - EXACTLY LIKE OTHER PRODUCTS
     const id = 'mark-' + (++markCounter);
     const { seriesCode, label } = nextSeriesLabel('TEXT');
-
+    
     const el = document.createElement('div');
     el.className = 'mark ' + shape;
     el.dataset.id = id;
     el.dataset.size = sizePixels;
     el.dataset.shape = shape;
     el.dataset.isTextLabel = true;
-
+    
     // ✅ SAME STYLING AS OTHER PRODUCTS
     // No custom styling - use default CSS classes
-
+    
     const badge = document.createElement('div');
     badge.className = 'label-badge';
     badge.textContent = label;
     // ✅ Same badge styling as other products
     el.appendChild(badge);
-
+    
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
-
+    
     const tooltipContent = document.createElement('div');
     tooltipContent.className = 'tooltip-content';
-
+    
     const tooltipTitle = document.createElement('div');
     tooltipTitle.className = 'tooltip-title';
     tooltipTitle.textContent = 'Text Label'; // Fixed category name
-
+    
     const tooltipModel = document.createElement('div');
     tooltipModel.className = 'tooltip-model';
     tooltipModel.textContent = text; // The actual text content
-
+    
     tooltipContent.appendChild(tooltipTitle);
     tooltipContent.appendChild(tooltipModel);
     tooltip.appendChild(tooltipContent);
     el.appendChild(tooltip);
-
+    
     imgInner.appendChild(el);
-
+    
     const markData = {
         id,
         x: centerX - (sizePixels / 2),
@@ -2320,13 +1749,13 @@ function addTextLabel(text, shape, sizePixels) {
         isTextLabel: true,
         text: text
     };
-
+    
     marks.push(markData);
-
+    
     // ✅ SAME EVENT HANDLING AS OTHER PRODUCTS
-    el.addEventListener('click', function (e) {
+    el.addEventListener('click', function(e) {
         e.stopPropagation();
-
+        
         if (isWireMode && currentWireType && !e.defaultPrevented) {
             // Wire selection logic (same as other products)
             if (!wireStartMark) {
@@ -2356,32 +1785,32 @@ function addTextLabel(text, shape, sizePixels) {
             // Do NOT call openProductModal(markData);
         }
     });
-
+    
     // ✅ SAME DRAGGING FUNCTIONALITY
     setupMarkDragging(el, markData);
-
+    
     updateMarkPosition(markData);
     updateMarkSelection();
     renderMarksList();
-
+    
     showNotification(`Text label "${text}" added as ${label}`, 'success');
-
+    
     return markData;
 }
 
 function createTextMark(options) {
     const { x, y, size, shape, text, fontSize } = options;
-
+    
     const id = 'mark-' + (++markCounter);
     const { seriesCode, label } = nextSeriesLabel('TEXT');
-
+    
     const el = document.createElement('div');
     el.className = 'mark ' + shape;
     el.dataset.id = id;
     el.dataset.size = size;
     el.dataset.shape = shape;
     el.dataset.isTextLabel = true;
-
+    
     // Style for text label
     el.style.backgroundColor = '#FFFFFF';
     el.style.borderColor = '#607D8B';
@@ -2391,7 +1820,7 @@ function createTextMark(options) {
     el.style.alignItems = 'center';
     el.style.justifyContent = 'center';
     el.style.padding = '4px 8px';
-
+    
     const textSpan = document.createElement('span');
     textSpan.className = 'label-text';
     textSpan.textContent = text;
@@ -2403,18 +1832,18 @@ function createTextMark(options) {
     textSpan.style.whiteSpace = 'nowrap';
     textSpan.style.overflow = 'hidden';
     textSpan.style.textOverflow = 'ellipsis';
-
+    
     el.appendChild(textSpan);
-
+    
     const badge = document.createElement('div');
     badge.className = 'label-badge';
     badge.textContent = label;
     badge.style.backgroundColor = '#607D8B';
     badge.style.color = '#FFFFFF';
     el.appendChild(badge);
-
+    
     imgInner.appendChild(el);
-
+    
     const markData = {
         id,
         x,
@@ -2435,25 +1864,25 @@ function createTextMark(options) {
         fontSize: fontSize,
         labelElement: textSpan
     };
-
+    
     marks.push(markData);
-
+    
     // Add click event to open modal
-    el.addEventListener('click', function (e) {
+    el.addEventListener('click', function(e) {
         e.stopPropagation();
         selectedMarkId = id;
         updateMarkSelection();
         openTextLabelModal(markData);
     });
-
+    
     // Add dragging functionality
     setupMarkDragging(el, markData);
-
+    
     updateMarkPosition(markData);
     updateMarkSelection();
-
+    
     showNotification(`Text label "${text}" added`, 'success');
-
+    
     return markData;
 }
 /* ------------------------- WIRE MAPPING FUNCTIONS ------------------------- */
@@ -3653,7 +3082,7 @@ function clearWireSelection() {
     hideWireControls();
 
     showNotification('Wire selection cleared', 'info');
-}
+}   
 
 /* ------------------------- MARKS & DRAGGING ------------------------- */
 const marksListEl = document.getElementById('marksList');
@@ -3835,9 +3264,9 @@ addMarkBtn.addEventListener('click', () => {
         alert('Please select a product first');
         return;
     }
-
+    
     const data = productData[currentProduct];
-
+    
     // Handle TEXT labels
     if (currentProduct === 'TEXT') {
         const textInput = document.getElementById('textLabelInput');
@@ -3845,18 +3274,18 @@ addMarkBtn.addEventListener('click', () => {
             showNotification('Please wait for text input to load', 'error');
             return;
         }
-
+        
         const text = textInput.value.trim();
         if (!text) {
             showNotification('Please enter text for the label', 'error');
             textInput.focus();
             return;
         }
-
+        
         const shape = markShapeEl.value;
         let sizePercent = parseFloat(markSizeEl.value) || 4;
         if (sizePercent <= 0) sizePercent = 4;
-
+        
         if (imageNaturalWidth && imageNaturalHeight) {
             const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
             addTextLabel(text, shape, sizePixels);
@@ -3867,7 +3296,7 @@ addMarkBtn.addEventListener('click', () => {
         }
         return;
     }
-
+    
     // Handle other products (original logic)
     if (data.subProducts && !data.isDBBox && !data.isNetworkDBBox && currentProduct !== 'Z-WAVE RELAY' && !currentSubProduct) {
         alert('Please select a model first');
@@ -3917,9 +3346,6 @@ function createMark({ x, y, size, shape }) {
         alert('Select a model before adding a label');
         return;
     }
-
-    // ADD THIS CHECK FOR EMITTER
-    const isEmitter = data.isEmitter || false;
 
     let relayItems = [];
     if (currentProduct === 'Z-WAVE RELAY') {
@@ -3986,10 +3412,6 @@ function createMark({ x, y, size, shape }) {
         modelName = relayItems.length === 1 ? relayItems[0].name : `${relayItems.length} modules selected`;
         featuresList = relayItems.map(item => `${item.name} — Qty ${item.quantity}`);
         descText = productDataForMark?.desc || fallbackProduct.desc || '';
-    } else if (isEmitter) { // ADD THIS ELSE IF BLOCK
-        modelName = data.title || 'Emitter';
-        featuresList = ['RF/IR emitter device'];
-        descText = data.desc || 'Emitter device';
     } else {
         modelName = productDataForMark?.title || fallbackProduct.title || '';
         featuresList = (productDataForMark?.features || fallbackProduct.features || []).slice();
@@ -4049,7 +3471,6 @@ function createMark({ x, y, size, shape }) {
         sizeFt: sizeFt,
         isDBBox: data.isDBBox || false,
         isNetworkDBBox: data.isNetworkDBBox || false,
-        isEmitter: isEmitter, // ADD THIS LINE
         selectedModules: selectedModules,
         selectedRelays: selectedRelays,
         selectedModels: selectedModels,
@@ -4068,7 +3489,6 @@ function createMark({ x, y, size, shape }) {
         e.stopPropagation();
 
         if (isWireMode && currentWireType && !e.defaultPrevented) {
-            // Unified wire selection logic for ALL marks
             if (!wireStartMark) {
                 wireStartMark = markData;
                 showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
@@ -4094,10 +3514,7 @@ function createMark({ x, y, size, shape }) {
             if (!dragStarted) {
                 selectedMarkId = id;
                 updateMarkSelection();
-                // Don't open modal for text labels or emitters
-                if (!data.isDBBox && !data.isNetworkDBBox && !markData.isTextLabel && !isEmitter) {
-                    openProductModal(markData);
-                }
+                openProductModal(markData);
             }
         }
     });
@@ -4202,7 +3619,7 @@ function createMultiComponentControls(productKey, subProductKey) {
     // Hide features section
     featuresSection.style.display = 'none';
     relayControlsEl.style.display = 'none';
-
+    
     // Create controls for multi-component system
     const componentsHTML = `
         <div class="mark-controls-box" id="multiComponentControls" style="margin-top: 20px; border-color: #FF9800;">
@@ -4257,9 +3674,9 @@ function createMultiComponentControls(productKey, subProductKey) {
     const markControlsBox = document.querySelector('.mark-controls-box');
     if (markControlsBox) {
         markControlsBox.insertAdjacentHTML('afterend', componentsHTML);
-
+        
         // Add system button
-        document.getElementById('addMultiComponentSystemBtn').addEventListener('click', function () {
+        document.getElementById('addMultiComponentSystemBtn').addEventListener('click', function() {
             addMultiComponentSystem(productKey, subProductKey);
         });
     }
@@ -4270,17 +3687,17 @@ let multiComponentGroups = {}; // Track grouped components
 function addMultiComponentSystem(productKey, subProductKey) {
     const data = productData[productKey];
     const subData = data.subProducts[subProductKey];
-
+    
     if (!subData.components) return;
-
+    
     const shape = markShapeEl.value;
     let sizePercent = parseFloat(markSizeEl.value) || 4;
     if (sizePercent <= 0) sizePercent = 4;
-
+    
     const groupId = `group-${Date.now()}`;
     const componentMarks = [];
     const totalComponents = Object.values(subData.components).reduce((sum, comp) => sum + comp.quantity, 0);
-
+    
     // Get next available label number
     const existingMarks = marks.filter(mark => mark.seriesCode === 'T');
     let nextNumber = 1;
@@ -4289,28 +3706,28 @@ function addMultiComponentSystem(productKey, subProductKey) {
             const num = parseInt(mark.seriesLabel.substring(1));
             return isNaN(num) ? 0 : num;
         });
-
+        
         while (existingNumbers.includes(nextNumber)) {
             nextNumber++;
         }
     }
-
+    
     let componentCounter = 0;
-
+    
     Object.entries(subData.components).forEach(([componentKey, component]) => {
         for (let i = 0; i < component.quantity; i++) {
             const label = `T${nextNumber}`;
-
+            
             const position = calculateGridPosition(
                 componentCounter + 1,
                 totalComponents
             );
-
+            
             if (imageNaturalWidth && imageNaturalHeight) {
                 const sizePixels = (sizePercent / 100) * Math.min(imageNaturalWidth, imageNaturalHeight);
                 const centerX = imageNaturalWidth / 2 + position.xOffset;
                 const centerY = imageNaturalHeight / 2 + position.yOffset;
-
+                
                 const mark = createMultiComponentMark({
                     x: centerX - (sizePixels / 2),
                     y: centerY - (sizePixels / 2),
@@ -4324,14 +3741,14 @@ function addMultiComponentSystem(productKey, subProductKey) {
                     groupId: groupId,
                     totalComponents: totalComponents
                 });
-
+                
                 componentMarks.push(mark);
                 componentCounter++;
             }
         }
         nextNumber++;
     });
-
+    
     // Store the group
     multiComponentGroups[groupId] = {
         productKey: productKey,
@@ -4339,17 +3756,17 @@ function addMultiComponentSystem(productKey, subProductKey) {
         marks: componentMarks.map(m => m.id),
         mainLabel: subData.title
     };
-
+    
     // Update series counter
-    seriesCounters['T'] = Math.max(seriesCounters['T'] || 0,
+    seriesCounters['T'] = Math.max(seriesCounters['T'] || 0, 
         componentMarks.length + (existingMarks.length > 0 ? Math.max(...existingMarks.map(m => {
             const num = parseInt(m.seriesLabel.substring(1));
             return isNaN(num) ? 0 : num;
         })) : 0));
-
+    
     // Update the marks list to show grouped
     renderMarksList();
-
+    
     showNotification(`Added ${subData.title} with ${componentMarks.length} components`, 'success');
 }
 
@@ -4358,7 +3775,7 @@ function calculateGridPosition(index, total) {
     const cols = Math.ceil(Math.sqrt(total));
     const row = Math.floor((index - 1) / cols);
     const col = (index - 1) % cols;
-
+    
     const spacing = 100; // pixels spacing
     return {
         xOffset: (col - Math.floor(cols / 2)) * spacing,
@@ -4371,7 +3788,7 @@ function calculateGridPosition(index, total) {
     const cols = Math.ceil(Math.sqrt(total));
     const row = Math.floor((index - 1) / cols);
     const col = (index - 1) % cols;
-
+    
     const spacing = 100; // pixels spacing
     return {
         xOffset: (col - Math.floor(cols / 2)) * spacing,
@@ -4382,55 +3799,48 @@ function calculateGridPosition(index, total) {
 function createMultiComponentMark(options) {
     const {
         x, y, size, shape, productKey, subProductKey, component,
-        componentIndex, label, groupId, totalComponents, originalId // Add originalId parameter
+        componentIndex, label, groupId, totalComponents
     } = options;
-
-    // Use originalId if provided, otherwise generate new ID
-    const id = originalId || 'mark-' + (++markCounter);
-
-    // Update markCounter if we're generating a new ID
-    if (!originalId) {
-        markCounter = Math.max(markCounter, parseInt(id.split('-')[1]) || markCounter);
-    }
-
+    
+    const id = 'mark-' + (++markCounter);
+    
     const subData = productData[productKey].subProducts[subProductKey];
-
+    
     const el = document.createElement('div');
     el.className = 'mark ' + shape;
     el.dataset.id = id;
     el.dataset.groupId = groupId;
     el.dataset.size = size;
     el.dataset.shape = shape;
-    el.dataset.seriesLabel = label; // Store seriesLabel in dataset for easy access
-
+    
     const badge = document.createElement('div');
     badge.className = 'label-badge';
     badge.textContent = label;
     badge.style.backgroundColor = '#FF9800';
     el.appendChild(badge);
-
+    
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
-
+    
     const tooltipContent = document.createElement('div');
     tooltipContent.className = 'tooltip-content';
-
+    
     const tooltipTitle = document.createElement('div');
     tooltipTitle.className = 'tooltip-title';
     tooltipTitle.textContent = `${subData.title} - ${component.title}`;
     tooltipTitle.style.color = '#FF9800';
-
+    
     const tooltipModel = document.createElement('div');
     tooltipModel.className = 'tooltip-model';
     tooltipModel.textContent = `Component ${componentIndex} of ${component.quantity}`;
-
+    
     tooltipContent.appendChild(tooltipTitle);
     tooltipContent.appendChild(tooltipModel);
     tooltip.appendChild(tooltipContent);
     el.appendChild(tooltip);
-
+    
     imgInner.appendChild(el);
-
+    
     const markData = {
         id,
         x,
@@ -4450,135 +3860,17 @@ function createMultiComponentMark(options) {
         groupId: groupId,
         componentType: component.title,
         componentIndex: componentIndex,
-        totalComponents: totalComponents,
-        originalId: originalId || id // Store original ID
+        totalComponents: totalComponents
     };
-
+    
     marks.push(markData);
-
+    
     // Add dragging functionality
-    let dragging = false;
-    let startX = 0, startY = 0;
-    let startMarkX = 0, startMarkY = 0;
-    let dragStarted = false;
-
-    function onPointerDown(ev) {
-        ev.stopPropagation();
-        ev.preventDefault();
-        if (el.setPointerCapture) el.setPointerCapture(ev.pointerId);
-        dragging = true;
-        dragStarted = false;
-        startX = ev.clientX;
-        startY = ev.clientY;
-        startMarkX = markData.x;
-        startMarkY = markData.y;
-        selectedMarkId = id;
-        updateMarkSelection();
-        el.classList.add('selected');
-    }
-
-    function onPointerMove(ev) {
-        if (!dragging) return;
-
-        const dx = ev.clientX - startX;
-        const dy = ev.clientY - startY;
-
-        if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
-            dragStarted = true;
-        }
-
-        if (!dragStarted) return;
-
-        ev.preventDefault();
-        ev.stopPropagation();
-
-        const transform = getImageTransform();
-        if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
-
-        const imgRect = previewImage.getBoundingClientRect();
-        const scaleX = imageNaturalWidth / imgRect.width;
-        const scaleY = imageNaturalHeight / imgRect.height;
-
-        const imageDx = dx * scaleX;
-        const imageDy = dy * scaleY;
-
-        let newX = startMarkX + imageDx;
-        let newY = startMarkY + imageDy;
-
-        newX = Math.max(0, Math.min(imageNaturalWidth - markData.size, newX));
-        newY = Math.max(0, Math.min(imageNaturalHeight - markData.size, newY));
-
-        markData.x = newX;
-        markData.y = newY;
-
-        updateMarkPosition(markData);
-
-        // Update wires connected to this mark
-        updateWiresConnectedToMark(markData);
-    }
-
-    function onPointerUp(ev) {
-        if (dragging) {
-            dragging = false;
-            dragStarted = false;
-            try {
-                if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
-            } catch (e) { }
-            el.classList.remove('selected');
-
-            if (!dragStarted && !isWireMode) {
-                selectedMarkId = id;
-                updateMarkSelection();
-                openProductModal(markData);
-            }
-        }
-    }
-
-    el.addEventListener('pointerdown', onPointerDown);
-    document.addEventListener('pointermove', onPointerMove);
-    document.addEventListener('pointerup', onPointerUp);
-
-    // Add click event with wire handling
-    el.addEventListener('click', function (e) {
-        e.stopPropagation();
-
-        if (isWireMode && currentWireType && !e.defaultPrevented) {
-            // Unified wire selection logic for ALL marks (including multi-component)
-            if (!wireStartMark) {
-                wireStartMark = markData;
-                showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
-            } else if (!wireEndMark && wireStartMark !== markData) {
-                wireEndMark = markData;
-                const wireTypeInfo = getWireTypeInfo(currentWireType);
-                showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
-            } else if (wireStartMark === markData) {
-                wireStartMark = null;
-                wireEndMark = null;
-                wirePoints = [];
-                showNotification('First mark selection cleared.', 'info');
-            } else if (wireEndMark === markData) {
-                wireEndMark = null;
-                wirePoints = [];
-                showNotification('Second mark selection cleared.', 'info');
-            }
-            updateWireSelectionLabels();
-            updatePointsList();
-            e.preventDefault();
-        } else if (!isWireMode && !e.defaultPrevented) {
-            // Only open modal if not in wire mode and not dragging
-            if (!dragStarted) {
-                selectedMarkId = id;
-                updateMarkSelection();
-                openProductModal(markData);
-            }
-        }
-    });
-
-    el.addEventListener('mouseenter', () => orientTooltip(markData));
-
+    setupMarkDragging(el, markData);
+    
     updateMarkPosition(markData);
     orientTooltip(markData);
-
+    
     return markData;
 }
 
@@ -4633,7 +3925,7 @@ function renderMarksList() {
     // Group multi-component marks
     const groupedMarks = {};
     const regularMarks = [];
-
+    
     marks.forEach(m => {
         if (m.groupId && multiComponentGroups[m.groupId]) {
             if (!groupedMarks[m.groupId]) {
@@ -4655,59 +3947,59 @@ function renderMarksList() {
         groupItem.className = 'mark-item group-item';
         groupItem.style.background = 'linear-gradient(135deg, #FFF3E0, #FFECB3)';
         groupItem.style.borderLeft = '4px solid #FF9800';
-
+        
         const groupHeader = document.createElement('div');
         groupHeader.style.display = 'flex';
         groupHeader.style.justifyContent = 'space-between';
         groupHeader.style.alignItems = 'center';
         groupHeader.style.width = '100%';
-
+        
         const groupInfo = document.createElement('div');
         groupInfo.style.flex = '1';
-
+        
         const groupTitle = document.createElement('div');
         groupTitle.style.fontWeight = '600';
         groupTitle.style.fontSize = '12px';
         groupTitle.style.color = '#333';
         groupTitle.textContent = group.group.mainLabel;
-
+        
         const groupSubtitle = document.createElement('div');
         groupSubtitle.style.fontSize = '10px';
         groupSubtitle.style.color = '#666';
         groupSubtitle.textContent = `${group.marks.length} components`;
-
+        
         groupInfo.appendChild(groupTitle);
         groupInfo.appendChild(groupSubtitle);
-
+        
         const groupActions = document.createElement('div');
         groupActions.style.display = 'flex';
         groupActions.style.gap = '4px';
-
+        
         const expandBtn = document.createElement('button');
         expandBtn.className = 'btn';
         expandBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">expand_more</span>';
         expandBtn.style.padding = '2px 4px';
         expandBtn.style.minHeight = 'auto';
         expandBtn.style.fontSize = '10px';
-
+        
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'btn';
         deleteBtn.innerHTML = '<span class="material-icons" style="font-size:14px;">close</span>';
         deleteBtn.style.padding = '2px 4px';
         deleteBtn.style.minHeight = 'auto';
         deleteBtn.style.fontSize = '10px';
-
+        
         expandBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const componentList = groupItem.querySelector('.component-list');
             if (componentList) {
                 const isHidden = componentList.style.display === 'none';
                 componentList.style.display = isHidden ? 'block' : 'none';
-                expandBtn.querySelector('.material-icons').textContent =
+                expandBtn.querySelector('.material-icons').textContent = 
                     isHidden ? 'expand_less' : 'expand_more';
             }
         });
-
+        
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (confirm(`Delete entire ${group.group.mainLabel}? This will remove all ${group.marks.length} components.`)) {
@@ -4717,14 +4009,14 @@ function renderMarksList() {
                 delete multiComponentGroups[group.group.id];
             }
         });
-
+        
         groupActions.appendChild(expandBtn);
         groupActions.appendChild(deleteBtn);
         groupHeader.appendChild(groupInfo);
         groupHeader.appendChild(groupActions);
-
+        
         groupItem.appendChild(groupHeader);
-
+        
         // Component list (hidden by default)
         const componentList = document.createElement('div');
         componentList.className = 'component-list';
@@ -4732,7 +4024,7 @@ function renderMarksList() {
         componentList.style.marginTop = '8px';
         componentList.style.paddingLeft = '10px';
         componentList.style.borderLeft = '2px dashed #FFB74D';
-
+        
         group.marks.forEach(m => {
             const compItem = document.createElement('div');
             compItem.className = 'mark-item';
@@ -4740,11 +4032,11 @@ function renderMarksList() {
             compItem.style.padding = '4px 6px';
             compItem.style.fontSize = '10px';
             compItem.classList.toggle('active', m.id === selectedMarkId);
-
+            
             const label = document.createElement('span');
             label.textContent = `${m.seriesLabel} - ${m.componentType}`;
             compItem.appendChild(label);
-
+            
             const compDeleteBtn = document.createElement('button');
             compDeleteBtn.className = 'btn';
             compDeleteBtn.innerHTML = '<span class="material-icons" style="font-size:12px;">close</span>';
@@ -4766,9 +4058,9 @@ function renderMarksList() {
                     groupItem.remove();
                 }
             });
-
+            
             compItem.appendChild(compDeleteBtn);
-
+            
             compItem.addEventListener('click', (e) => {
                 if (e.target !== compDeleteBtn && !compDeleteBtn.contains(e.target)) {
                     selectedMarkId = m.id;
@@ -4776,51 +4068,51 @@ function renderMarksList() {
                     openProductModal(m);
                 }
             });
-
+            
             componentList.appendChild(compItem);
         });
-
+        
         groupItem.appendChild(componentList);
         marksListEl.appendChild(groupItem);
     });
 
     // Render regular marks
-    // In the regular marks section (around line 1900-1950)
-    // In the regularMarks.forEach loop:
-    regularMarks.forEach(m => {
-        const item = document.createElement('div');
-        item.className = 'mark-item';
-        item.classList.toggle('active', m.id === selectedMarkId);
+// In the regular marks section (around line 1900-1950)
+// In the regularMarks.forEach loop:
+regularMarks.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'mark-item';
+    item.classList.toggle('active', m.id === selectedMarkId);
 
-        const label = document.createElement('span');
-        label.textContent = m.seriesLabel + (m.isTextLabel ? ` - ${m.text}` : '');
-        item.appendChild(label);
+    const label = document.createElement('span');
+    label.textContent = m.seriesLabel + (m.isTextLabel ? ` - ${m.text}` : '');
+    item.appendChild(label);
 
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'btn';
-        deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
-        deleteBtn.style.marginLeft = '8px';
-        deleteBtn.style.padding = '4px 6px';
-        deleteBtn.style.minHeight = 'auto';
-        deleteBtn.style.fontSize = '12px';
-        deleteBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            removeMark(m.id);
-        });
-        item.appendChild(deleteBtn);
-
-        item.addEventListener('click', (e) => {
-            if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
-                selectedMarkId = m.id;
-                updateMarkSelection();
-                // Don't open modal for text labels or emitters
-                if (!m.isTextLabel && !m.isEmitter) {
-                    openProductModal(m);
-                }
-            }
-        });
-        marksListEl.appendChild(item);
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn';
+    deleteBtn.innerHTML = '<span class="material-icons" style="font-size:16px;">close</span>';
+    deleteBtn.style.marginLeft = '8px';
+    deleteBtn.style.padding = '4px 6px';
+    deleteBtn.style.minHeight = 'auto';
+    deleteBtn.style.fontSize = '12px';
+    deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeMark(m.id);
     });
+    item.appendChild(deleteBtn);
+
+    item.addEventListener('click', (e) => {
+        if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
+            selectedMarkId = m.id;
+            updateMarkSelection();
+            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
+            if (!m.isTextLabel) {
+                openProductModal(m);
+            }
+        }
+    });
+    marksListEl.appendChild(item);
+});
 }
 
 /* ------------------------- ZOOMING ------------------------- */
@@ -5174,7 +4466,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 },
                 columnStyles: {
                     0: { cellWidth: 15, halign: 'center' },
-                    1: { cellWidth: 60, halign: 'center' }, // Type column
+                    1: { cellWidth: 60, halign: 'center'}, // Type column
                     2: { cellWidth: 30, halign: 'center' },
                     3: { cellWidth: 20, halign: 'center' },
                     4: { cellWidth: 40, halign: 'left' },
@@ -5254,7 +4546,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 },
                 columnStyles: {
                     0: { cellWidth: 15, halign: 'center' },
-                    1: { cellWidth: 60, halign: 'center' }, // Type column
+                    1: { cellWidth: 60, halign: 'center'}, // Type column
                     2: { cellWidth: 30, halign: 'center' },
                     3: { cellWidth: 20, halign: 'center' },
                     4: { cellWidth: 40, halign: 'left' },
@@ -5467,7 +4759,7 @@ function generateProductTable() {
 
     // First, group multi-component marks
     const groupedMultiComponent = {};
-
+    
     // Group marks by their groupId
     marks.forEach(mark => {
         if (mark.groupId && multiComponentGroups[mark.groupId]) {
@@ -5492,7 +4784,7 @@ function generateProductTable() {
         if (mark.categoryName && productData[mark.categoryName]) {
             brand = productData[mark.categoryName].brand || brand;
         }
-        if (mark.isEmitter) return;
+
         if (mark.isDBBox) {
             dbBoxesTable.push({
                 label: key,
@@ -5560,12 +4852,12 @@ function generateProductTable() {
         const key = group.group.mainLabel || group.group.subProductKey;
         const firstMark = group.marks[0];
         const category = 'TREMBLAY SOUNDS';
-
+        
         // Use the main product name (e.g., "7.1 Surround System") instead of component names
         const productKey = group.group.productKey;
         const subProductKey = group.group.subProductKey;
         const mainProductName = productData[productKey]?.subProducts[subProductKey]?.title || key;
-
+        
         if (!productMap.has(key)) {
             productMap.set(key, {
                 label: group.label, // Use the label (e.g., T1)
@@ -5593,7 +4885,6 @@ function generateProductTable() {
     };
 }
 
-/* ------------------------- PROJECT SAVE/LOAD FUNCTIONS ------------------------- */
 /* ------------------------- PROJECT SAVE/LOAD FUNCTIONS ------------------------- */
 document.addEventListener('DOMContentLoaded', function () {
     const saveProjectBtn = document.getElementById('saveProjectBtn');
@@ -5633,16 +4924,12 @@ function saveProject() {
                 size: mark.size,
                 shape: mark.shape,
                 seriesCode: mark.seriesCode,
-                seriesLabel: mark.seriesLabel,
+                seriesLabel: mark.seriesLabel,  // ✅ This is the key for wire connections
                 categoryName: mark.categoryName,
                 modelName: mark.modelName,
                 groupId: mark.groupId,
                 componentType: mark.componentType,
                 componentIndex: mark.componentIndex,
-                // Add a unique identifier for multi-component marks
-                componentUniqueKey: mark.isMultiComponent ?
-                    `${mark.seriesLabel}_${mark.componentType}_${mark.componentIndex}` :
-                    mark.seriesLabel,
                 desc: mark.desc,
                 features: mark.features,
                 imageSrc: mark.imageSrc,
@@ -5662,28 +4949,24 @@ function saveProject() {
                 apBrand: mark.apBrand,
                 apModel: mark.apModel,
                 apQty: mark.apQty || 1,
-                originalId: mark.id
+                // ✅ REMOVE these redundant fields as they're not needed
+                // productKey: currentProduct,  // Remove
+                // subProductKey: currentSubProduct,  // Remove
+                originalId: mark.id  // ✅ Add this to track original ID
             })),
             multiComponentGroups: multiComponentGroups,
-            wires: wires.map(wire => ({
-                id: wire.id,
-                startMarkId: wire.startMark.id,
-                endMarkId: wire.endMark.id,
-                startMarkLabel: wire.startMark.seriesLabel,
-                endMarkLabel: wire.endMark.seriesLabel,
-                // Save component unique keys for multi-component marks
-                startMarkComponentKey: wire.startMark.isMultiComponent ?
-                    `${wire.startMark.seriesLabel}_${wire.startMark.componentType}_${wire.startMark.componentIndex}` :
-                    wire.startMark.seriesLabel,
-                endMarkComponentKey: wire.endMark.isMultiComponent ?
-                    `${wire.endMark.seriesLabel}_${wire.endMark.componentType}_${wire.endMark.componentIndex}` :
-                    wire.endMark.seriesLabel,
-                wireType: wire.wireType,
-                mode: wire.mode,
-                curveValue: wire.curveValue,
-                points: wire.points,
-                color: wire.color || getWireTypeInfo(wire.wireType).color
-            })),
+wires: wires.map(wire => ({
+    id: wire.id,
+    startMarkId: wire.startMark.id,
+    endMarkId: wire.endMark.id,
+    startMarkLabel: wire.startMark.seriesLabel,
+    endMarkLabel: wire.endMark.seriesLabel,
+    wireType: wire.wireType, // This should save all wire types including 'speaker'
+    mode: wire.mode,
+    curveValue: wire.curveValue,
+    points: wire.points,
+    color: wire.color || getWireTypeInfo(wire.wireType).color
+})),
             relayState: relayState,
             lastRelaySelectionLabel: lastRelaySelectionLabel,
             currentProduct: currentProduct,
@@ -5757,6 +5040,7 @@ function loadProject(projectData) {
         return;
     }
 
+
     clearAllMarksAndWires();
 
     markCounter = 0;
@@ -5771,12 +5055,11 @@ function loadProject(projectData) {
         loadProjectData(projectData);
     }
 }
-
 function loadProjectData(projectData) {
     if (projectData.imageScale) {
         setScale(projectData.imageScale);
     }
-
+    
     if (projectData.dbBoxSpecs) {
         Object.keys(projectData.dbBoxSpecs).forEach(key => {
             if (productData[key]) {
@@ -5792,30 +5075,28 @@ function loadProjectData(projectData) {
             }
         });
     }
-
+    
     if (projectData.multiComponentGroups) {
         multiComponentGroups = projectData.multiComponentGroups;
     }
-
-    // ✅ Create THREE maps for different lookup methods
-    const markIdMap = new Map();          // Original ID -> new mark
-    const markLabelMap = new Map();       // seriesLabel -> new mark (for regular marks)
-    const markComponentKeyMap = new Map(); // componentUniqueKey -> new mark (for multi-component)
-
+    
+    // ✅ Create TWO maps: one by ID and one by Label
+    const markIdMap = new Map();    // Maps original ID -> new mark
+    const markLabelMap = new Map(); // Maps seriesLabel -> new mark
+    
     // First, load all marks
     projectData.marks.forEach(savedMark => {
-        // Generate a NEW ID for the mark
+        // Generate a NEW ID for the mark (don't use saved ID)
         const newId = 'mark-' + (++markCounter);
-
-        // Create mark data object
+        
         const mark = {
-            id: newId,
+            id: newId,  // ✅ Use NEW ID
             x: savedMark.x,
             y: savedMark.y,
             size: savedMark.size,
             shape: savedMark.shape || 'circle',
             seriesCode: savedMark.seriesCode,
-            seriesLabel: savedMark.seriesLabel,
+            seriesLabel: savedMark.seriesLabel, // ✅ Keep the SAME series label
             categoryName: savedMark.categoryName,
             modelName: savedMark.modelName,
             desc: savedMark.desc,
@@ -5840,8 +5121,7 @@ function loadProjectData(projectData) {
             isTremblay: savedMark.categoryName === 'TREMBLAY SOUNDS',
             groupId: savedMark.groupId || null,
             componentType: savedMark.componentType || '',
-            componentIndex: savedMark.componentIndex || 0,
-            componentUniqueKey: savedMark.componentUniqueKey || savedMark.seriesLabel
+            componentIndex: savedMark.componentIndex || 0
         };
 
         // Update series counter
@@ -5857,15 +5137,7 @@ function loadProjectData(projectData) {
         el.dataset.id = mark.id;
         el.dataset.size = mark.size;
         el.dataset.shape = mark.shape;
-        el.dataset.seriesLabel = mark.seriesLabel;
-
-        // Store component unique key in dataset for multi-component marks
-        if (mark.isMultiComponent) {
-            el.dataset.componentUniqueKey = mark.componentUniqueKey;
-            el.dataset.componentType = mark.componentType;
-            el.dataset.componentIndex = mark.componentIndex;
-        }
-
+        
         if (mark.isTextLabel) {
             el.dataset.isTextLabel = 'true';
             el.style.backgroundColor = '#FFFFFF';
@@ -5876,7 +5148,7 @@ function loadProjectData(projectData) {
             el.style.alignItems = 'center';
             el.style.justifyContent = 'center';
             el.style.padding = '4px 8px';
-
+            
             const textSpan = document.createElement('span');
             textSpan.className = 'label-text';
             textSpan.textContent = mark.text || mark.modelName || '';
@@ -5890,173 +5162,155 @@ function loadProjectData(projectData) {
             textSpan.style.textOverflow = 'ellipsis';
             textSpan.style.maxWidth = '100px';
             el.appendChild(textSpan);
-
+            
             mark.labelElement = textSpan;
         }
-
+        
         const badge = document.createElement('div');
         badge.className = 'label-badge';
         badge.textContent = mark.seriesLabel;
-
+        
         if (mark.isTextLabel) {
             badge.style.backgroundColor = '#667eea';
             badge.style.color = '#FFFFFF';
-        } else if (mark.isTremblay || mark.isMultiComponent) {
+        } else if (mark.isTremblay) {
             badge.style.backgroundColor = '#FF9800';
         }
-
+        
         el.appendChild(badge);
-
+        
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
-
+        
         const tooltipContent = document.createElement('div');
         tooltipContent.className = 'tooltip-content';
-
+        
         const tooltipTitle = document.createElement('div');
         tooltipTitle.className = 'tooltip-title';
         tooltipTitle.textContent = mark.categoryName || 'Product';
         if (mark.isTextLabel) {
             tooltipTitle.style.color = '#667eea';
-        } else if (mark.isTremblay || mark.isMultiComponent) {
+        } else if (mark.isTremblay) {
             tooltipTitle.style.color = '#FF9800';
         }
-
+        
         const tooltipModel = document.createElement('div');
         tooltipModel.className = 'tooltip-model';
         tooltipModel.textContent = mark.modelName || '—';
-
+        
         tooltipContent.appendChild(tooltipTitle);
         tooltipContent.appendChild(tooltipModel);
         tooltip.appendChild(tooltipContent);
         el.appendChild(tooltip);
-
+        
         imgInner.appendChild(el);
-
+        
         // Setup event listeners
-        el.addEventListener('click', function (e) {
-            e.stopPropagation();
+el.addEventListener('click', function (e) {
+    e.stopPropagation();
 
-            if (isWireMode && currentWireType && !e.defaultPrevented) {
-                // Use the mark object from closure
-                if (!wireStartMark) {
-                    wireStartMark = mark;
-                    showNotification(`First mark selected: ${mark.seriesLabel}. Now select second mark.`, 'info');
-                } else if (!wireEndMark && wireStartMark !== mark) {
-                    wireEndMark = mark;
-                    const wireTypeInfo = getWireTypeInfo(currentWireType);
-                    showNotification(`Second mark selected: ${mark.seriesLabel}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
-                } else if (wireStartMark === mark) {
-                    wireStartMark = null;
-                    wireEndMark = null;
-                    wirePoints = [];
-                    showNotification('First mark selection cleared.', 'info');
-                } else if (wireEndMark === mark) {
-                    wireEndMark = null;
-                    wirePoints = [];
-                    showNotification('Second mark selection cleared.', 'info');
-                }
-                updateWireSelectionLabels();
-                updatePointsList();
-                e.preventDefault();
-            } else if (!isWireMode && !e.defaultPrevented) {
-                // Only open modal if not in wire mode
-                selectedMarkId = mark.id;
-                updateMarkSelection();
-
-                // Don't open modal for text labels
-                if (!mark.isTextLabel) {
-                    openProductModal(mark);
-                }
+    if (isWireMode && currentWireType && !e.defaultPrevented) {
+        // Wire selection logic should work for ALL marks including multi-component
+        if (!wireStartMark) {
+            wireStartMark = markData;
+            showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
+        } else if (!wireEndMark && wireStartMark !== markData) {
+            wireEndMark = markData;
+            const wireTypeInfo = getWireTypeInfo(currentWireType);
+            showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
+        } else if (wireStartMark === markData) {
+            wireStartMark = null;
+            wireEndMark = null;
+            wirePoints = [];
+            showNotification('First mark selection cleared.', 'info');
+        } else if (wireEndMark === markData) {
+            wireEndMark = null;
+            wirePoints = [];
+            showNotification('Second mark selection cleared.', 'info');
+        }
+        updateWireSelectionLabels();
+        updatePointsList();
+        e.preventDefault();
+    } else if (!isWireMode && !e.defaultPrevented) {
+        // Only open modal if not in wire mode and not dragging
+        if (!dragStarted) {
+            selectedMarkId = id;
+            updateMarkSelection();
+            
+            // Don't open modal for text labels, but do for multi-component items
+            if (!markData.isTextLabel) {
+                openProductModal(markData);
             }
-        });
-
-        // Setup dragging
+        }
+    }
+});
+        
         setupMarkDragging(el, mark);
-
+        
         mark.el = el;
         mark.tooltip = tooltip;
         marks.push(mark);
-
-        // Store in all maps
+        
+        // ✅ Store in BOTH maps
         markIdMap.set(savedMark.id, mark);          // Original ID -> new mark
         markLabelMap.set(mark.seriesLabel, mark);   // Label -> new mark
-
-        // For multi-component marks, also store by componentUniqueKey
-        if (mark.isMultiComponent && mark.componentUniqueKey) {
-            markComponentKeyMap.set(mark.componentUniqueKey, mark);
-        }
     });
 
     // Update all marks positions
     updateAllMarks();
     renderMarksList();
 
-    // Now, load all wires with improved matching logic
+    // Now, load all wires - Use LABELS to find marks, not IDs
     if (projectData.wires && Array.isArray(projectData.wires)) {
         console.log('Loading wires:', projectData.wires.length);
-
+        
         projectData.wires.forEach(savedWire => {
-            let startMark = null;
-            let endMark = null;
-
-            // FIRST: Try to find marks by componentUniqueKey (for multi-component marks)
-            if (savedWire.startMarkComponentKey) {
-                startMark = markComponentKeyMap.get(savedWire.startMarkComponentKey);
-            }
-            if (savedWire.endMarkComponentKey) {
-                endMark = markComponentKeyMap.get(savedWire.endMarkComponentKey);
-            }
-
-            // SECOND: If not found by component key, try by seriesLabel
-            if (!startMark) {
-                startMark = markLabelMap.get(savedWire.startMarkLabel);
-            }
-            if (!endMark) {
-                endMark = markLabelMap.get(savedWire.endMarkLabel);
-            }
-
-            // THIRD: If still not found, try by ID (fallback)
+            // ✅ FIRST try to find marks by LABEL (most reliable)
+            let startMark = markLabelMap.get(savedWire.startMarkLabel);
+            let endMark = markLabelMap.get(savedWire.endMarkLabel);
+            
+            // If not found by label, try by ID (fallback)
             if (!startMark) {
                 startMark = markIdMap.get(savedWire.startMarkId);
-                if (startMark) console.warn('Found start mark by ID instead of label:', savedWire.startMarkLabel);
+                console.warn('Found start mark by ID instead of label:', savedWire.startMarkLabel);
             }
+            
             if (!endMark) {
                 endMark = markIdMap.get(savedWire.endMarkId);
-                if (endMark) console.warn('Found end mark by ID instead of label:', savedWire.endMarkLabel);
+                console.warn('Found end mark by ID instead of label:', savedWire.endMarkLabel);
             }
-
+            
             if (!startMark || !endMark) {
                 console.warn('Could not find marks for wire:', {
                     startLabel: savedWire.startMarkLabel,
                     endLabel: savedWire.endMarkLabel,
-                    startComponentKey: savedWire.startMarkComponentKey,
-                    endComponentKey: savedWire.endMarkComponentKey
+                    startId: savedWire.startMarkId,
+                    endId: savedWire.endMarkId
                 });
                 return;
             }
-
+            
             console.log('Creating wire between:', startMark.seriesLabel, 'and', endMark.seriesLabel);
-
+            
             // Set current wire type for wire creation
             const originalWireType = currentWireType;
             currentWireType = savedWire.wireType || 'knx';
-
+            
             let wireElement;
             if (savedWire.mode === 'curve') {
                 wireElement = createWireElement(startMark, endMark, savedWire.curveValue || 0, false);
             } else {
                 wireElement = createWireElementWithPoints(startMark, endMark, savedWire.points || [], false);
             }
-
+            
             // Restore original wire type
             currentWireType = originalWireType;
-
+            
             if (!wireElement) {
                 console.error('Failed to create wire element');
                 return;
             }
-
+            
             const wire = {
                 id: savedWire.id || `wire-${Date.now()}`,
                 startMark: startMark,
@@ -6068,9 +5322,9 @@ function loadProjectData(projectData) {
                 wireType: savedWire.wireType || 'knx',
                 color: savedWire.color || getWireTypeInfo(savedWire.wireType || 'knx').color
             };
-
+            
             wires.push(wire);
-
+            
             // Reattach event listeners
             if (wireElement.path) {
                 wireElement.path.style.cursor = "pointer";
@@ -6078,12 +5332,12 @@ function loadProjectData(projectData) {
                     e.stopPropagation();
                     selectWire(startMark, endMark, wire.wireType);
                 });
-
+                
                 // Reattach drag functionality
                 makeWireDraggable(wireElement.path, startMark, endMark);
             }
         });
-
+        
         console.log('Wires loaded:', wires.length);
     }
 
@@ -6097,7 +5351,7 @@ function loadProjectData(projectData) {
     if (projectData.currentWireType) {
         currentWireType = projectData.currentWireType;
         isWireMode = projectData.isWireMode || false;
-
+        
         if (isWireMode && currentWireType) {
             // Force a small delay to ensure DOM is ready
             setTimeout(() => {
@@ -6107,7 +5361,7 @@ function loadProjectData(projectData) {
             }, 100);
         }
     }
-
+    
     // Restore product selection
     if (projectData.currentProduct) {
         setTimeout(() => {
@@ -6124,7 +5378,7 @@ function loadProjectData(projectData) {
             updateWiresList();
         }, 200);
     }
-
+    
     showNotification(`Project loaded: ${projectData.marks.length} marks, ${wires.length} wires`, 'success');
 }
 
@@ -6133,7 +5387,7 @@ function setupMarkDragging(el, markData) {
     let startX = 0, startY = 0;
     let startMarkX = 0, startMarkY = 0;
     let dragStarted = false;
-
+    
     function onPointerDown(ev) {
         ev.stopPropagation();
         ev.preventDefault();
@@ -6148,47 +5402,47 @@ function setupMarkDragging(el, markData) {
         updateMarkSelection();
         el.classList.add('selected');
     }
-
+    
     function onPointerMove(ev) {
         if (!dragging) return;
-
+        
         const dx = ev.clientX - startX;
         const dy = ev.clientY - startY;
-
+        
         if (!dragStarted && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
             dragStarted = true;
         }
-
+        
         if (!dragStarted) return;
-
+        
         ev.preventDefault();
         ev.stopPropagation();
-
+        
         const transform = getImageTransform();
         if (!transform || !imageNaturalWidth || !imageNaturalHeight) return;
-
+        
         const imgRect = previewImage.getBoundingClientRect();
         const scaleX = imageNaturalWidth / imgRect.width;
         const scaleY = imageNaturalHeight / imgRect.height;
-
+        
         const imageDx = dx * scaleX;
         const imageDy = dy * scaleY;
-
+        
         let newX = startMarkX + imageDx;
         let newY = startMarkY + imageDy;
-
+        
         newX = Math.max(0, Math.min(imageNaturalWidth - markData.size, newX));
         newY = Math.max(0, Math.min(imageNaturalHeight - markData.size, newY));
-
+        
         markData.x = newX;
         markData.y = newY;
-
+        
         updateMarkPosition(markData);
-
+        
         // Update wires connected to this mark
         updateWiresConnectedToMark(markData);
     }
-
+    
     function onPointerUp(ev) {
         if (dragging) {
             dragging = false;
@@ -6197,8 +5451,8 @@ function setupMarkDragging(el, markData) {
                 if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
             } catch (e) { }
             el.classList.remove('selected');
-
-            // Don't open modal for text labels
+            
+            // ❌ DON'T OPEN MODAL FOR TEXT LABELS
             if (!dragStarted && !markData.isTextLabel && !isWireMode) {
                 selectedMarkId = markData.id;
                 updateMarkSelection();
@@ -6206,12 +5460,11 @@ function setupMarkDragging(el, markData) {
             }
         }
     }
-
+    
     el.addEventListener('pointerdown', onPointerDown);
     document.addEventListener('pointermove', onPointerMove);
     document.addEventListener('pointerup', onPointerUp);
 }
-
 function createNewProject() {
     if (confirm('Create new project? All unsaved changes will be lost.')) {
         clearAllMarksAndWires();
@@ -6221,25 +5474,23 @@ function createNewProject() {
     }
 }
 
-// The rest of your disableAllZoom function remains the same...
-
 function disableAllZoom() {
     // Prevent keyboard zoom (Ctrl +, Ctrl -, Ctrl + mouse wheel)
-    document.addEventListener('keydown', function (e) {
+    document.addEventListener('keydown', function(e) {
         // Windows/Linux: Ctrl + +/-/0
         // Mac: Cmd + +/-/0
-        if ((e.ctrlKey || e.metaKey) &&
-            (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=' ||
-                e.code === 'Equal' || e.code === 'Minus' || e.code === 'NumpadAdd' ||
-                e.code === 'NumpadSubtract' || e.keyCode === 187 || e.keyCode === 189 ||
-                e.keyCode === 48)) {
+        if ((e.ctrlKey || e.metaKey) && 
+            (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=' || 
+             e.code === 'Equal' || e.code === 'Minus' || e.code === 'NumpadAdd' || 
+             e.code === 'NumpadSubtract' || e.keyCode === 187 || e.keyCode === 189 || 
+             e.keyCode === 48)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
-
+        
         // Also prevent Ctrl + mouse wheel
-        if ((e.ctrlKey || e.metaKey) &&
+        if ((e.ctrlKey || e.metaKey) && 
             (e.key === 'ZoomIn' || e.key === 'ZoomOut')) {
             e.preventDefault();
             return false;
@@ -6247,7 +5498,7 @@ function disableAllZoom() {
     }, { passive: false });
 
     // Prevent mouse wheel zoom (Ctrl + mouse wheel)
-    document.addEventListener('wheel', function (e) {
+    document.addEventListener('wheel', function(e) {
         if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
             e.stopPropagation();
@@ -6256,14 +5507,14 @@ function disableAllZoom() {
     }, { passive: false });
 
     // Prevent touch zoom (pinch zoom)
-    document.addEventListener('touchstart', function (e) {
+    document.addEventListener('touchstart', function(e) {
         if (e.touches.length > 1) {
             e.preventDefault();
             e.stopPropagation();
         }
     }, { passive: false });
 
-    document.addEventListener('touchmove', function (e) {
+    document.addEventListener('touchmove', function(e) {
         if (e.touches.length > 1) {
             e.preventDefault();
             e.stopPropagation();
@@ -6272,7 +5523,7 @@ function disableAllZoom() {
 
     // Prevent double-tap zoom on mobile
     let lastTouchEnd = 0;
-    document.addEventListener('touchend', function (e) {
+    document.addEventListener('touchend', function(e) {
         const now = Date.now();
         if (now - lastTouchEnd <= 300) {
             e.preventDefault();
@@ -6285,7 +5536,7 @@ function disableAllZoom() {
     const metaViewport = document.querySelector('meta[name="viewport"]');
     if (metaViewport) {
         // Set maximum-scale and user-scalable to prevent zoom
-        metaViewport.setAttribute('content',
+        metaViewport.setAttribute('content', 
             'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no');
     } else {
         // Create meta viewport tag if it doesn't exist
@@ -6320,14 +5571,14 @@ function disableAllZoom() {
     document.head.appendChild(style);
 
     // Disable browser's zoom menu (context menu)
-    document.addEventListener('contextmenu', function (e) {
+    document.addEventListener('contextmenu', function(e) {
         // You might want to be more specific here
         // e.preventDefault();
     });
 
     // Listen for zoom events and reset if detected
     let lastZoomLevel = window.devicePixelRatio;
-    window.addEventListener('resize', function () {
+    window.addEventListener('resize', function() {
         const currentZoom = window.devicePixelRatio;
         if (Math.abs(currentZoom - lastZoomLevel) > 0.1) {
             // Zoom detected, try to reset
@@ -6346,22 +5597,22 @@ disableAllZoom();
 function enableAllZoom() {
     // Remove event listeners (this is a simplified version)
     // In a real implementation, you'd need to keep references to the handlers
-
+    
     // Reset viewport meta tag
     const metaViewport = document.querySelector('meta[name="viewport"]');
     if (metaViewport) {
         metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
     }
-
+    
     // Remove the CSS style
     const zoomStyles = document.querySelectorAll('style');
     zoomStyles.forEach(style => {
-        if (style.textContent.includes('text-size-adjust') ||
+        if (style.textContent.includes('text-size-adjust') || 
             style.textContent.includes('touch-action')) {
             style.remove();
         }
     });
-
+    
     console.log('Zoom functions re-enabled');
 }
 
