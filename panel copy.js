@@ -1,3 +1,4 @@
+
 const PRODUCT_ORDER = [
     "DOOR LOCK",
     "PROCESSOR",
@@ -5,18 +6,184 @@ const PRODUCT_ORDER = [
     "ESCULT SERIES",
     "TACTILE HEXA SERIES",
     "DUO-QUAD SERIES",
-    "DOMOGENIE GLASS LITE SERIES",
+    "DOMOGENIE GLASS SERIES",
     "WALL MOUNT DISPLAY",
     "TREMBLAY SOUNDS",
     "Z-WAVE RELAY",
     "CURTAIN MOTORS",
     "SENSORS",
     "IR BLASTER - ZMOTE",
-    "EMITTER", // ADD THIS LINE - NEW EMITTER CATEGORY
+    "EMITTER",
+    "EQUIPMENTS", // ADDED NEW CATEGORY
     "AUTOMATION DISTRIBUTION BOX",
     "NETWORK DISTRIBUTION BOX",
     "TEXT"
 ];
+
+/* ------------------------- SWITCH CONFIGURATION FUNCTIONS ------------------------- */
+function createSwitchConfigurationControls() {
+    const existingControls = document.getElementById('switchConfigControls');
+    if (existingControls) {
+        existingControls.remove();
+    }
+
+    const data = productData[currentProduct];
+    if (!data || !switchFamilies.has(currentProduct)) return;
+
+    // Remove existing features section
+    featuresSection.style.display = 'none';
+
+    // Hide product image overlay
+    productImageOverlay.style.display = 'none';
+
+    // Determine placeholder based on product series
+    let placeholder = '';
+    if (currentProduct === 'LUMI GLASS SERIES') {
+        placeholder = 'e.g., 3 light + 1 load';
+    } else if (currentProduct === 'DOMOGENIE GLASS SERIES') {
+        placeholder = 'e.g., 2 light + 1 fan';
+    } else {
+        placeholder = 'e.g., 1 light, 2 fan, 1 dimmer';
+    }
+
+    // Check if a mark is selected and has existing configuration
+    const selectedMark = marks.find(mark => mark.id === selectedMarkId);
+    const existingConfig = selectedMark ? selectedMark.switchConfig : '';
+
+    // In the createSwitchConfigurationControls function, update the HTML:
+    const switchControlsHTML = `
+    <div class="mark-controls-box" id="switchConfigControls" style="margin-top: 20px; border-color: #FF9800;">
+        <h3 style="color: #FF9800; margin-bottom: 15px;">
+            <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">settings</span>
+            ${currentProduct} Configuration
+        </h3>
+        
+        ${selectedMarkId ? `
+        <div style="background: #FFF8E1; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #FFECB3;">
+            <div style="font-size: 12px; color: #FF9800; margin-bottom: 4px;">
+                <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                Configuring: <strong>${selectedMark ? selectedMark.seriesLabel : ''}</strong>
+                ${selectedMark && selectedMark.modelName ? `(${selectedMark.modelName})` : ''}
+            </div>
+            <div style="font-size: 11px; color: #555;">
+                Configuration will be saved only for this specific switch label.
+            </div>
+        </div>
+        ` : `
+        <div style="background: #FFF8E1; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #FFECB3;">
+            <div style="font-size: 12px; color: #FF9800; margin-bottom: 4px;">
+                <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                Setting Default Configuration for New Switches
+            </div>
+            <div style="font-size: 11px; color: #555;">
+                This configuration will apply to all new ${currentProduct} switches.
+                Select a specific switch to configure it individually.
+            </div>
+        </div>
+        `}
+        
+        <div class="form-group">
+            <label style="color: #FF9800; font-weight: 500;">Switch Configuration</label>
+            <input type="text" 
+                   id="switchConfigInput" 
+                   class="form-control" 
+                   placeholder="${placeholder}"
+                   value="${selectedMarkId && selectedMark ? (selectedMark.switchConfig || productData[currentProduct]?.defaultSwitchConfig || '') : (productData[currentProduct]?.defaultSwitchConfig || '')}"
+                   style="border-color: #FF9800; margin-bottom: 10px;">
+            <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
+                ${selectedMarkId ? `Editing configuration for ${selectedMark.seriesLabel}` : 'Set default configuration for new switches'}
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
+            <button id="saveSwitchConfigBtn" class="btn primary full-width" style="background: #FF9800; border-color: #FF9800;">
+                <span class="material-icons" style="font-size: 16px; margin-right: 8px;">save</span>
+                ${selectedMarkId ? 'Save Configuration' : 'Set Default Configuration'}
+            </button>
+        </div>
+
+        <div style="margin-top: 15px; padding: 12px; background: #FFF3E0; border-radius: 6px; border: 1px solid #FFE0B2;">
+            <div style="font-size: 12px; color: #FF9800; margin-bottom: 4px;">
+                <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                Configuration Info
+            </div>
+            <div style="font-size: 11px; color: #555;">
+                • Each switch label has its own configuration<br>
+                • Default configuration applies to new switches<br>
+                • Select a switch to override with individual config<br>
+                • Configuration will be displayed in PDF<br>
+                • Will appear in product details
+            </div>
+        </div>
+    </div>
+`;
+
+    const markControlsBox = document.querySelector('.mark-controls-box');
+    if (markControlsBox) {
+        markControlsBox.insertAdjacentHTML('afterend', switchControlsHTML);
+        attachSwitchConfigEvents();
+    }
+}
+
+function attachSwitchConfigEvents() {
+    const saveBtn = document.getElementById('saveSwitchConfigBtn');
+    const configInput = document.getElementById('switchConfigInput');
+
+    if (saveBtn && configInput) {
+        saveBtn.addEventListener('click', function () {
+            const config = configInput.value.trim();
+            const selectedMark = marks.find(mark => mark.id === selectedMarkId);
+
+            if (!config) {
+                showNotification('Please enter switch configuration', 'error');
+                return;
+            }
+
+            if (selectedMarkId && selectedMark) {
+                // Save configuration for the selected mark
+                selectedMark.switchConfig = config;
+                selectedMark.desc = `${selectedMark.categoryName}: ${config}`;
+
+                // Update the mark's tooltip
+                if (selectedMark.tooltip) {
+                    const tooltipModel = selectedMark.tooltip.querySelector('.tooltip-model');
+                    if (tooltipModel) {
+                        tooltipModel.textContent = config || selectedMark.modelName || '—';
+                    }
+                }
+
+                showNotification(`Configuration saved for ${selectedMark.seriesLabel}!`, 'success');
+                renderMarksList();
+            } else {
+                // Set default configuration for new switches
+                if (productData[currentProduct]) {
+                    productData[currentProduct].defaultSwitchConfig = config;
+
+                    // Also update ALL existing switches of this type that don't have individual configs
+                    marks.forEach(mark => {
+                        if (mark.categoryName === currentProduct && !mark.switchConfig) {
+                            mark.switchConfig = config;
+                            mark.desc = `${mark.categoryName}: ${config}`;
+
+                            // Update tooltip
+                            if (mark.tooltip) {
+                                const tooltipModel = mark.tooltip.querySelector('.tooltip-model');
+                                if (tooltipModel) {
+                                    tooltipModel.textContent = config || mark.modelName || '—';
+                                }
+                            }
+                        }
+                    });
+
+                    showNotification('Default configuration set for new switches and updated existing ones without config', 'success');
+                    renderMarksList();
+                }
+            }
+        });
+    }
+}
+
 
 /* ------------------------- UI BUILD ------------------------- */
 const productListEl = document.getElementById('productList');
@@ -105,7 +272,7 @@ const switchFamilies = new Set([
     "ESCULT SERIES",
     "TACTILE HEXA SERIES",
     "DUO-QUAD SERIES",
-    "DOMOGENIE GLASS LITE SERIES"
+    "DOMOGENIE GLASS SERIES"
 ]);
 
 const seriesCounters = {};
@@ -116,16 +283,16 @@ function getSeriesCode(productKey) {
     if (productKey === 'WALL MOUNT DISPLAY') return 'D';
     if (productKey === 'CURTAIN MOTORS') return 'C';
     if (productKey === 'Z-WAVE RELAY') return 'R';
-    if (productKey === 'TREMBLAY SOUNDS') return 'T'; // Already has 'T'
+    if (productKey === 'TREMBLAY SOUNDS') return 'T';
     if (productKey === 'IR BLASTER - ZMOTE') return 'I';
     if (productKey === 'EMITTER') return 'E';
     if (productKey === 'TEXT') return 'TX';
+    if (productKey === 'EQUIPMENTS') return 'EQ'; // Add this line
     if (productKey === 'AUTOMATION DISTRIBUTION BOX') return 'ADB';
     if (productKey === 'NETWORK DISTRIBUTION BOX') return 'NDB';
     if (switchFamilies.has(productKey)) return 'S';
     return 'S';
 }
-
 /* ------------------------- LOAD FLOOR PLAN IMAGE ------------------------- */
 function loadFloorPlanImage() {
     const previewImage = document.getElementById('previewImage');
@@ -867,6 +1034,8 @@ function populateModal(mark) {
         title = `${mark.categoryName || ''} — ${mark.brand || ''} ${mark.sizeFt} ft`.trim() || 'DB Box';
     } else if (mark.isNetworkDBBox && mark.sizeFt) {
         title = `${mark.categoryName || ''} — ${mark.brand || ''} ${mark.sizeFt} ft`.trim() || 'Network DB Box';
+    } else if (mark.isSwitchFamily) {
+        title = `${mark.categoryName || ''} — ${mark.modelName || ''}`.trim() || 'Switch';
     } else {
         title = `${mark.categoryName || ''}${mark.modelName ? ' — ' + mark.modelName : ''}`.trim() || 'Product';
     }
@@ -934,6 +1103,45 @@ function populateModal(mark) {
             apEl.style.marginTop = '4px';
             modalProductDesc.appendChild(apEl);
         }
+        // In the populateModal function, update the switch section:
+    } else if (mark.isSwitchFamily) {
+        // Create HTML elements for separate points/lines
+        const typeEl = document.createElement('div');
+        typeEl.textContent = `Type: ${mark.categoryName || 'Switch'}`;
+        modalProductDesc.appendChild(typeEl);
+
+        const modelEl = document.createElement('div');
+        modelEl.textContent = `Model: ${mark.modelName || 'Not specified'}`;
+        modalProductDesc.appendChild(modelEl);
+
+        // Show individual switch configuration
+        if (mark.switchConfig) {
+            const configEl = document.createElement('div');
+            configEl.textContent = `Configuration: ${mark.switchConfig}`;
+            configEl.style.marginTop = '8px';
+            configEl.style.fontWeight = 'bold';
+            configEl.style.color = '#FF9800';
+            modalProductDesc.appendChild(configEl);
+        } else if (productData[mark.categoryName]?.defaultSwitchConfig) {
+            const configEl = document.createElement('div');
+            configEl.textContent = `Configuration: ${productData[mark.categoryName].defaultSwitchConfig} (default)`;
+            configEl.style.marginTop = '8px';
+            configEl.style.fontStyle = 'italic';
+            configEl.style.color = '#666';
+            modalProductDesc.appendChild(configEl);
+        }
+    } else if (mark.isTextLabel) {
+        const textEl = document.createElement('div');
+        textEl.textContent = `Text Label: ${mark.text || ''}`;
+        modalProductDesc.appendChild(textEl);
+    } else if (mark.isEquipment) {
+        const typeEl = document.createElement('div');
+        typeEl.textContent = `Type: Equipment`;
+        modalProductDesc.appendChild(typeEl);
+
+        const modelEl = document.createElement('div');
+        modelEl.textContent = `Equipment: ${mark.modelName || 'Not specified'}`;
+        modalProductDesc.appendChild(modelEl);
     } else {
         // For regular products
         const descEl = document.createElement('div');
@@ -966,8 +1174,8 @@ function populateModal(mark) {
     }
 
     modalProductFeatures.innerHTML = '';
-    // For DB Boxes, don't show features in modal
-    if (!mark.isDBBox && !mark.isNetworkDBBox) {
+    // For DB Boxes, Network DB Boxes, Text Labels, and Equipment, don't show features in modal
+    if (!mark.isDBBox && !mark.isNetworkDBBox && !mark.isTextLabel && !mark.isEquipment) {
         const featureList = (mark.features && mark.features.length ? mark.features : ['Immersive Audio Experience', 'Flexible Speaker Placement', 'Seamless Connectivity & Control', 'Expandable & Future-Ready System']).slice(0, 12);
         featureList.forEach(feature => {
             const li = document.createElement('li');
@@ -1210,7 +1418,7 @@ function selectProduct(productKey, subProductKey = null) {
     currentWireType = null;
     hideWireControls();
 
-    document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"]').forEach(btn => {
+    document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"], .tab-btn[data-name^="SPEAKER_WIRE"]').forEach(btn => {
         btn.classList.remove('active');
     });
 
@@ -1252,6 +1460,8 @@ function selectProduct(productKey, subProductKey = null) {
     const isTextLabel = data.isTextLabel || false;
     const isMultiComponent = data.isMultiComponent || false;
     const isEmitter = data.isEmitter || false;
+    const isEquipment = data.isEquipment || false; // Check if it's equipment
+    const isSwitchFamily = switchFamilies.has(productKey); // Check if it's a switch family
 
     if (isDBBox) {
         title = data.title;
@@ -1271,6 +1481,18 @@ function selectProduct(productKey, subProductKey = null) {
         img = data.img || '';
         features = [];
         currentSubProduct = null;
+    } else if (isEquipment && subProductKey && data.subProducts && data.subProducts[subProductKey]) {
+        const subData = data.subProducts[subProductKey];
+        title = subData.title;
+        desc = subData.desc;
+        img = subData.icon || ''; // Use icon for equipment
+        features = [];
+    } else if (isSwitchFamily && subProductKey && data.subProducts && data.subProducts[subProductKey]) {
+        const subData = data.subProducts[subProductKey];
+        title = subData.title;
+        desc = subData.desc;
+        img = subData.img || '';
+        features = subData.features || [];
     } else if (isMultiComponent && subProductKey && data.subProducts && data.subProducts[subProductKey]) {
         const subData = data.subProducts[subProductKey];
         title = subData.title;
@@ -1297,12 +1519,23 @@ function selectProduct(productKey, subProductKey = null) {
     if (resolvedImg) {
         productImage.src = resolvedImg;
         productImage.style.display = 'block';
+
+        // For equipment, use the CDN icon
+        if (isEquipment && subProductKey) {
+            productImage.style.width = '64px';
+            productImage.style.height = '64px';
+            productImage.style.objectFit = 'contain';
+        } else {
+            productImage.style.width = '';
+            productImage.style.height = '';
+            productImage.style.objectFit = '';
+        }
     } else {
         productImage.style.display = 'none';
     }
 
     pMeta.innerHTML = '';
-    if (subProductKey && !isDBBox && !isNetworkDBBox && !isTextLabel) {
+    if (subProductKey && !isDBBox && !isNetworkDBBox && !isTextLabel && !isEquipment) {
         const meta = document.createElement('div');
         meta.className = 'meta-item';
         meta.textContent = subProductKey;
@@ -1321,8 +1554,9 @@ function selectProduct(productKey, subProductKey = null) {
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
         document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+        document.getElementById('switchConfigControls') && (document.getElementById('switchConfigControls').style.display = 'none');
 
-    } else if (isEmitter) { // ADD THIS ELSE IF BLOCK
+    } else if (isEmitter) {
         // For EMITTER - Show clean interface similar to TEXT
         pTitle.textContent = data.title;
         pDesc.textContent = data.desc;
@@ -1346,6 +1580,7 @@ function selectProduct(productKey, subProductKey = null) {
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
         document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+        document.getElementById('switchConfigControls') && (document.getElementById('switchConfigControls').style.display = 'none');
 
         // Clear features
         pFeatures.innerHTML = '';
@@ -1369,6 +1604,75 @@ function selectProduct(productKey, subProductKey = null) {
         resetRelayPreview();
         lastRelaySelectionLabel = '';
 
+    } else if (isEquipment) {
+        // For EQUIPMENTS - Show icon-based interface
+        pTitle.textContent = title;
+        pDesc.textContent = desc;
+
+        // Show features section
+        featuresSection.style.display = 'block';
+        relayControlsEl.style.display = 'none';
+        productImageOverlay.style.display = 'none';
+        productImageOverlay.textContent = '';
+        resetRelayPreview();
+        lastRelaySelectionLabel = '';
+
+        // Hide other controls
+        document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
+        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
+        document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
+        document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+        document.getElementById('switchConfigControls') && (document.getElementById('switchConfigControls').style.display = 'none');
+
+        // Clear and add equipment features
+        pFeatures.innerHTML = '';
+        if (features.length > 0) {
+            features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                pFeatures.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = `Equipment: ${subProductKey || 'Select equipment type'}`;
+            pFeatures.appendChild(li);
+        }
+
+        // Clear pMeta
+        pMeta.innerHTML = '';
+
+    } else if (isSwitchFamily) {
+        // For switch families - Show configuration controls
+        relayControlsEl.style.display = 'none';
+        featuresSection.style.display = 'block';
+        productImageOverlay.style.display = 'none';
+        productImageOverlay.textContent = '';
+        resetRelayPreview();
+        lastRelaySelectionLabel = '';
+
+        // Create switch configuration controls
+        createSwitchConfigurationControls();
+
+        // Hide other controls
+        document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
+        document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
+        document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
+        document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+
+        // Clear and add switch features
+        pFeatures.innerHTML = '';
+        if (features.length > 0) {
+            features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                pFeatures.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = 'Select a model to see features';
+            pFeatures.appendChild(li);
+        }
+
     } else if (isDBBox) {
         relayControlsEl.style.display = 'none';
         featuresSection.style.display = 'none';
@@ -1382,6 +1686,7 @@ function selectProduct(productKey, subProductKey = null) {
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
+        document.getElementById('switchConfigControls') && (document.getElementById('switchConfigControls').style.display = 'none');
 
         pFeatures.innerHTML = '';
         if (features.length > 0) {
@@ -1404,6 +1709,7 @@ function selectProduct(productKey, subProductKey = null) {
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
+        document.getElementById('switchConfigControls') && (document.getElementById('switchConfigControls').style.display = 'none');
 
         pFeatures.innerHTML = '';
         if (features.length > 0) {
@@ -1429,6 +1735,7 @@ function selectProduct(productKey, subProductKey = null) {
         // Remove existing special controls
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
         document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+        document.getElementById('switchConfigControls') && (document.getElementById('switchConfigControls').style.display = 'none');
 
         // Clear features
         pFeatures.innerHTML = '';
@@ -1464,7 +1771,8 @@ function selectProduct(productKey, subProductKey = null) {
         // Hide other controls
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
-        document.getElementById('networkDBControls') && (document.getElementById('networkDBBoxControls').style.display = 'none');
+        document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+        document.getElementById('switchConfigControls') && (document.getElementById('switchConfigControls').style.display = 'none');
 
         pFeatures.innerHTML = '';
         const li = document.createElement('li');
@@ -1483,6 +1791,7 @@ function selectProduct(productKey, subProductKey = null) {
         document.getElementById('textLabelControls') && (document.getElementById('textLabelControls').style.display = 'none');
         document.getElementById('automationDBControls') && (document.getElementById('automationDBControls').style.display = 'none');
         document.getElementById('networkDBControls') && (document.getElementById('networkDBControls').style.display = 'none');
+        document.getElementById('switchConfigControls') && (document.getElementById('switchConfigControls').style.display = 'none');
 
         pFeatures.innerHTML = '';
         if (features.length > 0) {
@@ -3519,14 +3828,14 @@ function createMark({ x, y, size, shape }) {
     }
 
     const data = productData[currentProduct];
-    const needsModel = data.subProducts && currentProduct !== 'Z-WAVE RELAY' && !data.isDBBox && !data.isNetworkDBBox;
+    const needsModel = data.subProducts && currentProduct !== 'Z-WAVE RELAY' && !data.isDBBox && !data.isNetworkDBBox && !data.isEquipment;
     if (needsModel && !currentSubProduct) {
         alert('Select a model before adding a label');
         return;
     }
 
-    // ADD THIS CHECK FOR EMITTER
-    const isEmitter = data.isEmitter || false;
+    const isEquipment = data.isEquipment || false;
+    const isSwitchFamily = switchFamilies.has(currentProduct);
 
     let relayItems = [];
     if (currentProduct === 'Z-WAVE RELAY') {
@@ -3541,8 +3850,6 @@ function createMark({ x, y, size, shape }) {
 
     const { seriesCode, label } = nextSeriesLabel(currentProduct);
 
-    const fallbackProduct = productData[currentProduct] || {};
-    const fallbackImg = productDataForMark?.img || fallbackProduct.img || previewImage.src;
     const categoryName = currentProduct || '';
 
     let modelName = '';
@@ -3550,35 +3857,32 @@ function createMark({ x, y, size, shape }) {
     let descText = '';
     let brand = '';
     let sizeFt = '';
-    let selectedModules = [];
     let selectedRelays = [];
-    let selectedModels = [];
     let routerBrand = '';
     let routerModel = '';
     let routerQty = 1;
     let apBrand = '';
     let apModel = '';
     let apQty = 1;
+    let switchConfig = '';
+    let equipmentIcon = '';
 
     if (data.isDBBox) {
         brand = productData[currentProduct].brand || '';
         sizeFt = productData[currentProduct].size || '';
-        // Keep original model name format
         modelName = brand ? `${brand} - ${sizeFt} ft` : 'DB Box';
         descText = `${categoryName}: ${brand} ${sizeFt} ft`;
-        featuresList = []; // Empty features for DB Box
+        featuresList = [];
         selectedRelays = productData[currentProduct].selectedRelays || [];
 
     } else if (data.isNetworkDBBox) {
         brand = productData[currentProduct].brand || '';
         sizeFt = productData[currentProduct].size || '';
-        // Keep original model name format
         modelName = brand ? `${brand} - ${sizeFt} ft` : 'Network DB Box';
         descText = `${categoryName}: ${brand} ${sizeFt} ft`;
-        featuresList = []; // Empty features for Network DB Box
+        featuresList = [];
         currentSubProduct = null;
 
-        // ✅ ADD THESE LINES: Extract network equipment details
         routerBrand = productData[currentProduct].routerBrand || '';
         routerModel = productData[currentProduct].routerModel || '';
         routerQty = productData[currentProduct].routerQty || 1;
@@ -3586,21 +3890,39 @@ function createMark({ x, y, size, shape }) {
         apModel = productData[currentProduct].apModel || '';
         apQty = productData[currentProduct].apQty || 1;
 
-        console.log('Creating Network DB Box with equipment:', {
-            brand, sizeFt, routerBrand, routerModel, apBrand, apModel
-        });
+    } else if (isEquipment && currentSubProduct) {
+        // Equipment handling
+        brand = 'Equipment';
+        modelName = productDataForMark?.title || currentSubProduct;
+        descText = `${categoryName}: ${modelName}`;
+        featuresList = productDataForMark?.features || [];
+        equipmentIcon = productDataForMark?.icon || '';
+        fallbackImg = equipmentIcon;
+
+    } else if (isSwitchFamily) {
+        // Switch family handling with configuration
+        brand = productData[currentProduct].brand || 'LUMI';
+        modelName = productDataForMark?.title || data.title || '';
+        descText = productDataForMark?.desc || data.desc || '';
+        featuresList = (productDataForMark?.features || data.features || []).slice();
+        switchConfig = productData[currentProduct].defaultSwitchConfig || '';
+
+        if (switchConfig) {
+            descText = `${modelName}: ${switchConfig}`;
+        }
+
     } else if (currentProduct === 'Z-WAVE RELAY') {
         modelName = relayItems.length === 1 ? relayItems[0].name : `${relayItems.length} modules selected`;
         featuresList = relayItems.map(item => `${item.name} — Qty ${item.quantity}`);
-        descText = productDataForMark?.desc || fallbackProduct.desc || '';
-    } else if (isEmitter) { // ADD THIS ELSE IF BLOCK
+        descText = data.desc || '';
+    } else if (data.isEmitter) {
         modelName = data.title || 'Emitter';
         featuresList = ['RF/IR emitter device'];
         descText = data.desc || 'Emitter device';
     } else {
-        modelName = productDataForMark?.title || fallbackProduct.title || '';
-        featuresList = (productDataForMark?.features || fallbackProduct.features || []).slice();
-        descText = productDataForMark?.desc || fallbackProduct.desc || '';
+        modelName = productDataForMark?.title || data.title || '';
+        featuresList = (productDataForMark?.features || data.features || []).slice();
+        descText = productDataForMark?.desc || data.desc || '';
     }
 
     const el = document.createElement('div');
@@ -3609,10 +3931,58 @@ function createMark({ x, y, size, shape }) {
     el.dataset.size = size;
     el.dataset.shape = shape;
 
-    const badge = document.createElement('div');
-    badge.className = 'label-badge';
-    badge.textContent = label;
-    el.appendChild(badge);
+    if (isEquipment) {
+        el.dataset.isEquipment = 'true';
+
+        const iconContainer = document.createElement('div');
+        iconContainer.className = 'equipment-icon';
+        iconContainer.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            pointer-events: none;
+        `;
+
+        const iconImg = document.createElement('img');
+        iconImg.src = equipmentIcon || productDataForMark?.icon || '';
+        iconImg.style.cssText = `
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(0);
+        `;
+
+        iconContainer.appendChild(iconImg);
+        el.appendChild(iconContainer);
+
+        const eqText = document.createElement('div');
+        eqText.className = 'equipment-label-text';
+        eqText.textContent = label;
+        eqText.style.cssText = `
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, 5px);
+            font-size: 10px;
+            font-weight: bold;
+            color: #000;
+            white-space: nowrap;
+            pointer-events: none;
+        `;
+        el.appendChild(eqText);
+    } else {
+        const badge = document.createElement('div');
+        badge.className = 'label-badge';
+        badge.textContent = label;
+        el.appendChild(badge);
+    }
 
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
@@ -3650,32 +4020,35 @@ function createMark({ x, y, size, shape }) {
         modelName,
         desc: descText,
         features: featuresList,
-        imageSrc: fallbackImg,
+        imageSrc: isEquipment ? equipmentIcon : productDataForMark?.img || data.img || previewImage.src,
         relayItems,
         brand: brand,
         sizeFt: sizeFt,
         isDBBox: data.isDBBox || false,
         isNetworkDBBox: data.isNetworkDBBox || false,
-        isEmitter: isEmitter, // ADD THIS LINE
-        selectedModules: selectedModules,
+        isEmitter: data.isEmitter || false,
+        isEquipment: isEquipment,
+        isTextLabel: false,
+        isSwitchFamily: isSwitchFamily,
         selectedRelays: selectedRelays,
-        selectedModels: selectedModels,
         routerBrand: routerBrand,
         routerModel: routerModel,
         routerQty: routerQty,
         apBrand: apBrand,
         apModel: apModel,
         apQty: apQty,
-        selectedModels: selectedModels
+        switchConfig: isSwitchFamily ? (productData[currentProduct].defaultSwitchConfig || '') : '',
+        equipmentIcon: equipmentIcon
     };
 
     marks.push(markData);
 
+    // Event listener setup with switch configuration refresh
     el.addEventListener('click', function (e) {
         e.stopPropagation();
 
         if (isWireMode && currentWireType && !e.defaultPrevented) {
-            // Unified wire selection logic for ALL marks
+            // Unified wire selection logic for ALL marks including equipment
             if (!wireStartMark) {
                 wireStartMark = markData;
                 showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
@@ -3701,14 +4074,26 @@ function createMark({ x, y, size, shape }) {
             if (!dragStarted) {
                 selectedMarkId = id;
                 updateMarkSelection();
-                // Don't open modal for text labels or emitters
-                if (!data.isDBBox && !data.isNetworkDBBox && !markData.isTextLabel && !isEmitter) {
+
+                // Refresh switch configuration controls if this is a switch
+                if (isSwitchFamily) {
+                    // Remove and recreate switch controls
+                    const existingControls = document.getElementById('switchConfigControls');
+                    if (existingControls) {
+                        existingControls.remove();
+                    }
+                    createSwitchConfigurationControls();
+                }
+
+                // Don't open modal for equipment, DB boxes, Network DB boxes, or emitters
+                if (!data.isDBBox && !data.isNetworkDBBox && !data.isEmitter && !isEquipment) {
                     openProductModal(markData);
                 }
             }
         }
     });
 
+    // Dragging setup
     let dragging = false;
     let startX = 0, startY = 0;
     let startMarkX = 0, startMarkY = 0;
@@ -3770,16 +4155,30 @@ function createMark({ x, y, size, shape }) {
     function onPointerUp(ev) {
         if (dragging) {
             dragging = false;
-            dragStarted = false;
             try {
                 el.releasePointerCapture(ev.pointerId);
             } catch (e) { }
             el.classList.remove('selected');
 
+            // Only open modal if NO dragging occurred (just a click)
             if (!dragStarted && !isWireMode) {
                 selectedMarkId = id;
                 updateMarkSelection();
-                openProductModal(markData);
+
+                // Refresh switch configuration controls if this is a switch
+                if (isSwitchFamily) {
+                    // Remove and recreate switch controls
+                    const existingControls = document.getElementById('switchConfigControls');
+                    if (existingControls) {
+                        existingControls.remove();
+                    }
+                    createSwitchConfigurationControls();
+                }
+
+                // Don't open modal for equipment, DB boxes, Network DB boxes, or emitters
+                if (!data.isDBBox && !data.isNetworkDBBox && !data.isEmitter && !isEquipment) {
+                    openProductModal(markData);
+                }
             }
         }
     }
@@ -3791,6 +4190,17 @@ function createMark({ x, y, size, shape }) {
 
     updateMarkPosition(markData);
     updateMarkSelection();
+    renderMarksList();
+
+    if (isEquipment) {
+        showNotification(`Equipment "${modelName}" added as ${label}`, 'success');
+    } else if (isSwitchFamily) {
+        showNotification(`Switch "${modelName}" added as ${label}`, 'success');
+    } else {
+        showNotification(`Product "${modelName}" added as ${label}`, 'success');
+    }
+
+    return markData;
 }
 
 /* ------------------------- MULTI-COMPONENT PRODUCT FUNCTIONS ------------------------- */
@@ -4127,12 +4537,12 @@ function createMultiComponentMark(options) {
     function onPointerUp(ev) {
         if (dragging) {
             dragging = false;
-            dragStarted = false;
             try {
                 if (el.releasePointerCapture) el.releasePointerCapture(ev.pointerId);
             } catch (e) { }
             el.classList.remove('selected');
 
+            // FIX: Only open modal if NO dragging occurred (just a click)
             if (!dragStarted && !isWireMode) {
                 selectedMarkId = id;
                 updateMarkSelection();
@@ -4189,12 +4599,47 @@ function createMultiComponentMark(options) {
     return markData;
 }
 
+
+// Add this function to refresh config when selecting different marks
+function updateSwitchConfigForSelectedMark() {
+    if (!currentProduct || !switchFamilies.has(currentProduct)) return;
+
+    const selectedMark = marks.find(mark => mark.id === selectedMarkId);
+    const configInput = document.getElementById('switchConfigInput');
+
+    if (configInput) {
+        // Show the mark's individual config, or the default if no individual config exists
+        if (selectedMark) {
+            configInput.value = selectedMark.switchConfig ||
+                productData[currentProduct]?.defaultSwitchConfig ||
+                '';
+        } else {
+            // No mark selected, show default config
+            configInput.value = productData[currentProduct]?.defaultSwitchConfig || '';
+        }
+
+        // Update the instruction text
+        const infoDiv = configInput.nextElementSibling;
+        if (infoDiv && selectedMark) {
+            infoDiv.textContent = `Configuring: ${selectedMark.seriesLabel} (${selectedMark.modelName})`;
+        }
+    }
+}
+
+// Call this in updateMarkSelection():
 function updateMarkSelection() {
     marks.forEach(m => {
         m.el.classList.toggle('selected', m.id === selectedMarkId);
     });
+
+    // Update switch configuration input if a switch is selected
+    if (currentProduct && switchFamilies.has(currentProduct)) {
+        updateSwitchConfigForSelectedMark();
+    }
+
     renderMarksList();
 }
+
 
 function removeMark(id) {
     const idx = marks.findIndex(x => x.id === id);
@@ -4392,26 +4837,45 @@ function renderMarksList() {
     });
 
     // Render regular marks
-    // In the regular marks section (around line 1900-1950)
-    // In the regularMarks.forEach loop:
-    // In the renderMarksList function, update the regularMarks.forEach loop:
-    // In the renderMarksList function, update the regularMarks.forEach loop:
     regularMarks.forEach(m => {
         const item = document.createElement('div');
         item.className = 'mark-item';
         item.classList.toggle('active', m.id === selectedMarkId);
 
-        const label = document.createElement('span');
-        // Show just the text content for text labels
+        const labelContainer = document.createElement('div');
+        labelContainer.style.flex = '1';
+
         if (m.isTextLabel) {
+            // Show just the text content for text labels
+            const label = document.createElement('span');
             label.textContent = `"${m.text}"`;
-            label.style.color = '#000000'; // Black text
+            label.style.color = '#000000';
             label.style.fontWeight = 'normal';
             label.style.fontStyle = 'normal';
+            labelContainer.appendChild(label);
         } else {
-            label.textContent = m.seriesLabel;
+            // For switches, show configuration in the list
+            if (m.isSwitchFamily && m.switchConfig) {
+                const mainLabel = document.createElement('div');
+                mainLabel.style.fontSize = '11px';
+                mainLabel.style.fontWeight = 'bold';
+                mainLabel.textContent = m.seriesLabel;
+                labelContainer.appendChild(mainLabel);
+
+                const configLabel = document.createElement('div');
+                configLabel.style.fontSize = '10px';
+                configLabel.style.color = '#666';
+                configLabel.style.marginTop = '2px';
+                configLabel.textContent = m.switchConfig;
+                labelContainer.appendChild(configLabel);
+            } else {
+                const label = document.createElement('span');
+                label.textContent = m.seriesLabel;
+                labelContainer.appendChild(label);
+            }
         }
-        item.appendChild(label);
+
+        item.appendChild(labelContainer);
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'btn';
@@ -4430,7 +4894,18 @@ function renderMarksList() {
             if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
                 selectedMarkId = m.id;
                 updateMarkSelection();
-                // Don't open modal for text labels
+
+                // Refresh switch configuration controls if this is a switch
+                if (m.isSwitchFamily) {
+                    // Remove and recreate switch controls
+                    const existingControls = document.getElementById('switchConfigControls');
+                    if (existingControls) {
+                        existingControls.remove();
+                    }
+                    createSwitchConfigurationControls();
+                }
+
+                // Don't open modal for text labels or emitters
                 if (!m.isTextLabel && !m.isEmitter) {
                     openProductModal(m);
                 }
@@ -4666,19 +5141,20 @@ function enhanceProductDataWithBrands() {
         "WALL MOUNT DISPLAY": "LUMI",
         "TACTILE HEXA SERIES": "LUMI",
         "DUO-QUAD SERIES": "LUMI",
-        "DOMOGENIE GLASS LITE SERIES": "Domogenie",
+        "DOMOGENIE GLASS SERIES": "Domogenie",
         "TREMBLAY SOUNDS": "Tremblay",
         "Z-WAVE RELAY": "LUMI",
         "CURTAIN MOTORS": "LUMI",
         "SENSORS": "Big Sense",
-        "IR BLASTER - ZMOTE": "Zmote", // ADD THIS LINE
+        "IR BLASTER - ZMOTE": "Zmote",
+        "EQUIPMENTS": "Equipment", // Added equipment brand
         "AUTOMATION DISTRIBUTION BOX": "DB",
         "NETWORK DISTRIBUTION BOX": "DB"
     };
 
     for (const [category, brand] of Object.entries(brands)) {
         if (productData[category]) {
-            if (!productData[category].isDBBox && !productData[category].isNetworkDBBox) {
+            if (!productData[category].isDBBox && !productData[category].isNetworkDBBox && !productData[category].isEquipment) {
                 productData[category].brand = brand;
             }
             if (productData[category].subProducts) {
@@ -4784,6 +5260,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
         const hasDBBoxes = tables.dbBoxes.length > 0;
         const hasNetworkDBBoxes = tables.networkDBBoxes.length > 0;
         const hasMainProducts = tables.mainProducts.length > 0;
+        const hasEquipment = tables.equipment.length > 0; // Check for equipment
 
         // In the Automation DB Box section, update to show like:
         if (hasDBBoxes) {
@@ -5016,6 +5493,52 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
             yPosition = doc.lastAutoTable.finalY + 10;
         }
 
+        if (hasEquipment) {
+            yPosition += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0); // Black color for equipment
+            doc.text('Equipment', 20, yPosition);
+            yPosition += 8;
+
+            const equipmentTableData = tables.equipment.map(item => [
+                item.label,
+                item.category,
+                item.brand,
+                item.model,
+                item.quantity.toString()
+            ]);
+
+            doc.autoTable({
+                startY: yPosition,
+                head: [['Label', 'Category', 'Brand', 'Model', 'Qty']],
+                body: equipmentTableData,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [0, 0, 0], // Black header
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    overflow: 'linebreak',
+                    halign: 'center',
+                    minCellHeight: 6
+                },
+                columnStyles: {
+                    0: { cellWidth: 15, halign: 'center' },
+                    1: { cellWidth: 30, halign: 'center' },
+                    2: { cellWidth: 25, halign: 'center' },
+                    3: { cellWidth: 90, halign: 'left' },
+                    4: { cellWidth: 15, halign: 'center' }
+                },
+                margin: { left: 15 }
+            });
+
+            yPosition = doc.lastAutoTable.finalY + 10;
+        }
+
         const totalDBBoxes = tables.dbBoxes.reduce((sum, item) => sum + item.quantity, 0);
         const totalNetworkDBBoxes = tables.networkDBBoxes.reduce((sum, item) => sum + item.quantity, 0);
         const totalMainProducts = tables.mainProducts.reduce((sum, item) => sum + item.quantity, 0);
@@ -5130,7 +5653,6 @@ function generateProductTable() {
             return; // Skip individual processing for grouped marks
         }
 
-        // Rest of the code remains the same...
         const key = mark.seriesLabel;
         const category = mark.categoryName || 'Unknown';
         let model = mark.modelName || 'Unknown';
@@ -5139,7 +5661,13 @@ function generateProductTable() {
         if (mark.categoryName && productData[mark.categoryName]) {
             brand = productData[mark.categoryName].brand || brand;
         }
+
+        // Skip emitters from PDF
         if (mark.isEmitter) return;
+
+        // Skip equipment from main table (they'll be in separate section)
+        if (mark.isEquipment) return;
+
         if (mark.isDBBox) {
             dbBoxesTable.push({
                 label: key,
@@ -5189,13 +5717,21 @@ function generateProductTable() {
             return;
         }
 
+        // Handle switch families with configuration
+        if (mark.isSwitchFamily && mark.switchConfig) {
+            model = `${model} (${mark.switchConfig})`;
+
+            brand = mark.brand || 'LUMI';
+        }
+
         if (!productMap.has(key)) {
             productMap.set(key, {
                 label: key,
                 category: category,
                 brand: brand,
                 model: model,
-                quantity: 1
+                quantity: 1,
+                switchConfig: mark.switchConfig || ''
             });
         } else {
             productMap.get(key).quantity += 1;
@@ -5208,17 +5744,16 @@ function generateProductTable() {
         const firstMark = group.marks[0];
         const category = 'TREMBLAY SOUNDS';
 
-        // Use the main product name (e.g., "7.1 Surround System") instead of component names
         const productKey = group.group.productKey;
         const subProductKey = group.group.subProductKey;
         const mainProductName = productData[productKey]?.subProducts[subProductKey]?.title || key;
 
         if (!productMap.has(key)) {
             productMap.set(key, {
-                label: group.label, // Use the label (e.g., T1)
+                label: group.label,
                 category: category,
                 brand: 'Tremblay',
-                model: mainProductName, // Show main product name in PDF
+                model: mainProductName,
                 quantity: 1,
                 isMultiComponent: true
             });
@@ -5227,16 +5762,31 @@ function generateProductTable() {
 
     const mainProducts = Array.from(productMap.values())
         .sort((a, b) => {
-            // Sort by label number
             const numA = parseInt(a.label.substring(1)) || 0;
             const numB = parseInt(b.label.substring(1)) || 0;
             return numA - numB;
         });
 
+    // Add equipment section
+    const equipmentMarks = marks.filter(mark => mark.isEquipment);
+    const equipmentTable = [];
+
+    equipmentMarks.forEach(mark => {
+        const key = mark.seriesLabel;
+        equipmentTable.push({
+            label: key,
+            category: 'Equipment',
+            brand: 'Equipment',
+            model: mark.modelName || 'Unknown',
+            quantity: 1
+        });
+    });
+
     return {
         mainProducts: mainProducts,
         dbBoxes: dbBoxesTable.sort((a, b) => a.label.localeCompare(b.label)),
-        networkDBBoxes: networkDBBoxesTable.sort((a, b) => a.label.localeCompare(b.label))
+        networkDBBoxes: networkDBBoxesTable.sort((a, b) => a.label.localeCompare(b.label)),
+        equipment: equipmentTable.sort((a, b) => a.label.localeCompare(b.label))
     };
 }
 
@@ -5270,7 +5820,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function saveProject() {
     try {
         const projectData = {
-            version: '2.3',
+            version: '2.4', // Updated version
             timestamp: new Date().toISOString(),
             floorPlanImage: previewImage.src,
             marks: marks.map(mark => ({
@@ -5286,7 +5836,6 @@ function saveProject() {
                 groupId: mark.groupId,
                 componentType: mark.componentType,
                 componentIndex: mark.componentIndex,
-                // Add a unique identifier for multi-component marks
                 componentUniqueKey: mark.isMultiComponent ?
                     `${mark.seriesLabel}_${mark.componentType}_${mark.componentIndex}` :
                     mark.seriesLabel,
@@ -5298,6 +5847,8 @@ function saveProject() {
                 isNetworkDBBox: mark.isNetworkDBBox,
                 isTextLabel: mark.isTextLabel,
                 isMultiComponent: mark.isMultiComponent,
+                isEquipment: mark.isEquipment, // Save equipment flag
+                isSwitchFamily: mark.isSwitchFamily, // Save switch family flag
                 text: mark.text,
                 fontSize: mark.fontSize,
                 brand: mark.brand,
@@ -5309,6 +5860,8 @@ function saveProject() {
                 apBrand: mark.apBrand,
                 apModel: mark.apModel,
                 apQty: mark.apQty || 1,
+                switchConfig: mark.switchConfig || '', // Save switch configuration
+                equipmentIcon: mark.equipmentIcon || '', // Save equipment icon
                 originalId: mark.id
             })),
             multiComponentGroups: multiComponentGroups,
@@ -5318,7 +5871,6 @@ function saveProject() {
                 endMarkId: wire.endMark.id,
                 startMarkLabel: wire.startMark.seriesLabel,
                 endMarkLabel: wire.endMark.seriesLabel,
-                // Save component unique keys for multi-component marks
                 startMarkComponentKey: wire.startMark.isMultiComponent ?
                     `${wire.startMark.seriesLabel}_${wire.startMark.componentType}_${wire.startMark.componentIndex}` :
                     wire.startMark.seriesLabel,
@@ -5353,6 +5905,14 @@ function saveProject() {
                         apBrand: productData[key].apBrand || '',
                         apModel: productData[key].apModel || '',
                         apQty: productData[key].apQty || 1
+                    };
+                    return specs;
+                }, {}),
+            switchConfigs: Object.keys(productData)
+                .filter(key => switchFamilies.has(key))
+                .reduce((specs, key) => {
+                    specs[key] = {
+                        switchConfig: productData[key].switchConfig || ''
                     };
                     return specs;
                 }, {})
@@ -5440,18 +6000,26 @@ function loadProjectData(projectData) {
         });
     }
 
+    // Load switch configurations
+    if (projectData.switchConfigs) {
+        Object.keys(projectData.switchConfigs).forEach(key => {
+            if (productData[key]) {
+                productData[key].switchConfig = projectData.switchConfigs[key].switchConfig || '';
+            }
+        });
+    }
+
     if (projectData.multiComponentGroups) {
         multiComponentGroups = projectData.multiComponentGroups;
     }
 
-    // ✅ Create THREE maps for different lookup methods
-    const markIdMap = new Map();          // Original ID -> new mark
-    const markLabelMap = new Map();       // seriesLabel -> new mark (for regular marks)
-    const markComponentKeyMap = new Map(); // componentUniqueKey -> new mark (for multi-component)
+    // Create lookup maps
+    const markIdMap = new Map();
+    const markLabelMap = new Map();
+    const markComponentKeyMap = new Map();
 
     // First, load all marks
     projectData.marks.forEach(savedMark => {
-        // Generate a NEW ID for the mark
         const newId = 'mark-' + (++markCounter);
 
         // Create mark data object
@@ -5472,6 +6040,7 @@ function loadProjectData(projectData) {
             isDBBox: savedMark.isDBBox || false,
             isNetworkDBBox: savedMark.isNetworkDBBox || false,
             isTextLabel: savedMark.isTextLabel || false,
+            isEquipment: savedMark.isEquipment || false, // Load equipment flag
             isMultiComponent: savedMark.isMultiComponent || false,
             brand: savedMark.brand || '',
             sizeFt: savedMark.sizeFt || '',
@@ -5487,9 +6056,17 @@ function loadProjectData(projectData) {
             isTremblay: savedMark.categoryName === 'TREMBLAY SOUNDS',
             groupId: savedMark.groupId || null,
             componentType: savedMark.componentType || '',
+            isSwitchFamily: savedMark.isSwitchFamily || false,
+            switchConfig: savedMark.switchConfig || '',
+            equipmentIcon: savedMark.equipmentIcon || '', // Load equipment icon
             componentIndex: savedMark.componentIndex || 0,
             componentUniqueKey: savedMark.componentUniqueKey || savedMark.seriesLabel
         };
+
+        // CRITICAL: Ensure equipment is NOT treated as text label
+        if (mark.isEquipment) {
+            mark.isTextLabel = false;
+        }
 
         // Update series counter
         if (!seriesCounters[mark.seriesCode]) {
@@ -5506,14 +6083,58 @@ function loadProjectData(projectData) {
         el.dataset.shape = mark.shape;
         el.dataset.seriesLabel = mark.seriesLabel;
 
-        // Store component unique key in dataset for multi-component marks
-        if (mark.isMultiComponent) {
-            el.dataset.componentUniqueKey = mark.componentUniqueKey;
-            el.dataset.componentType = mark.componentType;
-            el.dataset.componentIndex = mark.componentIndex;
-        }
+        // Handle equipment marks
+        if (mark.isEquipment) {
+            el.dataset.isEquipment = 'true';
 
-        if (mark.isTextLabel) {
+            // Create icon container
+            const iconContainer = document.createElement('div');
+            iconContainer.className = 'equipment-icon';
+            iconContainer.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1;
+                pointer-events: none;
+            `;
+
+            const iconImg = document.createElement('img');
+            iconImg.src = mark.equipmentIcon || mark.imageSrc || '';
+            iconImg.style.cssText = `
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                filter: brightness(0);
+            `;
+
+            iconContainer.appendChild(iconImg);
+            el.appendChild(iconContainer);
+
+            // Add series label text
+            const eqText = document.createElement('div');
+            eqText.className = 'equipment-label-text';
+            eqText.textContent = mark.seriesLabel;
+            eqText.style.cssText = `
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translate(-50%, 5px);
+                font-size: 10px;
+                font-weight: bold;
+                color: #000;
+                white-space: nowrap;
+                pointer-events: none;
+            `;
+            el.appendChild(eqText);
+
+            // Equipment styling
+        } else if (mark.isTextLabel) {
             el.dataset.isTextLabel = 'true';
             el.style.backgroundColor = '#FFFFFF';
             el.style.borderColor = '#667eea';
@@ -5541,19 +6162,22 @@ function loadProjectData(projectData) {
             mark.labelElement = textSpan;
         }
 
+        // Create badge (not shown for equipment)
         const badge = document.createElement('div');
         badge.className = 'label-badge';
-        badge.textContent = mark.seriesLabel;
+        if (!mark.isEquipment) {
+            badge.textContent = mark.seriesLabel;
 
-        if (mark.isTextLabel) {
-            badge.style.backgroundColor = '#667eea';
-            badge.style.color = '#FFFFFF';
-        } else if (mark.isTremblay || mark.isMultiComponent) {
-            badge.style.backgroundColor = '#FF9800';
+            if (mark.isTextLabel) {
+                badge.style.backgroundColor = '#667eea';
+                badge.style.color = '#FFFFFF';
+            } else if (mark.isTremblay || mark.isMultiComponent) {
+                badge.style.backgroundColor = '#FF9800';
+            }
+            el.appendChild(badge);
         }
 
-        el.appendChild(badge);
-
+        // Create tooltip
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
 
@@ -5585,7 +6209,6 @@ function loadProjectData(projectData) {
             e.stopPropagation();
 
             if (isWireMode && currentWireType && !e.defaultPrevented) {
-                // Use the mark object from closure
                 if (!wireStartMark) {
                     wireStartMark = mark;
                     showNotification(`First mark selected: ${mark.seriesLabel}. Now select second mark.`, 'info');
@@ -5607,12 +6230,11 @@ function loadProjectData(projectData) {
                 updatePointsList();
                 e.preventDefault();
             } else if (!isWireMode && !e.defaultPrevented) {
-                // Only open modal if not in wire mode
                 selectedMarkId = mark.id;
                 updateMarkSelection();
 
-                // Don't open modal for text labels
-                if (!mark.isTextLabel) {
+                // Don't open modal for text labels or equipment
+                if (!mark.isTextLabel && !mark.isEquipment) {
                     openProductModal(mark);
                 }
             }
@@ -5625,11 +6247,10 @@ function loadProjectData(projectData) {
         mark.tooltip = tooltip;
         marks.push(mark);
 
-        // Store in all maps
-        markIdMap.set(savedMark.id, mark);          // Original ID -> new mark
-        markLabelMap.set(mark.seriesLabel, mark);   // Label -> new mark
+        // Store in maps
+        markIdMap.set(savedMark.id, mark);
+        markLabelMap.set(mark.seriesLabel, mark);
 
-        // For multi-component marks, also store by componentUniqueKey
         if (mark.isMultiComponent && mark.componentUniqueKey) {
             markComponentKeyMap.set(mark.componentUniqueKey, mark);
         }
@@ -5639,7 +6260,7 @@ function loadProjectData(projectData) {
     updateAllMarks();
     renderMarksList();
 
-    // Now, load all wires with improved matching logic
+    // Load all wires
     if (projectData.wires && Array.isArray(projectData.wires)) {
         console.log('Loading wires:', projectData.wires.length);
 
@@ -5647,7 +6268,7 @@ function loadProjectData(projectData) {
             let startMark = null;
             let endMark = null;
 
-            // FIRST: Try to find marks by componentUniqueKey (for multi-component marks)
+            // Try to find marks by componentUniqueKey (for multi-component marks)
             if (savedWire.startMarkComponentKey) {
                 startMark = markComponentKeyMap.get(savedWire.startMarkComponentKey);
             }
@@ -5655,7 +6276,7 @@ function loadProjectData(projectData) {
                 endMark = markComponentKeyMap.get(savedWire.endMarkComponentKey);
             }
 
-            // SECOND: If not found by component key, try by seriesLabel
+            // If not found by component key, try by seriesLabel
             if (!startMark) {
                 startMark = markLabelMap.get(savedWire.startMarkLabel);
             }
@@ -5663,27 +6284,21 @@ function loadProjectData(projectData) {
                 endMark = markLabelMap.get(savedWire.endMarkLabel);
             }
 
-            // THIRD: If still not found, try by ID (fallback)
+            // Fallback: try by ID
             if (!startMark) {
                 startMark = markIdMap.get(savedWire.startMarkId);
-                if (startMark) console.warn('Found start mark by ID instead of label:', savedWire.startMarkLabel);
             }
             if (!endMark) {
                 endMark = markIdMap.get(savedWire.endMarkId);
-                if (endMark) console.warn('Found end mark by ID instead of label:', savedWire.endMarkLabel);
             }
 
             if (!startMark || !endMark) {
                 console.warn('Could not find marks for wire:', {
                     startLabel: savedWire.startMarkLabel,
-                    endLabel: savedWire.endMarkLabel,
-                    startComponentKey: savedWire.startMarkComponentKey,
-                    endComponentKey: savedWire.endMarkComponentKey
+                    endLabel: savedWire.endMarkLabel
                 });
                 return;
             }
-
-            console.log('Creating wire between:', startMark.seriesLabel, 'and', endMark.seriesLabel);
 
             // Set current wire type for wire creation
             const originalWireType = currentWireType;
@@ -5726,7 +6341,6 @@ function loadProjectData(projectData) {
                     selectWire(startMark, endMark, wire.wireType);
                 });
 
-                // Reattach drag functionality
                 makeWireDraggable(wireElement.path, startMark, endMark);
             }
         });
@@ -5746,7 +6360,6 @@ function loadProjectData(projectData) {
         isWireMode = projectData.isWireMode || false;
 
         if (isWireMode && currentWireType) {
-            // Force a small delay to ensure DOM is ready
             setTimeout(() => {
                 showWireControls();
                 updateWireSelectionLabels();
@@ -6011,3 +6624,4 @@ function enableAllZoom() {
 
     console.log('Zoom functions re-enabled');
 }
+

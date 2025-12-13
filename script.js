@@ -217,13 +217,153 @@ function initCanvas() {
     });
 
     // Load saved plan if exists
-    loadPlan();
+    loadLocalPlan();
 
     // Initialize history with empty state
     saveToHistory();
 
+    // Add file input for JSON upload
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'json-file-upload';
+    fileInput.accept = '.json';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+    
+    fileInput.addEventListener('change', handleFileUpload);
+
     // Start animation loop
     requestAnimationFrame(render);
+}
+
+// Handle file upload for JSON files
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const planData = JSON.parse(e.target.result);
+            loadPlanFromJSON(planData);
+            operationStatus.textContent = `Plan loaded from file: ${file.name}`;
+        } catch (error) {
+            console.error('Error parsing JSON file:', error);
+            operationStatus.textContent = 'Error: Invalid JSON file format';
+            alert('Error: Invalid JSON file format. Please upload a valid floor plan JSON file.');
+        }
+    };
+    reader.readAsText(file);
+    
+    // Reset file input
+    event.target.value = '';
+}
+
+// Load plan from JSON data
+function loadPlanFromJSON(planData) {
+    try {
+        // Clear current state
+        appState.walls = [];
+        appState.furniture = [];
+        appState.joints = {};
+        appState.nextJointId = 1;
+        
+        // Load walls
+        if (planData.walls && Array.isArray(planData.walls)) {
+            appState.walls = planData.walls.map(wall => ({
+                ...wall,
+                id: wall.id || Date.now()
+            }));
+        }
+        
+        // Load furniture
+        if (planData.furniture && Array.isArray(planData.furniture)) {
+            appState.furniture = planData.furniture.map(item => ({
+                ...item,
+                id: item.id || Date.now(),
+                rotation: item.rotation || 0,
+                originalSize: item.originalSize || { width: item.width, height: item.height },
+                flipDirection: item.flipDirection || false
+            }));
+        }
+        
+        // Load joints if available
+        if (planData.joints) {
+            appState.joints = planData.joints;
+        }
+        
+        if (planData.nextJointId) {
+            appState.nextJointId = planData.nextJointId;
+        } else {
+            // Recreate joints from walls if not in data
+            recreateJointsFromWalls();
+        }
+        
+        // Load view transform if available
+        if (planData.viewTransform) {
+            appState.viewTransform = planData.viewTransform;
+            zoomLevel.textContent = `${Math.round(appState.viewTransform.scale * 100)}%`;
+        }
+        
+        // Clear selection
+        appState.selectedItem = null;
+        appState.selectedType = null;
+        updatePropertiesPanel();
+        
+        // Save to history
+        saveToHistory();
+        
+        // Update operation status
+        operationStatus.textContent = 'Plan loaded from file successfully';
+        
+        return true;
+    } catch (error) {
+        console.error('Error loading plan data:', error);
+        operationStatus.textContent = 'Error loading plan from file';
+        return false;
+    }
+}
+
+// Recreate joints from walls
+function recreateJointsFromWalls() {
+    appState.joints = {};
+    appState.nextJointId = 1;
+    
+    for (const wall of appState.walls) {
+        // Create or find joint for start point
+        let jointId1 = findJointAtPosition(wall.x1, wall.y1);
+        if (!jointId1) {
+            jointId1 = appState.nextJointId++;
+            appState.joints[jointId1] = { x: wall.x1, y: wall.y1, walls: [] };
+        }
+        wall.jointId1 = jointId1;
+        
+        // Create or find joint for end point
+        let jointId2 = findJointAtPosition(wall.x2, wall.y2);
+        if (!jointId2) {
+            jointId2 = appState.nextJointId++;
+            appState.joints[jointId2] = { x: wall.x2, y: wall.y2, walls: [] };
+        }
+        wall.jointId2 = jointId2;
+        
+        // Add wall to joints
+        if (!appState.joints[jointId1].walls) appState.joints[jointId1].walls = [];
+        if (!appState.joints[jointId2].walls) appState.joints[jointId2].walls = [];
+        
+        appState.joints[jointId1].walls.push(wall);
+        appState.joints[jointId2].walls.push(wall);
+    }
+}
+
+// Find joint at position
+function findJointAtPosition(x, y) {
+    for (const jointId in appState.joints) {
+        const joint = appState.joints[jointId];
+        if (Math.abs(joint.x - x) < 0.001 && Math.abs(joint.y - y) < 0.001) {
+            return parseInt(jointId);
+        }
+    }
+    return null;
 }
 
 // Flip furniture horizontally
@@ -1287,6 +1427,7 @@ function savePlan() {
         furniture: appState.furniture,
         joints: appState.joints,
         nextJointId: appState.nextJointId,
+        viewTransform: appState.viewTransform,
         version: '2.0'
     };
 
@@ -1294,15 +1435,13 @@ function savePlan() {
     operationStatus.textContent = 'Plan saved to browser storage';
 }
 
-function loadPlan() {
+// Load from localStorage
+function loadLocalPlan() {
     const saved = localStorage.getItem('homePlannerLayout');
     if (saved) {
         try {
             const plan = JSON.parse(saved);
-            appState.walls = plan.walls || [];
-            appState.furniture = plan.furniture || [];
-            appState.joints = plan.joints || {};
-            appState.nextJointId = plan.nextJointId || 1;
+            loadPlanFromJSON(plan);
             operationStatus.textContent = 'Plan loaded from browser storage';
         } catch (e) {
             console.error('Error loading plan:', e);
@@ -1311,24 +1450,44 @@ function loadPlan() {
     }
 }
 
+// Load plan function - triggers file upload
+function loadPlan() {
+    // Trigger file input click
+    const fileInput = document.getElementById('json-file-upload');
+    if (fileInput) {
+        fileInput.click();
+    } else {
+        // Fallback to localStorage load
+        loadLocalPlan();
+    }
+}
+
+// Download JSON function - downloads complete plan data
 function downloadJson() {
-    const plan = {
+    const planData = {
         walls: appState.walls,
         furniture: appState.furniture,
         joints: appState.joints,
         nextJointId: appState.nextJointId,
-        version: '2.0'
+        viewTransform: appState.viewTransform,
+        version: '2.0',
+        exportDate: new Date().toISOString(),
+        metadata: {
+            app: 'Domotics Designer',
+            format: 'floor-plan-backup'
+        }
     };
 
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(plan, null, 2));
+    const jsonData = JSON.stringify(planData, null, 2);
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonData);
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "floor_plan.json");
+    downloadAnchorNode.setAttribute("download", "floor_plan_backup.json");
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
 
-    operationStatus.textContent = 'Plan downloaded as JSON';
+    operationStatus.textContent = 'Plan downloaded as JSON file';
 }
 
 function exportPng() {
@@ -1912,9 +2071,40 @@ function drawAngleGuides(wall) {
     }
 }
 
-// Export to configurator
+// Export to configurator - UPDATED VERSION
 function exportToConfigurator() {
     try {
+        // 1. FIRST: Save the complete JSON data for configurator
+        const planData = {
+            walls: appState.walls,
+            furniture: appState.furniture,
+            joints: appState.joints,
+            nextJointId: appState.nextJointId,
+            viewTransform: appState.viewTransform,
+            exportTime: new Date().toISOString(),
+            version: '2.0',
+            metadata: {
+                app: 'Domotics Designer',
+                format: 'floor-plan-data'
+            }
+        };
+        
+        const jsonData = JSON.stringify(planData, null, 2);
+        
+        // Save JSON to sessionStorage for the configurator
+        sessionStorage.setItem('floorPlanData', jsonData);
+        sessionStorage.setItem('configuratorExportTime', new Date().toISOString());
+        
+        // 2. SECOND: Download JSON file automatically
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonData);
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "floor_plan_configurator.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+        
+        // 3. THIRD: KEEP YOUR EXISTING IMAGE EXPORT (for backward compatibility)
         // Capture the current canvas state
         const canvas = document.getElementById('floor-plan-canvas');
 
@@ -1980,22 +2170,17 @@ function exportToConfigurator() {
         // Convert to data URL
         const dataURL = tempCanvas.toDataURL('image/png');
 
-        // Save to sessionStorage
+        // Save image to sessionStorage (for your existing configurator)
         sessionStorage.setItem('exportedPlan', dataURL);
         sessionStorage.setItem('exportedPlanBounds', JSON.stringify({
             minX, minY, width, height
         }));
 
         // Save plan data for potential reconstruction
-        const planData = {
-            walls: appState.walls,
-            furniture: appState.furniture,
-            exportTime: new Date().toISOString()
-        };
         sessionStorage.setItem('exportedPlanData', JSON.stringify(planData));
 
         // Show success message
-        operationStatus.textContent = 'Plan exported to configurator! Redirecting...';
+        operationStatus.textContent = 'Plan exported! JSON downloaded. Redirecting to configurator...';
 
         // Redirect after a brief delay
         setTimeout(() => {
