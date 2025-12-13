@@ -97,25 +97,25 @@ const productData = {
             "LIGHT": {
                 title: "Light",
                 desc: "Lighting equipment",
-                icon: "https://cdn.jsdelivr.net/npm/@mdi/svg@7.4.47/svg/lightbulb.svg",
+                icon: "./images/svg/4.svg",
                 features: ["Lighting equipment"]
             },
             "FAN": {
                 title: "Fan",
                 desc: "Ceiling or wall fan",
-                icon: "https://cdn.jsdelivr.net/npm/@mdi/svg@7.4.47/svg/fan.svg",
+                icon: "./images/svg/3.svg",
                 features: ["Ceiling or wall fan"]
             },
             "STRIP LIGHT": {
                 title: "Strip Light",
                 desc: "LED strip lighting",
-                icon: "https://cdn.jsdelivr.net/npm/@mdi/svg@7.4.47/svg/led-strip.svg",
+                icon: "./images/svg/1.svg",
                 features: ["LED strip lighting"]
             },
             "CHANDELIER": {
                 title: "Chandelier",
                 desc: "Decorative chandelier",
-                icon: "https://cdn.jsdelivr.net/npm/@mdi/svg@7.4.47/svg/chandelier.svg",
+                icon: "./images/svg/2.svg",
                 features: ["Decorative chandelier"]
             }
         }
@@ -438,7 +438,26 @@ const productData = {
                 features: ["Dual KNX + RF control", "Real-time feedback", "Fully KNX compatible", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
             }
         }
+    },"KNX SENSORS": {
+    title: "Sensors",
+    desc: "Advanced KNX-based detection and monitoring sensors for smart homes.",
+    subProducts: {
+        "HUMAN PRESENCE / LUX SENSOR (LMHPSKNX)": {
+            title: "Human Presence / Lux Sensor",
+            desc: "KNX radar-based human presence and lux sensor for intelligent lighting and automation control.",
+            img: "./images/knxsensor/1.png",
+            features: [
+                "KNX BUS protocol",
+                "Radar-based human presence detection",
+                "Integrated lux (light level) sensor",
+                "High accuracy presence detection",
+                "Low power consumption",
+                "Compact recessed ceiling installation"
+            ]
+        }
     }
+}
+
     ,
     "SENSORS": {
         title: "Sensors",
@@ -567,6 +586,7 @@ const PRODUCT_ORDER = [
     "TREMBLAY SOUNDS",
     "Z-WAVE RELAY",
     "CURTAIN MOTORS",
+    "KNX SENSORS",
     "SENSORS",
     "IR BLASTER - ZMOTE",
     "EMITTER",
@@ -998,6 +1018,8 @@ function getSeriesCode(productKey) {
     if (productKey === 'TREMBLAY SOUNDS') return 'T';
     if (productKey === 'IR BLASTER - ZMOTE') return 'I';
     if (productKey === 'EMITTER') return 'E';
+    if (productKey === 'KNX SENSORS') return 'LS';
+    if (productKey === 'SENSORS') return 'BS';
     if (productKey === 'TEXT') return 'TX';
     if (productKey === 'EQUIPMENTS') return 'EQ';
     if (productKey === 'AUTOMATION DISTRIBUTION BOX') return 'ADB';
@@ -4732,53 +4754,55 @@ if (currentProduct === 'ACCESS POINT') {
     el.dataset.size = size;
     el.dataset.shape = shape;
 
-    if (isEquipment) {
-        el.dataset.isEquipment = 'true';
+if (isEquipment) {
+    el.dataset.isEquipment = 'true';
+    el.dataset.equipmentType = modelName; // Add this for identification
 
-        const iconContainer = document.createElement('div');
-        iconContainer.className = 'equipment-icon';
-        iconContainer.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1;
-            pointer-events: none;
-        `;
+    const iconContainer = document.createElement('div');
+    iconContainer.className = 'equipment-icon';
+    iconContainer.style.cssText = `
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        /* REMOVE pointer-events: none; */
+    `;
 
-        const iconImg = document.createElement('img');
-        iconImg.src = equipmentIcon || productDataForMark?.icon || '';
-        iconImg.style.cssText = `
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: brightness(0);
-        `;
+    const iconImg = document.createElement('img');
+    iconImg.src = equipmentIcon || productDataForMark?.icon || '';
+    iconImg.style.cssText = `
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: brightness(0);
+        /* REMOVE pointer-events: none; */
+    `;
 
-        iconContainer.appendChild(iconImg);
-        el.appendChild(iconContainer);
+    iconContainer.appendChild(iconImg);
+    el.appendChild(iconContainer);
 
-        const eqText = document.createElement('div');
-        eqText.className = 'equipment-label-text';
-        eqText.textContent = label;
-        eqText.style.cssText = `
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translate(-50%, 5px);
-            font-size: 10px;
-            font-weight: bold;
-            color: #000;
-            white-space: nowrap;
-            pointer-events: none;
-        `;
-        el.appendChild(eqText);
-    } else {
+    const eqText = document.createElement('div');
+    eqText.className = 'equipment-label-text';
+    eqText.textContent = label;
+    eqText.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translate(-50%, 5px);
+        font-size: 10px;
+        font-weight: bold;
+        color: #000;
+        white-space: nowrap;
+        /* REMOVE pointer-events: none; */
+    `;
+    el.appendChild(eqText);
+} else {
         const badge = document.createElement('div');
         badge.className = 'label-badge';
         badge.textContent = label;
@@ -4844,38 +4868,36 @@ if (currentProduct === 'ACCESS POINT') {
     marks.push(markData);
 
 // Event listener setup with configuration refresh
+// In the click event handler around line 3957, update it to:
 el.addEventListener('click', function (e) {
     e.stopPropagation();
 
     if (isWireMode && currentWireType && !e.defaultPrevented) {
-        // ... wire mode logic ...
-    } else if (!isWireMode && !e.defaultPrevented) {
-        if (!dragStarted) {
-            selectedMarkId = id;
-            updateMarkSelection();
-
-            if (isSwitchFamily) {
-                const existingControls = document.getElementById('switchConfigControls');
-                if (existingControls) {
-                    existingControls.remove();
-                }
-                const existingAPControls = document.getElementById('accessPointConfigControls');
-                if (existingAPControls) {
-                    existingAPControls.remove();
-                }
-                
-                // CREATE APPROPRIATE CONTROLS
-                if (currentProduct === 'ACCESS POINT') {
-                    createAccessPointConfigurationControls();
-                } else {
-                    createSwitchConfigurationControls();
-                }
-            }
-
-            if (!data.isDBBox && !data.isNetworkDBBox && !data.isEmitter && !isEquipment) {
-                openProductModal(markData);
-            }
+        // Wire selection logic - Add equipment handling
+        if (!wireStartMark) {
+            wireStartMark = markData;
+            const labelText = isEquipment ? `${markData.modelName} (${markData.seriesLabel})` : markData.seriesLabel;
+            showNotification(`First mark selected: "${labelText}". Now select second mark.`, 'info');
+        } else if (!wireEndMark && wireStartMark !== markData) {
+            wireEndMark = markData;
+            const wireTypeInfo = getWireTypeInfo(currentWireType);
+            const labelText = isEquipment ? `${markData.modelName} (${markData.seriesLabel})` : markData.seriesLabel;
+            showNotification(`Second mark selected: "${labelText}". ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
+        } else if (wireStartMark === markData) {
+            wireStartMark = null;
+            wireEndMark = null;
+            wirePoints = [];
+            showNotification('First mark selection cleared.', 'info');
+        } else if (wireEndMark === markData) {
+            wireEndMark = null;
+            wirePoints = [];
+            showNotification('Second mark selection cleared.', 'info');
         }
+        updateWireSelectionLabels();
+        updatePointsList();
+        e.preventDefault();
+    } else if (!isWireMode && !e.defaultPrevented) {
+        // Existing selection logic...
     }
 });
 
@@ -5972,6 +5994,7 @@ function enhanceProductDataWithBrands() {
         "TREMBLAY SOUNDS": "Tremblay",
         "Z-WAVE RELAY": "LUMI",
         "CURTAIN MOTORS": "LUMI",
+        "KNX SENSORS":"LUMI",
         "SENSORS": "Big Sense",
         "IR BLASTER - ZMOTE": "Zmote",
         "ACCESS POINT": "Ubiquiti", // ADD THIS LINE
@@ -5996,6 +6019,25 @@ function enhanceProductDataWithBrands() {
 enhanceProductDataWithBrands();
 
 /* ------------------------- PDF EXPORT FUNCTIONALITY ------------------------- */
+/* ------------------------- PDF EXPORT FUNCTIONALITY ------------------------- */
+// Cable color definition
+const cableColors = [
+    { type: 'KNX Bus Wire', color: '#4CAF50' },
+    { type: 'Phase Wire (Live)', color: '#f44336' },
+    { type: 'Neutral Wire', color: '#000000' },
+    { type: 'CAT6 Cable', color: '#9E9E9E' },
+    { type: 'IR Cable', color: '#2196F3' },
+    { type: 'Speaker Cable 16/18 AWG', color: '#FFC107' },
+    { type: 'DALI 2 Core Wire 1.5 sqmm', color: '#9C27B0' }
+];
+
+// Prepare table body
+const cableTableBody = cableColors.map(item => [
+    item.type,
+    item.color
+]);
+
+
 document.getElementById('downloadPdfBtn').addEventListener('click', async function () {
     try {
         const btn = this;
@@ -6069,7 +6111,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
         doc.setFontSize(8);
         doc.setTextColor(150, 150, 150);
-        doc.text('Page 1 of 2', doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+        doc.text('Page 1 of 3', doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
 
         doc.addPage();
         yPosition = 30;
@@ -6088,7 +6130,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
         const hasDBBoxes = tables.dbBoxes.length > 0;
         const hasNetworkDBBoxes = tables.networkDBBoxes.length > 0;
         const hasMainProducts = tables.mainProducts.length > 0;
-        const hasEquipment = tables.equipment.length > 0; // Check for equipment
+        const hasEquipment = tables.equipment.length > 0;
 
         // In the Automation DB Box section, update to show like:
         if (hasDBBoxes) {
@@ -6099,7 +6141,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             const dbTableData = tables.dbBoxes.map(item => [
                 item.label,
-                'AUTOMATION\nDISTRIBUTION\nBOX', // Type with line breaks
+                'AUTOMATION\nDISTRIBUTION\nBOX',
                 item.brand,
                 item.size,
                 item.model,
@@ -6126,7 +6168,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 },
                 columnStyles: {
                     0: { cellWidth: 15, halign: 'center' },
-                    1: { cellWidth: 60, halign: 'center' }, // Type column
+                    1: { cellWidth: 60, halign: 'center' },
                     2: { cellWidth: 30, halign: 'center' },
                     3: { cellWidth: 20, halign: 'center' },
                     4: { cellWidth: 40, halign: 'left' },
@@ -6137,7 +6179,6 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             yPosition = doc.lastAutoTable.finalY + 15;
 
-            // DB Box Relays section
             // DB Box Relays section
             const dbBoxWithRelays = tables.dbBoxes.filter(item => item.selectedRelays && item.selectedRelays.length > 0);
             if (dbBoxWithRelays.length > 0) {
@@ -6169,9 +6210,6 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 yPosition = itemY + 10;
             }
         }
-
-        // In the PDF generation section, replace the Network DB Box equipment part:
-        // In the PDF generation section, update the Network DB Box part:
 
         if (hasNetworkDBBoxes) {
             doc.setFontSize(14);
@@ -6297,6 +6335,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 yPosition = itemY + 10;
             }
         }
+        
         if (hasMainProducts) {
             if (hasDBBoxes || hasNetworkDBBoxes) {
                 doc.setFontSize(14);
@@ -6305,7 +6344,6 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 yPosition += 8;
             }
 
-            // KEEP ORIGINAL 5-COLUMN TABLE
             const mainTableData = tables.mainProducts.map(item => [
                 item.label,
                 item.category,
@@ -6316,7 +6354,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             doc.autoTable({
                 startY: yPosition,
-                head: [['Label', 'Category', 'Brand', 'Model', 'Qty']], // KEEP 5 COLUMNS
+                head: [['Label', 'Category', 'Brand', 'Model', 'Qty']],
                 body: mainTableData,
                 theme: 'grid',
                 headStyles: {
@@ -6348,7 +6386,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
         if (hasEquipment) {
             yPosition += 10;
             doc.setFontSize(14);
-            doc.setTextColor(0, 0, 0); // Black color for equipment
+            doc.setTextColor(0, 0, 0);
             doc.text('Equipment', 20, yPosition);
             yPosition += 8;
 
@@ -6366,7 +6404,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 body: equipmentTableData,
                 theme: 'grid',
                 headStyles: {
-                    fillColor: [0, 0, 0], // Black header
+                    fillColor: [0, 0, 0],
                     textColor: 255,
                     fontStyle: 'bold',
                     halign: 'center'
@@ -6415,7 +6453,111 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
         doc.setFontSize(8);
         doc.setTextColor(150, 150, 150);
-        doc.text(`Page 2 of 2`, 105, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+        doc.text(`Page 2 of 3`, 105, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+
+        // ============ NEW: ADD CABLE COLOR IDENTIFICATION PAGE ============
+        doc.addPage();
+        yPosition = 30;
+
+        doc.setFontSize(20);
+        doc.setTextColor(40, 40, 40);
+        doc.text('Cable Color Identification', 105, yPosition, { align: 'center' });
+        yPosition += 15;
+
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Use the following color codes for cable identification during installation:', 105, yPosition, { align: 'center' });
+        yPosition += 10;
+
+        // Cable color table
+        const cableData = wireTypes.map(wire => [
+            wire.title,
+            wire.color
+        ]);
+const cableTableBody = cableData.map(row => [...row]);
+
+
+
+doc.autoTable({
+    startY: yPosition,
+    head: [['Cable Type', 'Color Code']],
+    body: cableTableBody,
+    theme: 'grid',
+
+    headStyles: {
+        fillColor: [66, 66, 66],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center'
+    },
+
+    styles: {
+        fontSize: 9,
+        cellPadding: 4,
+        halign: 'center'
+    },
+
+    columnStyles: {
+        0: { cellWidth: 90, halign: 'left' },
+        1: { cellWidth: 60 }
+    },
+
+    didParseCell: function (data) {
+        // Apply only to body rows & Color Code column
+        if (data.section === 'body' && data.column.index === 1) {
+
+            const hex = data.cell.raw.replace('#', '');
+
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+
+            // Set background color
+            data.cell.styles.fillColor = [r, g, b];
+
+            // Auto contrast for text
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            data.cell.styles.textColor = brightness > 140
+                ? [0, 0, 0]
+                : [255, 255, 255];
+        }
+    },
+
+    margin: { left: 20, right: 20 }
+});
+
+
+        yPosition = doc.lastAutoTable.finalY + 15;
+
+        // Add wiring notes
+        doc.setFontSize(11);
+        doc.setTextColor(33, 33, 33);
+        doc.text('Wiring Guidelines:', 20, yPosition);
+        yPosition += 8;
+
+        doc.setFontSize(10);
+        doc.setTextColor(66, 66, 66);
+        const guidelines = [
+            '1. Use color-coded cables as specified above for easy identification',
+            '2. Label both ends of each cable with its destination',
+            '3. Maintain proper separation between power and data cables',
+            '4. Follow local electrical codes and regulations',
+            '5. Test all connections before final installation'
+        ];
+
+        guidelines.forEach((guideline, index) => {
+            if (yPosition > doc.internal.pageSize.getHeight() - 20) {
+                doc.addPage();
+                yPosition = 30;
+            }
+            doc.text(guideline, 25, yPosition);
+            yPosition += 6;
+        });
+
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(`Page 3 of 3`, 105, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+        // ============ END OF NEW SECTION ============
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
         doc.save(`home-automation-configuration-${timestamp}.pdf`);
@@ -6432,6 +6574,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
     }
 });
 
+// The rest of your functions remain exactly the same:
 async function captureFloorPlanScreenshot() {
     try {
         const imageContainer = document.querySelector('.img-container');
@@ -6712,7 +6855,6 @@ function generateProductTable() {
                 selectedRelays: mark.selectedRelays || []
             });
         } else if (mark.isNetworkDBBox) {
-            // FIX: Make sure selectedModules is included
             networkDBBoxesTable.push({
                 label: mark.seriesLabel,
                 category: category,
@@ -6723,7 +6865,7 @@ function generateProductTable() {
                 routerBrand: mark.routerBrand || '',
                 routerModel: mark.routerModel || '',
                 routerQty: mark.routerQty || 1,
-                selectedModules: mark.selectedModules || [] // ADD THIS LINE
+                selectedModules: mark.selectedModules || []
             });
         } else {
             // Handle regular products
