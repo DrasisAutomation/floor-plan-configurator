@@ -438,7 +438,8 @@ const productData = {
                 features: ["Dual KNX + RF control", "Real-time feedback", "Fully KNX compatible", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
             }
         }
-    },
+    }
+    ,
     "SENSORS": {
         title: "Sensors",
         desc: "Advanced detection and monitoring sensors for smart homes.",
@@ -462,12 +463,12 @@ const productData = {
                 features: ["PIR motion detection", "Time-delay adjustment", "Lux level sensing", "Dual-technology option", "Ceiling/wall mount", "Energy compliance certified"]
             }
         }
-    },"ACCESS POINT": {
-    title: "Access Point",
-    desc: "Wireless network access points for extended coverage.",
-    img: "./images/network/ap.png",
-    features: ["Wi-Fi 6/6E", "Mesh capable", "PoE powered", "Wall/Ceiling mount", "Multiple SSIDs"]
-},
+    }, "ACCESS POINT": {
+        title: "Access Point",
+        desc: "Wireless network access points for extended coverage.",
+        img: "./images/access point/1.png",
+        features: ["Wi-Fi 6/6E", "Mesh capable", "PoE powered", "Wall/Ceiling mount", "Multiple SSIDs"]
+    },
     // ADD THIS NEW CATEGORY - Add it with the other products before PRODUCT_ORDER
     "IR BLASTER - ZMOTE": {
         title: "IR Blaster - Zmote",
@@ -554,7 +555,6 @@ const productData = {
         features: ["Cable management", "Ventilation slots", "Wall mountable", "Lockable door", "Rack mount options"]
     }
 };
-
 const PRODUCT_ORDER = [
     "DOOR LOCK",
     "PROCESSOR",
@@ -683,6 +683,101 @@ function createSwitchConfigurationControls() {
     }
 }
 
+function createAccessPointConfigurationControls() {
+    const existingControls = document.getElementById('accessPointConfigControls');
+    if (existingControls) {
+        existingControls.remove();
+    }
+
+    const data = productData[currentProduct];
+    if (!data || !switchFamilies.has(currentProduct) || currentProduct !== 'ACCESS POINT') return;
+
+    // Remove existing features section
+    featuresSection.style.display = 'none';
+
+    // Hide product image overlay
+    productImageOverlay.style.display = 'none';
+
+    // Check if a mark is selected and has existing configuration
+    const selectedMark = marks.find(mark => mark.id === selectedMarkId);
+    const existingConfig = selectedMark ? selectedMark.accessPointConfig : '';
+
+    // Access Point configuration controls
+    const accessPointControlsHTML = `
+    <div class="mark-controls-box" id="accessPointConfigControls" style="margin-top: 20px; border-color: #2196F3;">
+        <h3 style="color: #2196F3; margin-bottom: 15px;">
+            <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">wifi</span>
+            ${currentProduct} Configuration
+        </h3>
+        
+        ${selectedMarkId ? `
+        <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #BBDEFB;">
+            <div style="font-size: 12px; color: #2196F3; margin-bottom: 4px;">
+                <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                Configuring: <strong>${selectedMark ? selectedMark.seriesLabel : ''}</strong>
+                ${selectedMark && selectedMark.modelName ? `(${selectedMark.modelName})` : ''}
+            </div>
+            <div style="font-size: 11px; color: #555;">
+                Configuration will be saved only for this specific access point label.
+            </div>
+        </div>
+        ` : `
+        <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #BBDEFB;">
+            <div style="font-size: 12px; color: #2196F3; margin-bottom: 4px;">
+                <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                Setting Default Configuration for New Access Points
+            </div>
+            <div style="font-size: 11px; color: #555;">
+                This configuration will apply to all new ${currentProduct} devices.
+                Select a specific access point to configure it individually.
+            </div>
+        </div>
+        `}
+        
+        <div class="form-group">
+            <label style="color: #2196F3; font-weight: 500;">Access Point Configuration (Brand & Model)</label>
+            <input type="text" 
+                   id="accessPointConfigInput" 
+                   class="form-control" 
+                   placeholder="e.g., Ubiquiti U6-Pro, TP-Link EAP670"
+                   value="${selectedMarkId && selectedMark ? (selectedMark.accessPointConfig || productData[currentProduct]?.defaultAccessPointConfig || '') : (productData[currentProduct]?.defaultAccessPointConfig || '')}"
+                   style="border-color: #2196F3; margin-bottom: 10px;">
+            <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
+                ${selectedMarkId ? `Editing configuration for ${selectedMark.seriesLabel}` : 'Set default configuration for new access points'}
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
+            <button id="saveAccessPointConfigBtn" class="btn primary full-width" style="background: #2196F3; border-color: #2196F3;">
+                <span class="material-icons" style="font-size: 16px; margin-right: 8px;">save</span>
+                ${selectedMarkId ? 'Save Configuration' : 'Set Default Configuration'}
+            </button>
+        </div>
+
+        <div style="margin-top: 15px; padding: 12px; background: #E3F2FD; border-radius: 6px; border: 1px solid #BBDEFB;">
+            <div style="font-size: 12px; color: #2196F3; margin-bottom: 4px;">
+                <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                Configuration Info
+            </div>
+            <div style="font-size: 11px; color: #555;">
+                • Each access point label has its own configuration<br>
+                • Default configuration applies to new access points<br>
+                • Select an access point to override with individual config<br>
+                • Configuration will be displayed in PDF<br>
+                • Will appear in product details
+            </div>
+        </div>
+    </div>
+`;
+
+    const markControlsBox = document.querySelector('.mark-controls-box');
+    if (markControlsBox) {
+        markControlsBox.insertAdjacentHTML('afterend', accessPointControlsHTML);
+        attachAccessPointConfigEvents();
+    }
+}
+
 function attachSwitchConfigEvents() {
     const saveBtn = document.getElementById('saveSwitchConfigBtn');
     const configInput = document.getElementById('switchConfigInput');
@@ -741,6 +836,65 @@ function attachSwitchConfigEvents() {
     }
 }
 
+function attachAccessPointConfigEvents() {
+    const saveBtn = document.getElementById('saveAccessPointConfigBtn');
+    const configInput = document.getElementById('accessPointConfigInput');
+
+    if (saveBtn && configInput) {
+        saveBtn.addEventListener('click', function () {
+            const config = configInput.value.trim();
+            const selectedMark = marks.find(mark => mark.id === selectedMarkId);
+
+            if (!config) {
+                showNotification('Please enter access point configuration', 'error');
+                return;
+            }
+
+            if (selectedMarkId && selectedMark) {
+                // Save configuration for the selected mark
+                selectedMark.accessPointConfig = config;
+                selectedMark.modelName = config;
+                selectedMark.desc = `${selectedMark.categoryName}: ${config}`;
+
+                // Update the mark's tooltip
+                if (selectedMark.tooltip) {
+                    const tooltipModel = selectedMark.tooltip.querySelector('.tooltip-model');
+                    if (tooltipModel) {
+                        tooltipModel.textContent = config;
+                    }
+                }
+
+                showNotification(`Configuration saved for ${selectedMark.seriesLabel}!`, 'success');
+                renderMarksList();
+            } else {
+                // Set default configuration for new access points
+                if (productData[currentProduct]) {
+                    productData[currentProduct].defaultAccessPointConfig = config;
+
+                    // Also update ALL existing access points of this type that don't have individual configs
+                    marks.forEach(mark => {
+                        if (mark.categoryName === currentProduct && !mark.accessPointConfig) {
+                            mark.accessPointConfig = config;
+                            mark.modelName = config;
+                            mark.desc = `${mark.categoryName}: ${config}`;
+
+                            // Update tooltip
+                            if (mark.tooltip) {
+                                const tooltipModel = mark.tooltip.querySelector('.tooltip-model');
+                                if (tooltipModel) {
+                                    tooltipModel.textContent = config;
+                                }
+                            }
+                        }
+                    });
+
+                    showNotification('Default configuration set for new access points and updated existing ones without config', 'success');
+                    renderMarksList();
+                }
+            }
+        });
+    }
+}
 
 /* ------------------------- UI BUILD ------------------------- */
 const productListEl = document.getElementById('productList');
@@ -829,7 +983,8 @@ const switchFamilies = new Set([
     "ESCULT SERIES",
     "TACTILE HEXA SERIES",
     "DUO-QUAD SERIES",
-    "DOMOGENIE GLASS SERIES"
+    "DOMOGENIE GLASS SERIES",
+    "ACCESS POINT" // ADD THIS LINE
 ]);
 
 const seriesCounters = {};
@@ -1663,51 +1818,79 @@ function populateModal(mark) {
                 modalProductDesc.appendChild(relayItem);
             });
         }
-    // In populateModal function, update the Network DB Box section:
+        // In populateModal function, update the Network DB Box section:
 
-} else if (mark.isNetworkDBBox) {
-    // Create HTML elements for separate points/lines
-    const typeEl = document.createElement('div');
-    typeEl.textContent = `Type: ${mark.categoryName || 'Network DB Box'}`;
-    modalProductDesc.appendChild(typeEl);
-
-    const brandEl = document.createElement('div');
-    brandEl.textContent = `Brand: ${mark.brand || 'Not specified'}`;
-    modalProductDesc.appendChild(brandEl);
-
-    const sizeEl = document.createElement('div');
-    sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
-    modalProductDesc.appendChild(sizeEl);
-
-    // Add router details if any - as bullet point
-    if (mark.routerBrand || mark.routerModel) {
-        const routerEl = document.createElement('div');
-        routerEl.innerHTML = `<strong>• Network Router:</strong> ${mark.routerBrand || ''} ${mark.routerModel || ''} x${mark.routerQty || 1}`;
-        routerEl.style.marginTop = '8px';
-        modalProductDesc.appendChild(routerEl);
-    }
-
-    // Add modules details if any - as bullet points
-    if (mark.selectedModules && mark.selectedModules.length > 0) {
-        const moduleHeader = document.createElement('div');
-        moduleHeader.textContent = 'Modules:';
-        moduleHeader.style.marginTop = '8px';
-        moduleHeader.style.fontWeight = 'bold';
-        modalProductDesc.appendChild(moduleHeader);
-
-        mark.selectedModules.forEach(item => {
-            const moduleItem = document.createElement('div');
-            moduleItem.textContent = `• ${item.name} x${item.quantity}`;
-            moduleItem.style.marginLeft = '15px';
-            modalProductDesc.appendChild(moduleItem);
-        });
-    }
-} else if (mark.isSwitchFamily) {
+    } else if (mark.isNetworkDBBox) {
         // Create HTML elements for separate points/lines
         const typeEl = document.createElement('div');
-        typeEl.textContent = `Type: ${mark.categoryName || 'Switch'}`;
+        typeEl.textContent = `Type: ${mark.categoryName || 'Network DB Box'}`;
         modalProductDesc.appendChild(typeEl);
 
+        const brandEl = document.createElement('div');
+        brandEl.textContent = `Brand: ${mark.brand || 'Not specified'}`;
+        modalProductDesc.appendChild(brandEl);
+
+        const sizeEl = document.createElement('div');
+        sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
+        modalProductDesc.appendChild(sizeEl);
+
+        // Add router details if any - as bullet point
+        if (mark.routerBrand || mark.routerModel) {
+            const routerEl = document.createElement('div');
+            routerEl.innerHTML = `<strong>• Network Router:</strong> ${mark.routerBrand || ''} ${mark.routerModel || ''} x${mark.routerQty || 1}`;
+            routerEl.style.marginTop = '8px';
+            modalProductDesc.appendChild(routerEl);
+        }
+
+        // Add modules details if any - as bullet points
+        if (mark.selectedModules && mark.selectedModules.length > 0) {
+            const moduleHeader = document.createElement('div');
+            moduleHeader.textContent = 'Modules:';
+            moduleHeader.style.marginTop = '8px';
+            moduleHeader.style.fontWeight = 'bold';
+            modalProductDesc.appendChild(moduleHeader);
+
+            mark.selectedModules.forEach(item => {
+                const moduleItem = document.createElement('div');
+                moduleItem.textContent = `• ${item.name} x${item.quantity}`;
+                moduleItem.style.marginLeft = '15px';
+                modalProductDesc.appendChild(moduleItem);
+            });
+        } else {
+            // Show empty message if no modules
+            const noModulesEl = document.createElement('div');
+            noModulesEl.textContent = 'No modules selected';
+            noModulesEl.style.marginTop = '8px';
+            noModulesEl.style.fontStyle = 'italic';
+            noModulesEl.style.color = '#666';
+            modalProductDesc.appendChild(noModulesEl);
+        }
+    } else if (mark.isSwitchFamily) {
+    // Create HTML elements for separate points/lines
+    const typeEl = document.createElement('div');
+    typeEl.textContent = `Type: ${mark.categoryName || 'Device'}`;
+    modalProductDesc.appendChild(typeEl);
+
+    // ACCESS POINT SPECIFIC HANDLING
+    if (mark.categoryName === 'ACCESS POINT') {
+        // Show individual access point configuration
+        if (mark.accessPointConfig) {
+            const configEl = document.createElement('div');
+            configEl.textContent = `Configuration: ${mark.accessPointConfig}`;
+            configEl.style.marginTop = '8px';
+            configEl.style.fontWeight = 'bold';
+            configEl.style.color = '#2196F3';
+            modalProductDesc.appendChild(configEl);
+        } else if (productData[mark.categoryName]?.defaultAccessPointConfig) {
+            const configEl = document.createElement('div');
+            configEl.textContent = `Configuration: ${productData[mark.categoryName].defaultAccessPointConfig} (default)`;
+            configEl.style.marginTop = '8px';
+            configEl.style.fontStyle = 'italic';
+            configEl.style.color = '#666';
+            modalProductDesc.appendChild(configEl);
+        }
+    } else {
+        // Regular switch handling
         const modelEl = document.createElement('div');
         modelEl.textContent = `Model: ${mark.modelName || 'Not specified'}`;
         modalProductDesc.appendChild(modelEl);
@@ -1728,7 +1911,8 @@ function populateModal(mark) {
             configEl.style.color = '#666';
             modalProductDesc.appendChild(configEl);
         }
-    } else if (mark.isTextLabel) {
+    }
+} else if (mark.isTextLabel) {
         const textEl = document.createElement('div');
         textEl.textContent = `Text Label: ${mark.text || ''}`;
         modalProductDesc.appendChild(textEl);
@@ -1824,35 +2008,35 @@ function buildList() {
         `;
 
         // Add click event directly to the tab-btn
-// In the buildList function, update the wire tab event listeners:
-wireItem.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+        // In the buildList function, update the wire tab event listeners:
+        wireItem.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-    let target = e.target;
-    while (target && !target.classList.contains('tab-btn')) {
-        target = target.parentElement;
-    }
+            let target = e.target;
+            while (target && !target.classList.contains('tab-btn')) {
+                target = target.parentElement;
+            }
 
-    if (target) {
-        currentWireType = wireType.id;
-        isWireMode = true;
+            if (target) {
+                currentWireType = wireType.id;
+                isWireMode = true;
 
-        // Update this selector to include DALI_WIRE
-document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"], .tab-btn[data-name^="SPEAKER_WIRE"], .tab-btn[data-name^="DALI_WIRE"]').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.name === wireType.name);
-});
+                // Update this selector to include DALI_WIRE
+                document.querySelectorAll('.tab-btn[data-name^="KNX_WIRE"], .tab-btn[data-name^="PHASE_WIRE"], .tab-btn[data-name^="NEUTRAL_WIRE"], .tab-btn[data-name^="CAT6_WIRE"], .tab-btn[data-name^="IR_WIRE"], .tab-btn[data-name^="SPEAKER_WIRE"], .tab-btn[data-name^="DALI_WIRE"]').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.name === wireType.name);
+                });
 
-        document.querySelectorAll('.tab-btn[data-name]').forEach(btn => {
-            if (!btn.dataset.name.includes('WIRE')) {
-                btn.classList.remove('active');
+                document.querySelectorAll('.tab-btn[data-name]').forEach(btn => {
+                    if (!btn.dataset.name.includes('WIRE')) {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                showWireControls();
+                showNotification(`${wireType.title} Mode: Select two marks to connect them`, 'info');
             }
         });
-
-        showWireControls();
-        showNotification(`${wireType.title} Mode: Select two marks to connect them`, 'info');
-    }
-});
 
         productListEl.appendChild(wireItem);
     });
@@ -2240,6 +2424,7 @@ function selectProduct(productKey, subProductKey = null) {
         // Clear pMeta
         pMeta.innerHTML = '';
 
+        // In the selectProduct function, find this part:
     } else if (isSwitchFamily) {
         // For switch families - Show configuration controls
         relayControlsEl.style.display = 'none';
@@ -2249,8 +2434,12 @@ function selectProduct(productKey, subProductKey = null) {
         resetRelayPreview();
         lastRelaySelectionLabel = '';
 
-        // Create switch configuration controls
-        createSwitchConfigurationControls();
+        // CREATE EITHER SWITCH OR ACCESS POINT CONTROLS
+        if (currentProduct === 'ACCESS POINT') {
+            createAccessPointConfigurationControls();
+        } else {
+            createSwitchConfigurationControls();
+        }
 
         // Hide other controls
         document.getElementById('multiComponentControls') && (document.getElementById('multiComponentControls').style.display = 'none');
@@ -2271,7 +2460,6 @@ function selectProduct(productKey, subProductKey = null) {
             li.textContent = 'Select a model to see features';
             pFeatures.appendChild(li);
         }
-
     } else if (isDBBox) {
         relayControlsEl.style.display = 'none';
         featuresSection.style.display = 'none';
@@ -3987,30 +4175,25 @@ function deleteWire(wire) {
 function updateAllWires(wireType = null) {
     wires.forEach(wire => {
         if (!wireType || wire.wireType === wireType) {
-            // Only update wires if their SVG element exists
+            // Recreate wire at current scale
             if (wire.element && wire.element.svg && wire.element.svg.parentNode) {
-                // Just remove and recreate the wire
-                if (wire.element.svg) {
-                    wire.element.svg.remove();
-                }
-
-                // Temporarily set currentWireType to the wire's type
+                wire.element.svg.remove();
+                
                 const tempWireType = currentWireType;
                 currentWireType = wire.wireType;
-
+                
                 let newElement;
                 if (wire.mode === 'curve') {
                     newElement = createWireElement(wire.startMark, wire.endMark, wire.curveValue, false);
                 } else {
                     newElement = createWireElementWithPoints(wire.startMark, wire.endMark, wire.points, false);
                 }
-
-                // Restore original wire type
+                
                 currentWireType = tempWireType;
-
+                
                 if (newElement) {
                     wire.element = newElement;
-
+                    
                     // Reattach event listeners
                     if (newElement.path) {
                         newElement.path.style.cursor = "pointer";
@@ -4018,7 +4201,7 @@ function updateAllWires(wireType = null) {
                             e.stopPropagation();
                             selectWire(wire.startMark, wire.endMark, wire.wireType);
                         });
-
+                        
                         makeWireDraggable(newElement.path, wire.startMark, wire.endMark);
                     }
                 }
@@ -4280,6 +4463,9 @@ function updateImageDimensions() {
 function updateAllMarks() {
     marks.forEach(mark => {
         updateMarkPosition(mark);
+        if (mark.tooltip) {
+            orientTooltip(mark);
+        }
     });
 }
 
@@ -4447,6 +4633,15 @@ function createMark({ x, y, size, shape }) {
         updateRelayOverlay();
     }
 
+    let accessPointConfig = '';
+if (currentProduct === 'ACCESS POINT') {
+    accessPointConfig = productData[currentProduct].defaultAccessPointConfig || '';
+    if (accessPointConfig) {
+        modelName = accessPointConfig;
+        descText = `${categoryName}: ${accessPointConfig}`;
+    }
+}
+
     const { seriesCode, label } = nextSeriesLabel(currentProduct);
 
     const categoryName = currentProduct || '';
@@ -4457,14 +4652,13 @@ function createMark({ x, y, size, shape }) {
     let brand = '';
     let sizeFt = '';
     let selectedRelays = [];
+    let selectedModules = [];
     let routerBrand = '';
     let routerModel = '';
     let routerQty = 1;
-    let apBrand = '';
-    let apModel = '';
-    let apQty = 1;
     let switchConfig = '';
     let equipmentIcon = '';
+    let fallbackImg = '';
 
     if (data.isDBBox) {
         brand = productData[currentProduct].brand || '';
@@ -4475,22 +4669,31 @@ function createMark({ x, y, size, shape }) {
         selectedRelays = productData[currentProduct].selectedRelays || [];
 
     } else if (data.isNetworkDBBox) {
-        brand = productData[currentProduct].brand || '';
-        sizeFt = productData[currentProduct].size || '';
+        // FIX: Check if data exists before accessing properties
+        const networkData = productData[currentProduct];
+        brand = networkData.brand || '';
+        sizeFt = networkData.size || '';
         modelName = brand ? `${brand} - ${sizeFt} ft` : 'Network DB Box';
         descText = `${categoryName}: ${brand} ${sizeFt} ft`;
         featuresList = [];
         currentSubProduct = null;
 
-        routerBrand = productData[currentProduct].routerBrand || '';
-        routerModel = productData[currentProduct].routerModel || '';
-        routerQty = productData[currentProduct].routerQty || 1;
-        apBrand = productData[currentProduct].apBrand || '';
-        apModel = productData[currentProduct].apModel || '';
-        apQty = productData[currentProduct].apQty || 1;
+        routerBrand = networkData.routerBrand || '';
+        routerModel = networkData.routerModel || '';
+        routerQty = networkData.routerQty || 1;
+        selectedModules = networkData.selectedModules || [];
+
+        // FIX: Debug logging
+        console.log('Network DB Box Data:', {
+            brand: brand,
+            sizeFt: sizeFt,
+            routerBrand: routerBrand,
+            routerModel: routerModel,
+            routerQty: routerQty,
+            selectedModules: selectedModules
+        });
 
     } else if (isEquipment && currentSubProduct) {
-        // Equipment handling
         brand = 'Equipment';
         modelName = productDataForMark?.title || currentSubProduct;
         descText = `${categoryName}: ${modelName}`;
@@ -4499,7 +4702,6 @@ function createMark({ x, y, size, shape }) {
         fallbackImg = equipmentIcon;
 
     } else if (isSwitchFamily) {
-        // Switch family handling with configuration
         brand = productData[currentProduct].brand || 'LUMI';
         modelName = productDataForMark?.title || data.title || '';
         descText = productDataForMark?.desc || data.desc || '';
@@ -4605,94 +4807,78 @@ function createMark({ x, y, size, shape }) {
     imgInner.appendChild(el);
 
     const markData = {
-        id,
-        x,
-        y,
-        size,
-        shape,
-        el,
-        productData: productDataForMark,
-        seriesCode,
-        seriesLabel: label,
-        tooltip,
-        categoryName,
-        modelName,
-        desc: descText,
-        features: featuresList,
-        imageSrc: isEquipment ? equipmentIcon : productDataForMark?.img || data.img || previewImage.src,
-        relayItems,
-        brand: brand,
-        sizeFt: sizeFt,
-        isDBBox: data.isDBBox || false,
-        isNetworkDBBox: data.isNetworkDBBox || false,
-        isEmitter: data.isEmitter || false,
-        isEquipment: isEquipment,
-        isTextLabel: false,
-        isSwitchFamily: isSwitchFamily,
-        selectedRelays: selectedRelays,
-        routerBrand: routerBrand,
-        routerModel: routerModel,
-        routerQty: routerQty,
-        apBrand: apBrand,
-        apModel: apModel,
-        apQty: apQty,
-        switchConfig: isSwitchFamily ? (productData[currentProduct].defaultSwitchConfig || '') : '',
-        equipmentIcon: equipmentIcon
-    };
+    id,
+    x,
+    y,
+    size,
+    shape,
+    el,
+    productData: productDataForMark,
+    seriesCode,
+    seriesLabel: label,
+    tooltip,
+    categoryName,
+    modelName,
+    desc: descText,
+    features: featuresList,
+    imageSrc: isEquipment ? equipmentIcon : productDataForMark?.img || data.img || previewImage.src,
+    relayItems,
+    brand: brand,
+    sizeFt: sizeFt,
+    isDBBox: data.isDBBox || false,
+    isNetworkDBBox: data.isNetworkDBBox || false,
+    isEmitter: data.isEmitter || false,
+    isEquipment: isEquipment,
+    isTextLabel: false,
+    isSwitchFamily: isSwitchFamily,
+    selectedRelays: selectedRelays,
+    selectedModules: selectedModules,
+    routerBrand: routerBrand,
+    routerModel: routerModel,
+    routerQty: routerQty,
+    switchConfig: isSwitchFamily && currentProduct !== 'ACCESS POINT' ? (productData[currentProduct].defaultSwitchConfig || '') : '',
+    accessPointConfig: currentProduct === 'ACCESS POINT' ? (productData[currentProduct].defaultAccessPointConfig || '') : '', // ADD THIS
+    equipmentIcon: equipmentIcon
+};
 
     marks.push(markData);
 
-    // Event listener setup with switch configuration refresh
-    el.addEventListener('click', function (e) {
-        e.stopPropagation();
+// Event listener setup with configuration refresh
+el.addEventListener('click', function (e) {
+    e.stopPropagation();
 
-        if (isWireMode && currentWireType && !e.defaultPrevented) {
-            // Unified wire selection logic for ALL marks including equipment
-            if (!wireStartMark) {
-                wireStartMark = markData;
-                showNotification(`First mark selected: ${label}. Now select second mark.`, 'info');
-            } else if (!wireEndMark && wireStartMark !== markData) {
-                wireEndMark = markData;
-                const wireTypeInfo = getWireTypeInfo(currentWireType);
-                showNotification(`Second mark selected: ${label}. ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
-            } else if (wireStartMark === markData) {
-                wireStartMark = null;
-                wireEndMark = null;
-                wirePoints = [];
-                showNotification('First mark selection cleared.', 'info');
-            } else if (wireEndMark === markData) {
-                wireEndMark = null;
-                wirePoints = [];
-                showNotification('Second mark selection cleared.', 'info');
-            }
-            updateWireSelectionLabels();
-            updatePointsList();
-            e.preventDefault();
-        } else if (!isWireMode && !e.defaultPrevented) {
-            // Only open modal if not in wire mode and not dragging
-            if (!dragStarted) {
-                selectedMarkId = id;
-                updateMarkSelection();
+    if (isWireMode && currentWireType && !e.defaultPrevented) {
+        // ... wire mode logic ...
+    } else if (!isWireMode && !e.defaultPrevented) {
+        if (!dragStarted) {
+            selectedMarkId = id;
+            updateMarkSelection();
 
-                // Refresh switch configuration controls if this is a switch
-                if (isSwitchFamily) {
-                    // Remove and recreate switch controls
-                    const existingControls = document.getElementById('switchConfigControls');
-                    if (existingControls) {
-                        existingControls.remove();
-                    }
+            if (isSwitchFamily) {
+                const existingControls = document.getElementById('switchConfigControls');
+                if (existingControls) {
+                    existingControls.remove();
+                }
+                const existingAPControls = document.getElementById('accessPointConfigControls');
+                if (existingAPControls) {
+                    existingAPControls.remove();
+                }
+                
+                // CREATE APPROPRIATE CONTROLS
+                if (currentProduct === 'ACCESS POINT') {
+                    createAccessPointConfigurationControls();
+                } else {
                     createSwitchConfigurationControls();
                 }
+            }
 
-                // Don't open modal for equipment, DB boxes, Network DB boxes, or emitters
-                if (!data.isDBBox && !data.isNetworkDBBox && !data.isEmitter && !isEquipment) {
-                    openProductModal(markData);
-                }
+            if (!data.isDBBox && !data.isNetworkDBBox && !data.isEmitter && !isEquipment) {
+                openProductModal(markData);
             }
         }
-    });
+    }
+});
 
-    // Dragging setup
     let dragging = false;
     let startX = 0, startY = 0;
     let startMarkX = 0, startMarkY = 0;
@@ -4759,14 +4945,11 @@ function createMark({ x, y, size, shape }) {
             } catch (e) { }
             el.classList.remove('selected');
 
-            // Only open modal if NO dragging occurred (just a click)
             if (!dragStarted && !isWireMode) {
                 selectedMarkId = id;
                 updateMarkSelection();
 
-                // Refresh switch configuration controls if this is a switch
                 if (isSwitchFamily) {
-                    // Remove and recreate switch controls
                     const existingControls = document.getElementById('switchConfigControls');
                     if (existingControls) {
                         existingControls.remove();
@@ -4774,8 +4957,11 @@ function createMark({ x, y, size, shape }) {
                     createSwitchConfigurationControls();
                 }
 
-                // Don't open modal for equipment, DB boxes, Network DB boxes, or emitters
-                if (!data.isDBBox && !data.isNetworkDBBox && !data.isEmitter && !isEquipment) {
+                // FIX: Check the mark's own properties
+                if (!markData.isDBBox && !markData.isNetworkDBBox && !markData.isEmitter && !markData.isEquipment) {
+                    openProductModal(markData);
+                } else if (markData.isDBBox || markData.isNetworkDBBox) {
+                    // ADD THIS: Open modal for DB boxes too
                     openProductModal(markData);
                 }
             }
@@ -5226,17 +5412,47 @@ function updateSwitchConfigForSelectedMark() {
 }
 
 // Call this in updateMarkSelection():
+
 function updateMarkSelection() {
     marks.forEach(m => {
         m.el.classList.toggle('selected', m.id === selectedMarkId);
     });
 
-    // Update switch configuration input if a switch is selected
+    // Update switch or access point configuration input if selected
     if (currentProduct && switchFamilies.has(currentProduct)) {
-        updateSwitchConfigForSelectedMark();
+        if (currentProduct === 'ACCESS POINT') {
+            updateAccessPointConfigForSelectedMark();
+        } else {
+            updateSwitchConfigForSelectedMark();
+        }
     }
 
     renderMarksList();
+}
+
+function updateAccessPointConfigForSelectedMark() {
+    if (!currentProduct || currentProduct !== 'ACCESS POINT') return;
+
+    const selectedMark = marks.find(mark => mark.id === selectedMarkId);
+    const configInput = document.getElementById('accessPointConfigInput');
+
+    if (configInput) {
+        // Show the mark's individual config, or the default if no individual config exists
+        if (selectedMark) {
+            configInput.value = selectedMark.accessPointConfig ||
+                productData[currentProduct]?.defaultAccessPointConfig ||
+                '';
+        } else {
+            // No mark selected, show default config
+            configInput.value = productData[currentProduct]?.defaultAccessPointConfig || '';
+        }
+
+        // Update the instruction text
+        const infoDiv = configInput.nextElementSibling;
+        if (infoDiv && selectedMark) {
+            infoDiv.textContent = `Configuring: ${selectedMark.seriesLabel}`;
+        }
+    }
 }
 
 
@@ -5453,26 +5669,38 @@ function renderMarksList() {
             label.style.fontStyle = 'normal';
             labelContainer.appendChild(label);
         } else {
-            // For switches, show configuration in the list
-            if (m.isSwitchFamily && m.switchConfig) {
-                const mainLabel = document.createElement('div');
-                mainLabel.style.fontSize = '11px';
-                mainLabel.style.fontWeight = 'bold';
-                mainLabel.textContent = m.seriesLabel;
-                labelContainer.appendChild(mainLabel);
+    // For switches and access points, show configuration in the list
+    if (m.isSwitchFamily) {
+        const mainLabel = document.createElement('div');
+        mainLabel.style.fontSize = '11px';
+        mainLabel.style.fontWeight = 'bold';
+        mainLabel.textContent = m.seriesLabel;
+        labelContainer.appendChild(mainLabel);
 
-                const configLabel = document.createElement('div');
-                configLabel.style.fontSize = '10px';
-                configLabel.style.color = '#666';
-                configLabel.style.marginTop = '2px';
-                configLabel.textContent = m.switchConfig;
-                labelContainer.appendChild(configLabel);
-            } else {
-                const label = document.createElement('span');
-                label.textContent = m.seriesLabel;
-                labelContainer.appendChild(label);
-            }
+        const configLabel = document.createElement('div');
+        configLabel.style.fontSize = '10px';
+        configLabel.style.color = '#666';
+        configLabel.style.marginTop = '2px';
+        
+        // SHOW APPROPRIATE CONFIG
+        if (m.categoryName === 'ACCESS POINT' && m.accessPointConfig) {
+            configLabel.textContent = m.accessPointConfig;
+            configLabel.style.color = '#2196F3';
+        } else if (m.switchConfig) {
+            configLabel.textContent = m.switchConfig;
+            configLabel.style.color = '#FF9800';
+        } else {
+            configLabel.textContent = m.modelName || 'No configuration';
+            configLabel.style.color = '#999';
         }
+        
+        labelContainer.appendChild(configLabel);
+    } else {
+        const label = document.createElement('span');
+        label.textContent = m.seriesLabel;
+        labelContainer.appendChild(label);
+    }
+}
 
         item.appendChild(labelContainer);
 
@@ -5943,127 +6171,132 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
         }
 
         // In the PDF generation section, replace the Network DB Box equipment part:
-// In the PDF generation section, update the Network DB Box part:
+        // In the PDF generation section, update the Network DB Box part:
 
-if (hasNetworkDBBoxes) {
-    doc.setFontSize(14);
-    doc.setTextColor(156, 39, 176);
-    doc.text('Network Distribution Boxes', 20, yPosition);
-    yPosition += 8;
+        if (hasNetworkDBBoxes) {
+            doc.setFontSize(14);
+            doc.setTextColor(156, 39, 176);
+            doc.text('Network Distribution Boxes', 20, yPosition);
+            yPosition += 8;
 
-    const networkDBTableData = tables.networkDBBoxes.map(item => [
-        item.label,
-        'NETWORK\nDISTRIBUTION\nBOX',
-        item.brand,
-        item.size,
-        item.model,
-        item.quantity.toString()
-    ]);
+            const networkDBTableData = tables.networkDBBoxes.map(item => [
+                item.label,
+                'NETWORK\nDISTRIBUTION\nBOX',
+                item.brand,
+                item.size,
+                item.model,
+                item.quantity.toString()
+            ]);
 
-    doc.autoTable({
-        startY: yPosition,
-        head: [['Label', 'Type', 'Brand', 'Size (ft)', 'Model', 'Qty']],
-        body: networkDBTableData,
-        theme: 'grid',
-        headStyles: {
-            fillColor: [156, 39, 176],
-            textColor: 255,
-            fontStyle: 'bold',
-            halign: 'center'
-        },
-        styles: {
-            fontSize: 8,
-            cellPadding: 3,
-            overflow: 'linebreak',
-            halign: 'center',
-            minCellHeight: 6
-        },
-        columnStyles: {
-            0: { cellWidth: 15, halign: 'center' },
-            1: { cellWidth: 60, halign: 'center' },
-            2: { cellWidth: 30, halign: 'center' },
-            3: { cellWidth: 20, halign: 'center' },
-            4: { cellWidth: 40, halign: 'left' },
-            5: { cellWidth: 15, halign: 'center' }
-        },
-        margin: { left: 15 }
-    });
-
-    yPosition = doc.lastAutoTable.finalY + 15;
-
-    // Network DB Box Modules section
-    const networkDBWithModules = tables.networkDBBoxes.filter(item => 
-        item.selectedModules && item.selectedModules.length > 0
-    );
-
-    if (networkDBWithModules.length > 0) {
-        yPosition += 5;
-        doc.setFontSize(12);
-        doc.setTextColor(156, 39, 176);
-        doc.text('DB Box Modules:', 20, yPosition);
-        yPosition += 8;
-
-        let itemY = yPosition;
-        networkDBWithModules.forEach(dbBox => {
-            doc.setFontSize(10);
-            doc.setTextColor(80, 80, 80);
-            doc.text(`${dbBox.label}:`, 25, itemY);
-            itemY += 5;
-
-            dbBox.selectedModules.forEach(item => {
-                if (itemY > doc.internal.pageSize.getHeight() - 30) {
-                    doc.addPage();
-                    itemY = 30;
-                }
-                doc.setFontSize(9);
-                doc.setTextColor(60, 60, 60);
-                doc.text(`• ${item.name} x${item.quantity}`, 35, itemY);
-                itemY += 4;
+            doc.autoTable({
+                startY: yPosition,
+                head: [['Label', 'Type', 'Brand', 'Size (ft)', 'Model', 'Qty']],
+                body: networkDBTableData,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [156, 39, 176],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    overflow: 'linebreak',
+                    halign: 'center',
+                    minCellHeight: 6
+                },
+                columnStyles: {
+                    0: { cellWidth: 15, halign: 'center' },
+                    1: { cellWidth: 60, halign: 'center' },
+                    2: { cellWidth: 30, halign: 'center' },
+                    3: { cellWidth: 20, halign: 'center' },
+                    4: { cellWidth: 40, halign: 'left' },
+                    5: { cellWidth: 15, halign: 'center' }
+                },
+                margin: { left: 15 }
             });
-            itemY += 3;
-        });
-        yPosition = itemY + 10;
-    }
 
-    // Network Router details
-    const networkDBWithRouter = tables.networkDBBoxes.filter(item => 
-        item.routerBrand && item.routerModel
-    );
+            yPosition = doc.lastAutoTable.finalY + 15;
 
-    if (networkDBWithRouter.length > 0) {
-        yPosition += 5;
-        doc.setFontSize(12);
-        doc.setTextColor(156, 39, 176);
-        doc.text('Network Routers:', 20, yPosition);
-        yPosition += 8;
+            // Network DB Box Modules section
+            const networkDBWithModules = tables.networkDBBoxes.filter(item =>
+                item.selectedModules && item.selectedModules.length > 0
+            );
 
-        let itemY = yPosition;
-        networkDBWithRouter.forEach(dbBox => {
-            if (itemY > doc.internal.pageSize.getHeight() - 30) {
-                doc.addPage();
-                itemY = 30;
+            if (networkDBWithModules.length > 0) {
+                yPosition += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(156, 39, 176);
+                doc.text('Network DB Box Modules:', 20, yPosition);
+                yPosition += 8;
+
+                let itemY = yPosition;
+                networkDBWithModules.forEach(dbBox => {
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
+
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`${dbBox.label}:`, 25, itemY);
+                    itemY += 5;
+
+                    dbBox.selectedModules.forEach(item => {
+                        if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                            doc.addPage();
+                            itemY = 30;
+                        }
+                        doc.setFontSize(9);
+                        doc.setTextColor(60, 60, 60);
+                        doc.text(`• ${item.name} x${item.quantity}`, 35, itemY);
+                        itemY += 4;
+                    });
+                    itemY += 3;
+                });
+                yPosition = itemY + 10;
             }
 
-            doc.setFontSize(10);
-            doc.setTextColor(80, 80, 80);
-            doc.text(`${dbBox.label}:`, 25, itemY);
-            itemY += 5;
+            // Network Router details
+            const networkDBWithRouter = tables.networkDBBoxes.filter(item =>
+                item.routerBrand && item.routerModel
+            );
 
-            doc.setFontSize(9);
-            doc.setTextColor(60, 60, 60);
-            doc.text(`Network Router:`, 35, itemY);
-            itemY += 4;
+            if (networkDBWithRouter.length > 0) {
+                yPosition += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(156, 39, 176);
+                doc.text('Network Routers:', 20, yPosition);
+                yPosition += 8;
 
-            doc.setFontSize(8);
-            doc.setTextColor(40, 40, 40);
-            doc.text(`${dbBox.routerBrand} - ${dbBox.routerModel}`, 40, itemY);
-            itemY += 6;
+                let itemY = yPosition;
+                networkDBWithRouter.forEach(dbBox => {
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
 
-            itemY += 3;
-        });
-        yPosition = itemY + 10;
-    }
-}
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`${dbBox.label}:`, 25, itemY);
+                    itemY += 5;
+
+                    doc.setFontSize(9);
+                    doc.setTextColor(60, 60, 60);
+                    doc.text(`Network Router:`, 35, itemY);
+                    itemY += 4;
+
+                    doc.setFontSize(8);
+                    doc.setTextColor(40, 40, 40);
+                    doc.text(`${dbBox.routerBrand} - ${dbBox.routerModel}`, 40, itemY);
+                    itemY += 6;
+
+                    itemY += 3;
+                });
+                yPosition = itemY + 10;
+            }
+        }
         if (hasMainProducts) {
             if (hasDBBoxes || hasNetworkDBBoxes) {
                 doc.setFontSize(14);
@@ -6202,57 +6435,229 @@ if (hasNetworkDBBoxes) {
 async function captureFloorPlanScreenshot() {
     try {
         const imageContainer = document.querySelector('.img-container');
-
+        const previewImage = document.getElementById('previewImage');
+        const imgInner = document.getElementById('imgInner');
+        
+        // Store current state
+        const originalScale = imageScale;
+        const originalTransform = imgInner.style.transform;
+        const originalOverflow = imageContainer.style.overflow;
+        
+        // Hide notifications temporarily
         const notifications = document.querySelectorAll('.pdf-notification');
         notifications.forEach(n => n.style.visibility = 'hidden');
-
+        
+        // Reset to 100% scale for screenshot
+        imageScale = 1;
+        imgInner.style.transform = 'scale(1)';
+        imageContainer.style.overflow = 'hidden';
+        
+        // Force a reflow to apply changes
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Update all marks and wires to the new scale
+        updateAllMarks();
+        updateAllWires();
+        
+        // Take screenshot of the entire image container (including marks)
         const canvas = await html2canvas(imageContainer, {
             backgroundColor: '#ffffff',
-            scale: 1,
+            scale: 2, // High resolution
             useCORS: true,
             logging: false,
             allowTaint: true,
             imageTimeout: 15000,
             onclone: function (clonedDoc) {
+                // Ensure images are loaded in clone
                 const images = clonedDoc.querySelectorAll('img');
                 images.forEach(img => {
                     if (img.complete) return;
-                    img.onload = function () {
-                        console.log('Image loaded in clone');
-                    };
+                    img.crossOrigin = 'anonymous';
                 });
+                
+                // Force marks to be visible at scale 1
+                const clonedImgInner = clonedDoc.getElementById('imgInner');
+                if (clonedImgInner) {
+                    clonedImgInner.style.transform = 'scale(1)';
+                }
             }
         });
-
+        
+        // Restore original state
+        imageScale = originalScale;
+        imgInner.style.transform = originalTransform;
+        imageContainer.style.overflow = originalOverflow;
+        
+        // Restore marks and wires to original positions
+        updateAllMarks();
+        updateAllWires();
+        
+        // Show notifications again
         notifications.forEach(n => n.style.visibility = 'visible');
-
+        
         return canvas.toDataURL('image/png');
+        
     } catch (error) {
         console.error('Screenshot capture error:', error);
-
-        const canvas = document.createElement('canvas');
-        canvas.width = 800;
-        canvas.height = 600;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f8f9fa';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#5f6368';
-        ctx.font = '16px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Floor Plan Image Not Available', canvas.width / 2, canvas.height / 2);
-        ctx.font = '12px Arial';
-        ctx.fillText('Please check console for errors', canvas.width / 2, canvas.height / 2 + 20);
-
-        return canvas.toDataURL('image/png');
+        
+        // Fallback: create a simple placeholder with product list
+        return createFallbackScreenshot();
     }
 }
 
+function createFallbackScreenshot() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 600;
+    const ctx = canvas.getContext('2d');
+    
+    // Background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Title
+    ctx.fillStyle = '#333333';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Automation Configuration', canvas.width / 2, 50);
+    
+    // Subtitle
+    ctx.font = '14px Arial';
+    ctx.fillStyle = '#666666';
+    ctx.fillText('Floor plan with product placement', canvas.width / 2, 80);
+    
+    // Product summary
+    const tables = generateProductTable();
+    let y = 120;
+    
+    // Draw product count
+    const totalProducts = tables.mainProducts.length + 
+                         tables.dbBoxes.length + 
+                         tables.networkDBBoxes.length +
+                         tables.equipment.length;
+    
+    ctx.font = 'bold 16px Arial';
+    ctx.fillStyle = '#2196F3';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Total Products: ${totalProducts}`, 50, y);
+    y += 30;
+    
+    // Draw product categories
+    ctx.font = '14px Arial';
+    ctx.fillStyle = '#555555';
+    
+    if (tables.dbBoxes.length > 0) {
+        ctx.fillText(`• Automation DB Boxes: ${tables.dbBoxes.length}`, 70, y);
+        y += 25;
+    }
+    
+    if (tables.networkDBBoxes.length > 0) {
+        ctx.fillText(`• Network DB Boxes: ${tables.networkDBBoxes.length}`, 70, y);
+        y += 25;
+    }
+    
+    if (tables.mainProducts.length > 0) {
+        ctx.fillText(`• Automation Products: ${tables.mainProducts.length}`, 70, y);
+        y += 25;
+    }
+    
+    if (tables.equipment.length > 0) {
+        ctx.fillText(`• Equipment: ${tables.equipment.length}`, 70, y);
+        y += 25;
+    }
+    
+    // Footer note
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#999999';
+    ctx.textAlign = 'center';
+    ctx.fillText('Screenshot generation failed. See detailed product list in PDF.', canvas.width / 2, canvas.height - 50);
+    
+    return canvas.toDataURL('image/png');
+}
+
+// Add a function to properly update marks during screenshot
+function updateMarkPositionForScreenshot(mark, scale = 1) {
+    const transform = getImageTransform();
+    if (!transform) return;
+    
+    const x = mark.x * transform.scaleX * scale + transform.imgOffsetX;
+    const y = mark.y * transform.scaleY * scale + transform.imgOffsetY;
+    
+    if (mark.isTextLabel) {
+        // For text labels
+        const textWidth = mark.el.offsetWidth || 50;
+        const textHeight = mark.el.offsetHeight || 20;
+        
+        mark.el.style.left = (x - textWidth / 2) + 'px';
+        mark.el.style.top = (y - textHeight / 2) + 'px';
+        mark.el.style.width = 'auto';
+        mark.el.style.height = 'auto';
+    } else {
+        const size = mark.size * transform.scaleX * scale;
+        mark.el.style.left = x + 'px';
+        mark.el.style.top = y + 'px';
+        mark.el.style.width = size + 'px';
+        mark.el.style.height = size + 'px';
+    }
+    
+    if (mark.tooltip) {
+        orientTooltip(mark);
+    }
+}
+
+// Helper function to get current image transform
+function getCurrentImageTransform() {
+    const previewImage = document.getElementById('previewImage');
+    const imgContainer = document.getElementById('imgContainer');
+    
+    if (!previewImage || !imgContainer) return null;
+    
+    const imgRect = previewImage.getBoundingClientRect();
+    const containerRect = imgContainer.getBoundingClientRect();
+    
+    // Calculate natural dimensions
+    const naturalWidth = previewImage.naturalWidth || imgRect.width;
+    const naturalHeight = previewImage.naturalHeight || imgRect.height;
+    
+    // Calculate displayed dimensions based on object-fit: contain
+    const imgAspect = naturalWidth / naturalHeight;
+    const containerAspect = containerRect.width / containerRect.height;
+    
+    let displayWidth, displayHeight, imgOffsetX, imgOffsetY;
+    
+    if (imgAspect > containerAspect) {
+        // Image is wider than container
+        displayWidth = containerRect.width;
+        displayHeight = containerRect.width / imgAspect;
+        imgOffsetX = 0;
+        imgOffsetY = (containerRect.height - displayHeight) / 2;
+    } else {
+        // Image is taller than container
+        displayHeight = containerRect.height;
+        displayWidth = containerRect.height * imgAspect;
+        imgOffsetX = (containerRect.width - displayWidth) / 2;
+        imgOffsetY = 0;
+    }
+    
+    return {
+        imgOffsetX,
+        imgOffsetY,
+        scaleX: displayWidth / naturalWidth,
+        scaleY: displayHeight / naturalHeight,
+        naturalWidth,
+        naturalHeight,
+        displayWidth,
+        displayHeight
+    };
+}
+
 function generateProductTable() {
-    if (marks.length === 0) return { mainProducts: [], dbBoxes: [], networkDBBoxes: [] };
+    if (marks.length === 0) return { mainProducts: [], dbBoxes: [], networkDBBoxes: [], equipment: [] };
 
     const productMap = new Map();
     const dbBoxesTable = [];
     const networkDBBoxesTable = [];
+    const equipmentTable = [];
 
     // First, group multi-component marks
     const groupedMultiComponent = {};
@@ -6264,12 +6669,12 @@ function generateProductTable() {
                 groupedMultiComponent[mark.groupId] = {
                     group: multiComponentGroups[mark.groupId],
                     marks: [mark],
-                    label: mark.seriesLabel // Use first label as main label
+                    label: mark.seriesLabel
                 };
             } else {
                 groupedMultiComponent[mark.groupId].marks.push(mark);
             }
-            return; // Skip individual processing for grouped marks
+            return;
         }
 
         const key = mark.seriesLabel;
@@ -6284,128 +6689,75 @@ function generateProductTable() {
         // Skip emitters from PDF
         if (mark.isEmitter) return;
 
-        // Skip equipment from main table (they'll be in separate section)
-        if (mark.isEquipment) return;
-
-        if (mark.isDBBox) {
-            dbBoxesTable.push({
-                label: key,
+        // Handle equipment separately
+        if (mark.isEquipment) {
+            equipmentTable.push({
+                label: mark.seriesLabel,
                 category: category,
-                brand: mark.brand || 'Not specified',
-                size: mark.sizeFt || 'Not specified',
-                model: `${mark.brand || ''} - ${mark.sizeFt || ''} ft`.trim(),
-                quantity: 1,
-                selectedRelays: mark.selectedRelays || []
+                brand: brand,
+                model: model,
+                quantity: 1
             });
             return;
         }
 
-        if (mark.isNetworkDBBox) {
-            networkDBBoxesTable.push({
-                label: key,
+        if (mark.isDBBox) {
+            dbBoxesTable.push({
+                label: mark.seriesLabel,
                 category: category,
-                brand: mark.brand || 'Not specified',
+                brand: mark.brand || brand,
                 size: mark.sizeFt || 'Not specified',
-                model: `${mark.brand || ''} - ${mark.sizeFt || ''} ft`.trim(),
+                model: mark.modelName || model,
+                quantity: 1,
+                selectedRelays: mark.selectedRelays || []
+            });
+        } else if (mark.isNetworkDBBox) {
+            // FIX: Make sure selectedModules is included
+            networkDBBoxesTable.push({
+                label: mark.seriesLabel,
+                category: category,
+                brand: mark.brand || brand,
+                size: mark.sizeFt || 'Not specified',
+                model: mark.modelName || model,
                 quantity: 1,
                 routerBrand: mark.routerBrand || '',
                 routerModel: mark.routerModel || '',
                 routerQty: mark.routerQty || 1,
-                apBrand: mark.apBrand || '',
-                apModel: mark.apModel || '',
-                apQty: mark.apQty || 1
-            });
-            return;
-        }
-
-        if (category === 'Z-WAVE RELAY' && mark.relayItems && mark.relayItems.length > 0) {
-            mark.relayItems.forEach(relayItem => {
-                const relayKey = `${key}-${relayItem.name}`;
-                if (!productMap.has(relayKey)) {
-                    productMap.set(relayKey, {
-                        label: key,
-                        category: 'Relay Module',
-                        brand: 'LUMI',
-                        model: relayItem.name,
-                        quantity: relayItem.quantity
-                    });
-                } else {
-                    productMap.get(relayKey).quantity += relayItem.quantity;
-                }
-            });
-            return;
-        }
-
-        // Handle switch families with configuration
-        if (mark.isSwitchFamily && mark.switchConfig) {
-            model = `${model} (${mark.switchConfig})`;
-
-            brand = mark.brand || 'LUMI';
-        }
-
-        if (!productMap.has(key)) {
-            productMap.set(key, {
-                label: key,
-                category: category,
-                brand: brand,
-                model: model,
-                quantity: 1,
-                switchConfig: mark.switchConfig || ''
+                selectedModules: mark.selectedModules || [] // ADD THIS LINE
             });
         } else {
-            productMap.get(key).quantity += 1;
+            // Handle regular products
+            if (!productMap.has(key)) {
+                productMap.set(key, {
+                    label: key,
+                    category: category,
+                    brand: brand,
+                    model: model,
+                    quantity: 1
+                });
+            } else {
+                productMap.get(key).quantity += 1;
+            }
         }
     });
 
-    // Add grouped multi-component products as single entries in PDF
+    // Add grouped multi-component products
     Object.values(groupedMultiComponent).forEach(group => {
-        const key = group.group.mainLabel || group.group.subProductKey;
-        const firstMark = group.marks[0];
-        const category = 'TREMBLAY SOUNDS';
-
-        const productKey = group.group.productKey;
-        const subProductKey = group.group.subProductKey;
-        const mainProductName = productData[productKey]?.subProducts[subProductKey]?.title || key;
-
-        if (!productMap.has(key)) {
-            productMap.set(key, {
-                label: group.label,
-                category: category,
-                brand: 'Tremblay',
-                model: mainProductName,
-                quantity: 1,
-                isMultiComponent: true
-            });
-        }
-    });
-
-    const mainProducts = Array.from(productMap.values())
-        .sort((a, b) => {
-            const numA = parseInt(a.label.substring(1)) || 0;
-            const numB = parseInt(b.label.substring(1)) || 0;
-            return numA - numB;
-        });
-
-    // Add equipment section
-    const equipmentMarks = marks.filter(mark => mark.isEquipment);
-    const equipmentTable = [];
-
-    equipmentMarks.forEach(mark => {
-        const key = mark.seriesLabel;
-        equipmentTable.push({
-            label: key,
-            category: 'Equipment',
-            brand: 'Equipment',
-            model: mark.modelName || 'Unknown',
-            quantity: 1
+        const mainMark = group.marks[0];
+        productMap.set(group.label, {
+            label: group.label,
+            category: mainMark.categoryName,
+            brand: 'Tremblay',
+            model: mainMark.modelName,
+            quantity: group.marks.length
         });
     });
 
     return {
-        mainProducts: mainProducts,
-        dbBoxes: dbBoxesTable.sort((a, b) => a.label.localeCompare(b.label)),
-        networkDBBoxes: networkDBBoxesTable.sort((a, b) => a.label.localeCompare(b.label)),
-        equipment: equipmentTable.sort((a, b) => a.label.localeCompare(b.label))
+        mainProducts: Array.from(productMap.values()),
+        dbBoxes: dbBoxesTable,
+        networkDBBoxes: networkDBBoxesTable,
+        equipment: equipmentTable
     };
 }
 
@@ -6439,7 +6791,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function saveProject() {
     try {
         const projectData = {
-            version: '2.4', // Updated version
+            version: '2.4',
             timestamp: new Date().toISOString(),
             floorPlanImage: previewImage.src,
             marks: marks.map(mark => ({
@@ -6466,21 +6818,20 @@ function saveProject() {
                 isNetworkDBBox: mark.isNetworkDBBox,
                 isTextLabel: mark.isTextLabel,
                 isMultiComponent: mark.isMultiComponent,
-                isEquipment: mark.isEquipment, // Save equipment flag
-                isSwitchFamily: mark.isSwitchFamily, // Save switch family flag
+                isEquipment: mark.isEquipment,
+                isSwitchFamily: mark.isSwitchFamily,
                 text: mark.text,
                 fontSize: mark.fontSize,
                 brand: mark.brand,
                 sizeFt: mark.sizeFt,
                 selectedRelays: mark.selectedRelays,
-                routerBrand: mark.routerBrand,
-                routerModel: mark.routerModel,
-                routerQty: mark.routerQty || 1,
-                apBrand: mark.apBrand,
-                apModel: mark.apModel,
-                apQty: mark.apQty || 1,
-                switchConfig: mark.switchConfig || '', // Save switch configuration
-                equipmentIcon: mark.equipmentIcon || '', // Save equipment icon
+                routerBrand: mark.routerBrand,          // ADD THIS
+                routerModel: mark.routerModel,          // ADD THIS
+                routerQty: mark.routerQty || 1,         // ADD THIS
+                selectedModules: mark.selectedModules || [], // ADD THIS
+                switchConfig: mark.switchConfig || '',  // Individual switch config
+                accessPointConfig: mark.accessPointConfig || '', // ADD THIS - Individual AP config
+                equipmentIcon: mark.equipmentIcon || '',
                 originalId: mark.id
             })),
             multiComponentGroups: multiComponentGroups,
@@ -6521,6 +6872,7 @@ function saveProject() {
                         routerBrand: productData[key].routerBrand || '',
                         routerModel: productData[key].routerModel || '',
                         routerQty: productData[key].routerQty || 1,
+                        selectedModules: productData[key].selectedModules || [], // ADD THIS
                         apBrand: productData[key].apBrand || '',
                         apModel: productData[key].apModel || '',
                         apQty: productData[key].apQty || 1
@@ -6531,7 +6883,8 @@ function saveProject() {
                 .filter(key => switchFamilies.has(key))
                 .reduce((specs, key) => {
                     specs[key] = {
-                        switchConfig: productData[key].switchConfig || ''
+                        defaultSwitchConfig: productData[key].defaultSwitchConfig || '',
+                        defaultAccessPointConfig: productData[key].defaultAccessPointConfig || '' // ADD THIS
                     };
                     return specs;
                 }, {})
@@ -6612,6 +6965,7 @@ function loadProjectData(projectData) {
                 productData[key].routerBrand = projectData.dbBoxSpecs[key].routerBrand || '';
                 productData[key].routerModel = projectData.dbBoxSpecs[key].routerModel || '';
                 productData[key].routerQty = projectData.dbBoxSpecs[key].routerQty || 1;
+                productData[key].selectedModules = projectData.dbBoxSpecs[key].selectedModules || []; // ADD THIS
                 productData[key].apBrand = projectData.dbBoxSpecs[key].apBrand || '';
                 productData[key].apModel = projectData.dbBoxSpecs[key].apModel || '';
                 productData[key].apQty = projectData.dbBoxSpecs[key].apQty || 1;
@@ -6619,11 +6973,12 @@ function loadProjectData(projectData) {
         });
     }
 
-    // Load switch configurations
+    // Load switch and access point configurations
     if (projectData.switchConfigs) {
         Object.keys(projectData.switchConfigs).forEach(key => {
             if (productData[key]) {
-                productData[key].switchConfig = projectData.switchConfigs[key].switchConfig || '';
+                productData[key].defaultSwitchConfig = projectData.switchConfigs[key].defaultSwitchConfig || '';
+                productData[key].defaultAccessPointConfig = projectData.switchConfigs[key].defaultAccessPointConfig || ''; // ADD THIS
             }
         });
     }
@@ -6643,44 +6998,46 @@ function loadProjectData(projectData) {
 
         // Create mark data object
         const mark = {
-            id: newId,
-            x: savedMark.x,
-            y: savedMark.y,
-            size: savedMark.size,
-            shape: savedMark.shape || 'circle',
-            seriesCode: savedMark.seriesCode,
-            seriesLabel: savedMark.seriesLabel,
-            categoryName: savedMark.categoryName,
-            modelName: savedMark.modelName,
-            desc: savedMark.desc,
-            features: savedMark.features || [],
-            imageSrc: savedMark.imageSrc,
-            relayItems: savedMark.relayItems || [],
-            isDBBox: savedMark.isDBBox || false,
-            isNetworkDBBox: savedMark.isNetworkDBBox || false,
-            isTextLabel: savedMark.isTextLabel || false,
-            isEquipment: savedMark.isEquipment || false, // Load equipment flag
-            isMultiComponent: savedMark.isMultiComponent || false,
-            brand: savedMark.brand || '',
-            sizeFt: savedMark.sizeFt || '',
-            selectedRelays: savedMark.selectedRelays || [],
-            routerBrand: savedMark.routerBrand || '',
-            routerModel: savedMark.routerModel || '',
-            routerQty: savedMark.routerQty || 1,
-            apBrand: savedMark.apBrand || '',
-            apModel: savedMark.apModel || '',
-            apQty: savedMark.apQty || 1,
-            text: savedMark.text || '',
-            fontSize: savedMark.fontSize || 12,
-            isTremblay: savedMark.categoryName === 'TREMBLAY SOUNDS',
-            groupId: savedMark.groupId || null,
-            componentType: savedMark.componentType || '',
-            isSwitchFamily: savedMark.isSwitchFamily || false,
-            switchConfig: savedMark.switchConfig || '',
-            equipmentIcon: savedMark.equipmentIcon || '', // Load equipment icon
-            componentIndex: savedMark.componentIndex || 0,
-            componentUniqueKey: savedMark.componentUniqueKey || savedMark.seriesLabel
-        };
+        id: newId,
+        x: savedMark.x,
+        y: savedMark.y,
+        size: savedMark.size,
+        shape: savedMark.shape || 'circle',
+        seriesCode: savedMark.seriesCode,
+        seriesLabel: savedMark.seriesLabel,
+        categoryName: savedMark.categoryName,
+        modelName: savedMark.modelName,
+        desc: savedMark.desc,
+        features: savedMark.features || [],
+        imageSrc: savedMark.imageSrc,
+        relayItems: savedMark.relayItems || [],
+        isDBBox: savedMark.isDBBox || false,
+        isNetworkDBBox: savedMark.isNetworkDBBox || false,
+        isTextLabel: savedMark.isTextLabel || false,
+        isEquipment: savedMark.isEquipment || false,
+        isMultiComponent: savedMark.isMultiComponent || false,
+        brand: savedMark.brand || '',
+        sizeFt: savedMark.sizeFt || '',
+        selectedRelays: savedMark.selectedRelays || [],
+        routerBrand: savedMark.routerBrand || '',           // ADD THIS
+        routerModel: savedMark.routerModel || '',           // ADD THIS
+        routerQty: savedMark.routerQty || 1,                // ADD THIS
+        selectedModules: savedMark.selectedModules || [],   // ADD THIS
+        apBrand: savedMark.apBrand || '',
+        apModel: savedMark.apModel || '',
+        apQty: savedMark.apQty || 1,
+        text: savedMark.text || '',
+        fontSize: savedMark.fontSize || 12,
+        isTremblay: savedMark.categoryName === 'TREMBLAY SOUNDS',
+        groupId: savedMark.groupId || null,
+        componentType: savedMark.componentType || '',
+        isSwitchFamily: savedMark.isSwitchFamily || false,
+        switchConfig: savedMark.switchConfig || '',         // Individual switch config
+        accessPointConfig: savedMark.accessPointConfig || '', // ADD THIS - Individual AP config
+        equipmentIcon: savedMark.equipmentIcon || '',
+        componentIndex: savedMark.componentIndex || 0,
+        componentUniqueKey: savedMark.componentUniqueKey || savedMark.seriesLabel
+    };
 
         // CRITICAL: Ensure equipment is NOT treated as text label
         if (mark.isEquipment) {
@@ -6988,14 +7345,31 @@ function loadProjectData(projectData) {
     }
 
     // Restore product selection
-    if (projectData.currentProduct) {
-        setTimeout(() => {
-            selectProduct(projectData.currentProduct, projectData.currentSubProduct);
-            if (projectData.currentProduct === 'Z-WAVE RELAY') {
-                updateRelayOverlay();
+// In the loadProjectData function, update the restore product section:
+if (projectData.currentProduct) {
+    setTimeout(() => {
+        selectProduct(projectData.currentProduct, projectData.currentSubProduct);
+        
+        // Refresh the mark selection if needed
+        if (selectedMarkId) {
+            const selectedMark = marks.find(m => m.id === selectedMarkId);
+            if (selectedMark) {
+                // Recreate configuration controls for the selected mark
+                if (selectedMark.isSwitchFamily) {
+                    if (selectedMark.categoryName === 'ACCESS POINT') {
+                        createAccessPointConfigurationControls();
+                    } else {
+                        createSwitchConfigurationControls();
+                    }
+                }
             }
-        }, 150);
-    }
+        }
+        
+        if (projectData.currentProduct === 'Z-WAVE RELAY') {
+            updateRelayOverlay();
+        }
+    }, 200);
+}
 
     // Update wires list if needed
     if (currentWireType) {
@@ -7243,4 +7617,3 @@ function enableAllZoom() {
 
     console.log('Zoom functions re-enabled');
 }
-
