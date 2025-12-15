@@ -438,25 +438,25 @@ const productData = {
                 features: ["Dual KNX + RF control", "Real-time feedback", "Fully KNX compatible", "KNX 21–30VDC & 100–240V AC motor", "1.5 N·m torque", "50kg load", "13cm/s speed", "0.9–12m width", ">4min runtime", "<28dB noise", "IP20", "–10°C to +55°C"]
             }
         }
-    },"KNX SENSORS": {
-    title: "Sensors",
-    desc: "Advanced KNX-based detection and monitoring sensors for smart homes.",
-    subProducts: {
-        "HUMAN PRESENCE / LUX SENSOR (LMHPSKNX)": {
-            title: "Human Presence / Lux Sensor",
-            desc: "KNX radar-based human presence and lux sensor for intelligent lighting and automation control.",
-            img: "./images/knxsensor/1.png",
-            features: [
-                "KNX BUS protocol",
-                "Radar-based human presence detection",
-                "Integrated lux (light level) sensor",
-                "High accuracy presence detection",
-                "Low power consumption",
-                "Compact recessed ceiling installation"
-            ]
+    }, "KNX SENSORS": {
+        title: "Sensors",
+        desc: "Advanced KNX-based detection and monitoring sensors for smart homes.",
+        subProducts: {
+            "HUMAN PRESENCE / LUX SENSOR (LMHPSKNX)": {
+                title: "Human Presence / Lux Sensor",
+                desc: "KNX radar-based human presence and lux sensor for intelligent lighting and automation control.",
+                img: "./images/knxsensor/1.png",
+                features: [
+                    "KNX BUS protocol",
+                    "Radar-based human presence detection",
+                    "Integrated lux (light level) sensor",
+                    "High accuracy presence detection",
+                    "Low power consumption",
+                    "Compact recessed ceiling installation"
+                ]
+            }
         }
     }
-}
 
     ,
     "SENSORS": {
@@ -631,8 +631,7 @@ function createSwitchConfigurationControls() {
     const switchControlsHTML = `
     <div class="mark-controls-box" id="switchConfigControls" style="margin-top: 20px; border-color: #FF9800;">
         <h3 style="color: #FF9800; margin-bottom: 15px;">
-            <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">settings</span>
-            ${currentProduct} Configuration
+            <span class="material-icons" style="font-size: 18px; vertical-align: middle; margin-right: 8px;">settings</span>Switch Configuration
         </h3>
         
         ${selectedMarkId ? `
@@ -731,7 +730,7 @@ function createAccessPointConfigurationControls() {
         </h3>
         
         ${selectedMarkId ? `
-        <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #BBDEFB;">
+        <div class="useless" style="background: #E3F2FD; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #BBDEFB;">
             <div style="font-size: 12px; color: #2196F3; margin-bottom: 4px;">
                 <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
                 Configuring: <strong>${selectedMark ? selectedMark.seriesLabel : ''}</strong>
@@ -1247,7 +1246,11 @@ function createAutomationDBBoxControls() {
     // Hide product image overlay
     productImageOverlay.style.display = 'none';
 
-    // Automation DB box specific options - REMOVED MODULES
+    // Check if a mark is selected and has existing configuration
+    const selectedMark = marks.find(mark => mark.id === selectedMarkId);
+    const existingRemark = selectedMark ? selectedMark.dbBoxRemark : '';
+
+    // Automation DB box specific options
     const dbBoxRelays = [
         { id: 'knx-power-supply', label: 'KNX Power Supply' },
         { id: '12-channel-actuator', label: '12 Channel Actuator' },
@@ -1268,13 +1271,36 @@ function createAutomationDBBoxControls() {
                 Automation DB Box Specifications
             </h3>
             
+            ${selectedMarkId ? `
+            <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #BBDEFB;">
+                <div style="font-size: 12px; color: #2196F3; margin-bottom: 4px;">
+                    <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                    Configuring: <strong>${selectedMark ? selectedMark.seriesLabel : ''}</strong>
+                </div>
+                <div style="font-size: 11px; color: #555;">
+                    Configuration will be saved only for this specific DB box label.
+                </div>
+            </div>
+            ` : `
+            <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #BBDEFB;">
+                <div style="font-size: 12px; color: #2196F3; margin-bottom: 4px;">
+                    <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                    Setting Default Configuration for New DB Boxes
+                </div>
+                <div style="font-size: 11px; color: #555;">
+                    This configuration will apply to all new ${currentProduct} boxes.
+                    Select a specific DB box to configure it individually.
+                </div>
+            </div>
+            `}
+            
             <div class="form-group">
                 <label style="color: #2196F3; font-weight: 500;">Brand</label>
                 <input type="text" 
                        id="automationDBBrandInput" 
                        class="form-control" 
                        placeholder="Enter brand name (e.g., Legrand, Schneider)"
-                       value="${data.brand || ''}"
+                       value="${selectedMarkId && selectedMark ? (selectedMark.brand || productData[currentProduct]?.brand || '') : (productData[currentProduct]?.brand || '')}"
                        style="border-color: #2196F3;">
                 <div style="font-size: 11px; color: #666; margin-top: 4px;">
                     <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
@@ -1288,7 +1314,7 @@ function createAutomationDBBoxControls() {
                        id="automationDBSizeInput" 
                        class="form-control" 
                        placeholder="Enter size in feet (e.g., 2x3, 4x6)"
-                       value="${data.size || ''}"
+                       value="${selectedMarkId && selectedMark ? (selectedMark.sizeFt || productData[currentProduct]?.size || '') : (productData[currentProduct]?.size || '')}"
                        style="border-color: #2196F3;">
                 <div style="font-size: 11px; color: #666; margin-top: 4px;">
                     <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
@@ -1296,15 +1322,38 @@ function createAutomationDBBoxControls() {
                 </div>
             </div>
 
+            <!-- ADDED: Remark Input -->
+            <div class="form-group" style="margin-top: 15px;">
+                <label style="color: #2196F3; font-weight: 500;">Remarks / Notes</label>
+                <textarea 
+                    id="automationDBRemarkInput" 
+                    class="form-control" 
+                    placeholder="Enter any remarks or notes for this DB box (e.g., Wall mounted near entrance, Extra space for future modules, etc.)"
+                    rows="3"
+                    style="border-color: #2196F3; resize: vertical; min-height: 80px;"
+                >${selectedMarkId && selectedMark ? (selectedMark.dbBoxRemark || '') : ''}</textarea>
+                <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                    <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
+                    Optional remarks that will appear in PDF and when clicking the label
+                </div>
+            </div>
+
             <div class="form-group" style="margin-top: 20px;">
                 <label style="color: #2196F3; font-weight: 500;">Modules</label>
                 <div id="automationDBRelaysList" style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
-                    ${dbBoxRelays.map(relay => `
+                    ${dbBoxRelays.map(relay => {
+        const selectedMarkRelay = selectedMarkId && selectedMark && selectedMark.selectedRelays ?
+            selectedMark.selectedRelays.find(r => r.id === relay.id) : null;
+        const isChecked = selectedMarkRelay ? true : false;
+        const quantity = selectedMarkRelay ? selectedMarkRelay.quantity : 1;
+
+        return `
                         <div class="db-relay-option" style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; border: 1px solid #e0e0e0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                                     <input type="checkbox" 
                                            data-relay-id="${relay.id}" 
+                                           ${isChecked ? 'checked' : ''}
                                            style="cursor: pointer;">
                                     <span style="font-size: 13px;">${relay.label}</span>
                                 </label>
@@ -1313,20 +1362,20 @@ function createAutomationDBBoxControls() {
                                     <input type="number" 
                                            data-relay-id="${relay.id}" 
                                            min="1" 
-                                           value="1" 
+                                           value="${quantity}" 
                                            style="width: 60px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; text-align: center;"
-                                           disabled>
+                                           ${isChecked ? '' : 'disabled'}>
                                 </div>
                             </div>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
             </div>
 
             <div class="form-group" style="margin-top: 20px;">
                 <button id="saveAutomationDBSpecsBtn" class="btn primary full-width" style="background: #2196F3; border-color: #2196F3;">
                     <span class="material-icons" style="font-size: 16px; margin-right: 8px;">save</span>
-                    Save Specifications
+                    ${selectedMarkId ? 'Save Configuration' : 'Set Default Configuration'}
                 </button>
             </div>
 
@@ -1336,8 +1385,8 @@ function createAutomationDBBoxControls() {
                     Specifications Info
                 </div>
                 <div style="font-size: 11px; color: #555;">
-                    • Brand and size will be displayed in PDF<br>
-                    • Size will be shown in model name when label is clicked<br>
+                    • Brand, size, and remarks will be displayed in PDF<br>
+                    • Remarks will be shown in model name when label is clicked<br>
                     • Relay selection will be included in PDF<br>
                     • Information is saved per DB box
                 </div>
@@ -1420,29 +1469,11 @@ function attachAutomationDBControlsEvents() {
         });
     }
 }
-
 function attachAutomationDBControlsEvents() {
     const saveBtn = document.getElementById('saveAutomationDBSpecsBtn');
     const brandInput = document.getElementById('automationDBBrandInput');
     const sizeInput = document.getElementById('automationDBSizeInput');
-
-    // Add event listeners to module checkboxes
-    document.querySelectorAll('#automationDBModulesList input[type="checkbox"]').forEach(checkbox => {
-        const moduleId = checkbox.dataset.moduleId;
-        const qtyInput = document.querySelector(`input[data-module-id="${moduleId}"]`);
-
-        checkbox.addEventListener('change', function () {
-            qtyInput.disabled = !this.checked;
-            if (!this.checked) {
-                qtyInput.value = '1';
-            }
-        });
-
-        qtyInput.addEventListener('input', function () {
-            const val = Math.max(1, parseInt(this.value || '1', 10));
-            this.value = val;
-        });
-    });
+    const remarkInput = document.getElementById('automationDBRemarkInput');
 
     // Add event listeners to relay checkboxes
     document.querySelectorAll('#automationDBRelaysList input[type="checkbox"]').forEach(checkbox => {
@@ -1462,28 +1493,16 @@ function attachAutomationDBControlsEvents() {
         });
     });
 
-    if (saveBtn && brandInput && sizeInput) {
+    if (saveBtn && brandInput && sizeInput && remarkInput) {
         saveBtn.addEventListener('click', function () {
             const brand = brandInput.value.trim();
             const size = sizeInput.value.trim();
+            const remark = remarkInput.value.trim();
 
             if (!brand || !size) {
                 showNotification('Please enter both brand and size', 'error');
                 return;
             }
-
-            // Get selected modules
-            const selectedModules = [];
-            document.querySelectorAll('#automationDBModulesList input[type="checkbox"]:checked').forEach(checkbox => {
-                const moduleId = checkbox.dataset.moduleId;
-                const qtyInput = document.querySelector(`input[data-module-id="${moduleId}"]`);
-                const moduleLabel = checkbox.parentElement.querySelector('span').textContent;
-                selectedModules.push({
-                    id: moduleId,
-                    name: moduleLabel,
-                    quantity: parseInt(qtyInput.value) || 1
-                });
-            });
 
             // Get selected relays
             const selectedRelays = [];
@@ -1498,26 +1517,73 @@ function attachAutomationDBControlsEvents() {
                 });
             });
 
-            if (productData[currentProduct]) {
-                productData[currentProduct].brand = brand;
-                productData[currentProduct].size = size;
-                productData[currentProduct].selectedModules = selectedModules;
-                productData[currentProduct].selectedRelays = selectedRelays;
+            const selectedMark = marks.find(mark => mark.id === selectedMarkId);
 
-                // Update existing marks
-                marks.forEach(mark => {
-                    if (mark.categoryName === currentProduct) {
-                        mark.modelName = `${brand} - ${size} ft`;
-                        mark.desc = `${currentProduct}: ${brand} ${size} ft`;
-                        mark.brand = brand;
-                        mark.sizeFt = size;
-                        mark.selectedModules = selectedModules;
-                        mark.selectedRelays = selectedRelays;
+            // ADD THIS: Fix the image size issue
+            if (productImage && productImage.style.display !== 'none') {
+                productImage.style.width = '';
+                productImage.style.height = '';
+                productImage.style.objectFit = 'contain';
+                productImage.style.maxWidth = '100%';
+                productImage.style.maxHeight = '200px';
+            }
+
+            if (selectedMarkId && selectedMark) {
+                // Save configuration for the selected mark
+                selectedMark.brand = brand;
+                selectedMark.sizeFt = size;
+                selectedMark.dbBoxRemark = remark;
+                selectedMark.selectedRelays = selectedRelays;
+                // ADD THIS LINE for modules - initialize if not exists
+                if (!selectedMark.selectedModules) selectedMark.selectedModules = [];
+                selectedMark.modelName = `${brand} - ${size} ft${remark ? ` (${remark})` : ''}`;
+                selectedMark.desc = `${selectedMark.categoryName}: ${brand} ${size} ft${remark ? ` - ${remark}` : ''}`;
+
+                // Update the mark's tooltip
+                if (selectedMark.tooltip) {
+                    const tooltipModel = selectedMark.tooltip.querySelector('.tooltip-model');
+                    if (tooltipModel) {
+                        tooltipModel.textContent = `${brand} - ${size} ft${remark ? ` (${remark})` : ''}`;
                     }
-                });
+                }
 
-                showNotification('Automation DB Box specifications saved successfully!', 'success');
+                showNotification(`Configuration saved for ${selectedMark.seriesLabel}!`, 'success');
                 renderMarksList();
+            } else {
+                // Set default configuration for new DB boxes
+                if (productData[currentProduct]) {
+                    productData[currentProduct].brand = brand;
+                    productData[currentProduct].size = size;
+                    productData[currentProduct].dbBoxRemark = remark;
+                    productData[currentProduct].selectedRelays = selectedRelays;
+                    // ADD THIS LINE for modules - initialize if not exists
+                    if (!productData[currentProduct].selectedModules) productData[currentProduct].selectedModules = [];
+
+                    // Also update ALL existing DB boxes of this type that don't have individual configs
+                    marks.forEach(mark => {
+                        if (mark.categoryName === currentProduct && !mark.brand) {
+                            mark.brand = brand;
+                            mark.sizeFt = size;
+                            mark.dbBoxRemark = remark;
+                            mark.selectedRelays = selectedRelays;
+                            // ADD THIS LINE for modules
+                            if (!mark.selectedModules) mark.selectedModules = [];
+                            mark.modelName = `${brand} - ${size} ft${remark ? ` (${remark})` : ''}`;
+                            mark.desc = `${mark.categoryName}: ${brand} ${size} ft${remark ? ` - ${remark}` : ''}`;
+
+                            // Update tooltip
+                            if (mark.tooltip) {
+                                const tooltipModel = mark.tooltip.querySelector('.tooltip-model');
+                                if (tooltipModel) {
+                                    tooltipModel.textContent = `${brand} - ${size} ft${remark ? ` (${remark})` : ''}`;
+                                }
+                            }
+                        }
+                    });
+
+                    showNotification('Default configuration set for new DB boxes and updated existing ones without config', 'success');
+                    renderMarksList();
+                }
             }
         });
     }
@@ -1539,7 +1605,11 @@ function createNetworkDBBoxControls() {
     // Hide product image overlay
     productImageOverlay.style.display = 'none';
 
-    // Network DB box specific modules - ADD THESE
+    // Check if a mark is selected and has existing configuration
+    const selectedMark = marks.find(mark => mark.id === selectedMarkId);
+    const existingRemark = selectedMark ? selectedMark.networkDBBoxRemark : '';
+
+    // Network DB box specific modules
     const networkDBModules = [
         { id: 'network-switch', label: 'Network Switch' },
         { id: 'patch-panel', label: 'Patch Panel' },
@@ -1558,13 +1628,36 @@ function createNetworkDBBoxControls() {
                 Network DB Box Specifications
             </h3>
             
+            ${selectedMarkId ? `
+            <div style="background: #F3E5F5; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #E1BEE7;">
+                <div style="font-size: 12px; color: #9C27B0; margin-bottom: 4px;">
+                    <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                    Configuring: <strong>${selectedMark ? selectedMark.seriesLabel : ''}</strong>
+                </div>
+                <div style="font-size: 11px; color: #555;">
+                    Configuration will be saved only for this specific Network DB box label.
+                </div>
+            </div>
+            ` : `
+            <div style="background: #F3E5F5; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #E1BEE7;">
+                <div style="font-size: 12px; color: #9C27B0; margin-bottom: 4px;">
+                    <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">info</span>
+                    Setting Default Configuration for New Network DB Boxes
+                </div>
+                <div style="font-size: 11px; color: #555;">
+                    This configuration will apply to all new ${currentProduct} boxes.
+                    Select a specific Network DB box to configure it individually.
+                </div>
+            </div>
+            `}
+            
             <div class="form-group">
                 <label style="color: #9C27B0; font-weight: 500;">Brand</label>
                 <input type="text" 
                        id="networkDBBrandInput" 
                        class="form-control" 
                        placeholder="Enter brand name (e.g., Legrand, Schneider)"
-                       value="${data.brand || ''}"
+                       value="${selectedMarkId && selectedMark ? (selectedMark.brand || productData[currentProduct]?.brand || '') : (productData[currentProduct]?.brand || '')}"
                        style="border-color: #9C27B0;">
                 <div style="font-size: 11px; color: #666; margin-top: 4px;">
                     <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
@@ -1578,11 +1671,27 @@ function createNetworkDBBoxControls() {
                        id="networkDBSizeInput" 
                        class="form-control" 
                        placeholder="Enter size in feet (e.g., 2x3, 4x6)"
-                       value="${data.size || ''}"
+                       value="${selectedMarkId && selectedMark ? (selectedMark.sizeFt || productData[currentProduct]?.size || '') : (productData[currentProduct]?.size || '')}"
                        style="border-color: #9C27B0;">
                 <div style="font-size: 11px; color: #666; margin-top: 4px;">
                     <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
                     Enter dimensions like 2x3, 4x6, etc.
+                </div>
+            </div>
+
+            <!-- ADDED: Remark Input -->
+            <div class="form-group" style="margin-top: 15px;">
+                <label style="color: #9C27B0; font-weight: 500;">Remarks / Notes</label>
+                <textarea 
+                    id="networkDBRemarkInput" 
+                    class="form-control" 
+                    placeholder="Enter any remarks or notes for this Network DB box (e.g., Located in server room, Includes cooling fan, etc.)"
+                    rows="3"
+                    style="border-color: #9C27B0; resize: vertical; min-height: 80px;"
+                >${selectedMarkId && selectedMark ? (selectedMark.networkDBBoxRemark || '') : ''}</textarea>
+                <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                    <span class="material-icons" style="font-size: 11px; vertical-align: middle;">info</span>
+                    Optional remarks that will appear in PDF and when clicking the label
                 </div>
             </div>
 
@@ -1594,7 +1703,7 @@ function createNetworkDBBoxControls() {
                         <input type="text" 
                                id="networkRouterBrand" 
                                placeholder="e.g., Cisco"
-                               value="${data.routerBrand || ''}"
+                               value="${selectedMarkId && selectedMark ? (selectedMark.routerBrand || productData[currentProduct]?.routerBrand || '') : (productData[currentProduct]?.routerBrand || '')}"
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
                     </div>
                     <div>
@@ -1602,7 +1711,7 @@ function createNetworkDBBoxControls() {
                         <input type="text" 
                                id="networkRouterModel" 
                                placeholder="e.g., ISR 4331"
-                               value="${data.routerModel || ''}"
+                               value="${selectedMarkId && selectedMark ? (selectedMark.routerModel || productData[currentProduct]?.routerModel || '') : (productData[currentProduct]?.routerModel || '')}"
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
                     </div>
                     <div style="grid-column: span 2;">
@@ -1610,7 +1719,7 @@ function createNetworkDBBoxControls() {
                         <input type="number" 
                                id="networkRouterQty" 
                                min="1" 
-                               value="${data.routerQty || 1}"
+                               value="${selectedMarkId && selectedMark ? (selectedMark.routerQty || productData[currentProduct]?.routerQty || 1) : (productData[currentProduct]?.routerQty || 1)}"
                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; text-align: center;">
                     </div>
                 </div>
@@ -1619,12 +1728,19 @@ function createNetworkDBBoxControls() {
             <div class="form-group" style="margin-top: 20px;">
                 <label style="color: #9C27B0; font-weight: 500;">Network Modules</label>
                 <div id="networkDBModulesList" style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
-                    ${networkDBModules.map(module => `
+                    ${networkDBModules.map(module => {
+        const selectedMarkModule = selectedMarkId && selectedMark && selectedMark.selectedModules ?
+            selectedMark.selectedModules.find(m => m.id === module.id) : null;
+        const isChecked = selectedMarkModule ? true : false;
+        const quantity = selectedMarkModule ? selectedMarkModule.quantity : 1;
+
+        return `
                         <div class="db-module-option" style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; border: 1px solid #e0e0e0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                                     <input type="checkbox" 
                                            data-module-id="${module.id}" 
+                                           ${isChecked ? 'checked' : ''}
                                            style="cursor: pointer;">
                                     <span style="font-size: 13px;">${module.label}</span>
                                 </label>
@@ -1633,20 +1749,20 @@ function createNetworkDBBoxControls() {
                                     <input type="number" 
                                            data-module-id="${module.id}" 
                                            min="1" 
-                                           value="1" 
+                                           value="${quantity}" 
                                            style="width: 60px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; text-align: center;"
-                                           disabled>
+                                           ${isChecked ? '' : 'disabled'}>
                                 </div>
                             </div>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
             </div>
 
             <div class="form-group" style="margin-top: 20px;">
                 <button id="saveNetworkDBSpecsBtn" class="btn primary full-width" style="background: #9C27B0; border-color: #9C27B0;">
                     <span class="material-icons" style="font-size: 16px; margin-right: 8px;">save</span>
-                    Save Specifications
+                    ${selectedMarkId ? 'Save Configuration' : 'Set Default Configuration'}
                 </button>
             </div>
 
@@ -1656,7 +1772,8 @@ function createNetworkDBBoxControls() {
                     Specifications Info
                 </div>
                 <div style="font-size: 11px; color: #555;">
-                    • Brand and size will be displayed in PDF<br>
+                    • Brand, size, and remarks will be displayed in PDF<br>
+                    • Remarks will be shown in model name when label is clicked<br>
                     • Router details will be included in PDF<br>
                     • Module selection will be included in PDF<br>
                     • Information is saved per DB box
@@ -1676,6 +1793,7 @@ function attachNetworkDBControlsEvents() {
     const saveBtn = document.getElementById('saveNetworkDBSpecsBtn');
     const brandInput = document.getElementById('networkDBBrandInput');
     const sizeInput = document.getElementById('networkDBSizeInput');
+    const remarkInput = document.getElementById('networkDBRemarkInput');
     const routerBrandInput = document.getElementById('networkRouterBrand');
     const routerModelInput = document.getElementById('networkRouterModel');
     const routerQtyInput = document.getElementById('networkRouterQty');
@@ -1706,10 +1824,11 @@ function attachNetworkDBControlsEvents() {
         });
     }
 
-    if (saveBtn && brandInput && sizeInput) {
+    if (saveBtn && brandInput && sizeInput && remarkInput) {
         saveBtn.addEventListener('click', function () {
             const brand = brandInput.value.trim();
             const size = sizeInput.value.trim();
+            const remark = remarkInput.value.trim();
 
             if (!brand || !size) {
                 showNotification('Please enter both brand and size', 'error');
@@ -1734,30 +1853,67 @@ function attachNetworkDBControlsEvents() {
                 });
             });
 
-            if (productData[currentProduct]) {
-                productData[currentProduct].brand = brand;
-                productData[currentProduct].size = size;
-                productData[currentProduct].routerBrand = routerBrand;
-                productData[currentProduct].routerModel = routerModel;
-                productData[currentProduct].routerQty = routerQty;
-                productData[currentProduct].selectedModules = selectedModules;
+            const selectedMark = marks.find(mark => mark.id === selectedMarkId);
 
-                // Update existing marks
-                marks.forEach(mark => {
-                    if (mark.categoryName === currentProduct) {
-                        mark.modelName = `${brand} - ${size} ft`;
-                        mark.desc = `${currentProduct}: ${brand} ${size} ft`;
-                        mark.brand = brand;
-                        mark.sizeFt = size;
-                        mark.routerBrand = routerBrand;
-                        mark.routerModel = routerModel;
-                        mark.routerQty = routerQty;
-                        mark.selectedModules = selectedModules;
+            if (selectedMarkId && selectedMark) {
+                // Save configuration for the selected mark
+                selectedMark.brand = brand;
+                selectedMark.sizeFt = size;
+                selectedMark.networkDBBoxRemark = remark;
+                selectedMark.routerBrand = routerBrand;
+                selectedMark.routerModel = routerModel;
+                selectedMark.routerQty = routerQty;
+                selectedMark.selectedModules = selectedModules;
+                selectedMark.modelName = `${brand} - ${size} ft${remark ? ` (${remark})` : ''}`;
+                selectedMark.desc = `${selectedMark.categoryName}: ${brand} ${size} ft${remark ? ` - ${remark}` : ''}`;
+
+                // Update the mark's tooltip
+                if (selectedMark.tooltip) {
+                    const tooltipModel = selectedMark.tooltip.querySelector('.tooltip-model');
+                    if (tooltipModel) {
+                        tooltipModel.textContent = `${brand} - ${size} ft${remark ? ` (${remark})` : ''}`;
                     }
-                });
+                }
 
-                showNotification('Network DB Box specifications saved successfully!', 'success');
+                showNotification(`Configuration saved for ${selectedMark.seriesLabel}!`, 'success');
                 renderMarksList();
+            } else {
+                // Set default configuration for new Network DB boxes
+                if (productData[currentProduct]) {
+                    productData[currentProduct].brand = brand;
+                    productData[currentProduct].size = size;
+                    productData[currentProduct].networkDBBoxRemark = remark;
+                    productData[currentProduct].routerBrand = routerBrand;
+                    productData[currentProduct].routerModel = routerModel;
+                    productData[currentProduct].routerQty = routerQty;
+                    productData[currentProduct].selectedModules = selectedModules;
+
+                    // Also update ALL existing Network DB boxes of this type that don't have individual configs
+                    marks.forEach(mark => {
+                        if (mark.categoryName === currentProduct && !mark.brand) {
+                            mark.brand = brand;
+                            mark.sizeFt = size;
+                            mark.networkDBBoxRemark = remark;
+                            mark.routerBrand = routerBrand;
+                            mark.routerModel = routerModel;
+                            mark.routerQty = routerQty;
+                            mark.selectedModules = selectedModules;
+                            mark.modelName = `${brand} - ${size} ft${remark ? ` (${remark})` : ''}`;
+                            mark.desc = `${mark.categoryName}: ${brand} ${size} ft${remark ? ` - ${remark}` : ''}`;
+
+                            // Update tooltip
+                            if (mark.tooltip) {
+                                const tooltipModel = mark.tooltip.querySelector('.tooltip-model');
+                                if (tooltipModel) {
+                                    tooltipModel.textContent = `${brand} - ${size} ft${remark ? ` (${remark})` : ''}`;
+                                }
+                            }
+                        }
+                    });
+
+                    showNotification('Default configuration set for new Network DB boxes and updated existing ones without config', 'success');
+                    renderMarksList();
+                }
             }
         });
     }
@@ -1825,6 +1981,31 @@ function populateModal(mark) {
         sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
         modalProductDesc.appendChild(sizeEl);
 
+        // ADDED: Show remarks if available
+        if (mark.dbBoxRemark) {
+            const remarkEl = document.createElement('div');
+            remarkEl.style.marginTop = '8px';
+            remarkEl.style.padding = '8px';
+            remarkEl.style.background = '#E3F2FD';
+            remarkEl.style.borderRadius = '6px';
+            remarkEl.style.borderLeft = '4px solid #2196F3';
+
+            const remarkTitle = document.createElement('div');
+            remarkTitle.textContent = 'Remarks:';
+            remarkTitle.style.fontWeight = 'bold';
+            remarkTitle.style.color = '#2196F3';
+            remarkTitle.style.marginBottom = '4px';
+
+            const remarkText = document.createElement('div');
+            remarkText.textContent = mark.dbBoxRemark;
+            remarkText.style.fontSize = '12px';
+            remarkText.style.color = '#555';
+
+            remarkEl.appendChild(remarkTitle);
+            remarkEl.appendChild(remarkText);
+            modalProductDesc.appendChild(remarkEl);
+        }
+
         // Add relay details if any - as bullet points
         if (mark.selectedRelays && mark.selectedRelays.length > 0) {
             const relayHeader = document.createElement('div');
@@ -1840,8 +2021,6 @@ function populateModal(mark) {
                 modalProductDesc.appendChild(relayItem);
             });
         }
-        // In populateModal function, update the Network DB Box section:
-
     } else if (mark.isNetworkDBBox) {
         // Create HTML elements for separate points/lines
         const typeEl = document.createElement('div');
@@ -1855,6 +2034,31 @@ function populateModal(mark) {
         const sizeEl = document.createElement('div');
         sizeEl.textContent = `Size: ${mark.sizeFt || 'Not specified'} ft`;
         modalProductDesc.appendChild(sizeEl);
+
+        // ADDED: Show remarks if available
+        if (mark.networkDBBoxRemark) {
+            const remarkEl = document.createElement('div');
+            remarkEl.style.marginTop = '8px';
+            remarkEl.style.padding = '8px';
+            remarkEl.style.background = '#F3E5F5';
+            remarkEl.style.borderRadius = '6px';
+            remarkEl.style.borderLeft = '4px solid #9C27B0';
+
+            const remarkTitle = document.createElement('div');
+            remarkTitle.textContent = 'Remarks:';
+            remarkTitle.style.fontWeight = 'bold';
+            remarkTitle.style.color = '#9C27B0';
+            remarkTitle.style.marginBottom = '4px';
+
+            const remarkText = document.createElement('div');
+            remarkText.textContent = mark.networkDBBoxRemark;
+            remarkText.style.fontSize = '12px';
+            remarkText.style.color = '#555';
+
+            remarkEl.appendChild(remarkTitle);
+            remarkEl.appendChild(remarkText);
+            modalProductDesc.appendChild(remarkEl);
+        }
 
         // Add router details if any - as bullet point
         if (mark.routerBrand || mark.routerModel) {
@@ -1888,53 +2092,53 @@ function populateModal(mark) {
             modalProductDesc.appendChild(noModulesEl);
         }
     } else if (mark.isSwitchFamily) {
-    // Create HTML elements for separate points/lines
-    const typeEl = document.createElement('div');
-    typeEl.textContent = `Type: ${mark.categoryName || 'Device'}`;
-    modalProductDesc.appendChild(typeEl);
+        // Create HTML elements for separate points/lines
+        const typeEl = document.createElement('div');
+        typeEl.textContent = `Type: ${mark.categoryName || 'Device'}`;
+        modalProductDesc.appendChild(typeEl);
 
-    // ACCESS POINT SPECIFIC HANDLING
-    if (mark.categoryName === 'ACCESS POINT') {
-        // Show individual access point configuration
-        if (mark.accessPointConfig) {
-            const configEl = document.createElement('div');
-            configEl.textContent = `Configuration: ${mark.accessPointConfig}`;
-            configEl.style.marginTop = '8px';
-            configEl.style.fontWeight = 'bold';
-            configEl.style.color = '#2196F3';
-            modalProductDesc.appendChild(configEl);
-        } else if (productData[mark.categoryName]?.defaultAccessPointConfig) {
-            const configEl = document.createElement('div');
-            configEl.textContent = `Configuration: ${productData[mark.categoryName].defaultAccessPointConfig} (default)`;
-            configEl.style.marginTop = '8px';
-            configEl.style.fontStyle = 'italic';
-            configEl.style.color = '#666';
-            modalProductDesc.appendChild(configEl);
-        }
-    } else {
-        // Regular switch handling
-        const modelEl = document.createElement('div');
-        modelEl.textContent = `Model: ${mark.modelName || 'Not specified'}`;
-        modalProductDesc.appendChild(modelEl);
+        // ACCESS POINT SPECIFIC HANDLING
+        if (mark.categoryName === 'ACCESS POINT') {
+            // Show individual access point configuration
+            if (mark.accessPointConfig) {
+                const configEl = document.createElement('div');
+                configEl.textContent = `Configuration: ${mark.accessPointConfig}`;
+                configEl.style.marginTop = '8px';
+                configEl.style.fontWeight = 'bold';
+                configEl.style.color = '#2196F3';
+                modalProductDesc.appendChild(configEl);
+            } else if (productData[mark.categoryName]?.defaultAccessPointConfig) {
+                const configEl = document.createElement('div');
+                configEl.textContent = `Configuration: ${productData[mark.categoryName].defaultAccessPointConfig} (default)`;
+                configEl.style.marginTop = '8px';
+                configEl.style.fontStyle = 'italic';
+                configEl.style.color = '#666';
+                modalProductDesc.appendChild(configEl);
+            }
+        } else {
+            // Regular switch handling
+            const modelEl = document.createElement('div');
+            modelEl.textContent = `Model: ${mark.modelName || 'Not specified'}`;
+            modalProductDesc.appendChild(modelEl);
 
-        // Show individual switch configuration
-        if (mark.switchConfig) {
-            const configEl = document.createElement('div');
-            configEl.textContent = `Configuration: ${mark.switchConfig}`;
-            configEl.style.marginTop = '8px';
-            configEl.style.fontWeight = 'bold';
-            configEl.style.color = '#FF9800';
-            modalProductDesc.appendChild(configEl);
-        } else if (productData[mark.categoryName]?.defaultSwitchConfig) {
-            const configEl = document.createElement('div');
-            configEl.textContent = `Configuration: ${productData[mark.categoryName].defaultSwitchConfig} (default)`;
-            configEl.style.marginTop = '8px';
-            configEl.style.fontStyle = 'italic';
-            configEl.style.color = '#666';
-            modalProductDesc.appendChild(configEl);
+            // Show individual switch configuration
+            if (mark.switchConfig) {
+                const configEl = document.createElement('div');
+                configEl.textContent = `Configuration: ${mark.switchConfig}`;
+                configEl.style.marginTop = '8px';
+                configEl.style.fontWeight = 'bold';
+                configEl.style.color = '#FF9800';
+                modalProductDesc.appendChild(configEl);
+            } else if (productData[mark.categoryName]?.defaultSwitchConfig) {
+                const configEl = document.createElement('div');
+                configEl.textContent = `Configuration: ${productData[mark.categoryName].defaultSwitchConfig} (default)`;
+                configEl.style.marginTop = '8px';
+                configEl.style.fontStyle = 'italic';
+                configEl.style.color = '#666';
+                modalProductDesc.appendChild(configEl);
+            }
         }
-    }
-} else if (mark.isTextLabel) {
+    } else if (mark.isTextLabel) {
         const textEl = document.createElement('div');
         textEl.textContent = `Text Label: ${mark.text || ''}`;
         modalProductDesc.appendChild(textEl);
@@ -4200,22 +4404,22 @@ function updateAllWires(wireType = null) {
             // Recreate wire at current scale
             if (wire.element && wire.element.svg && wire.element.svg.parentNode) {
                 wire.element.svg.remove();
-                
+
                 const tempWireType = currentWireType;
                 currentWireType = wire.wireType;
-                
+
                 let newElement;
                 if (wire.mode === 'curve') {
                     newElement = createWireElement(wire.startMark, wire.endMark, wire.curveValue, false);
                 } else {
                     newElement = createWireElementWithPoints(wire.startMark, wire.endMark, wire.points, false);
                 }
-                
+
                 currentWireType = tempWireType;
-                
+
                 if (newElement) {
                     wire.element = newElement;
-                    
+
                     // Reattach event listeners
                     if (newElement.path) {
                         newElement.path.style.cursor = "pointer";
@@ -4223,7 +4427,7 @@ function updateAllWires(wireType = null) {
                             e.stopPropagation();
                             selectWire(wire.startMark, wire.endMark, wire.wireType);
                         });
-                        
+
                         makeWireDraggable(newElement.path, wire.startMark, wire.endMark);
                     }
                 }
@@ -4656,13 +4860,13 @@ function createMark({ x, y, size, shape }) {
     }
 
     let accessPointConfig = '';
-if (currentProduct === 'ACCESS POINT') {
-    accessPointConfig = productData[currentProduct].defaultAccessPointConfig || '';
-    if (accessPointConfig) {
-        modelName = accessPointConfig;
-        descText = `${categoryName}: ${accessPointConfig}`;
+    if (currentProduct === 'ACCESS POINT') {
+        accessPointConfig = productData[currentProduct].defaultAccessPointConfig || '';
+        if (accessPointConfig) {
+            modelName = accessPointConfig;
+            descText = `${categoryName}: ${accessPointConfig}`;
+        }
     }
-}
 
     const { seriesCode, label } = nextSeriesLabel(currentProduct);
 
@@ -4682,15 +4886,14 @@ if (currentProduct === 'ACCESS POINT') {
     let equipmentIcon = '';
     let fallbackImg = '';
 
-    if (data.isDBBox) {
-        brand = productData[currentProduct].brand || '';
-        sizeFt = productData[currentProduct].size || '';
-        modelName = brand ? `${brand} - ${sizeFt} ft` : 'DB Box';
-        descText = `${categoryName}: ${brand} ${sizeFt} ft`;
-        featuresList = [];
-        selectedRelays = productData[currentProduct].selectedRelays || [];
-
-    } else if (data.isNetworkDBBox) {
+if (data.isDBBox) {
+    brand = productData[currentProduct].brand || '';
+    sizeFt = productData[currentProduct].size || '';
+    modelName = brand ? `${brand} - ${sizeFt} ft` : 'DB Box';
+    descText = `${categoryName}: ${brand} ${sizeFt} ft`;
+    featuresList = [];
+    selectedRelays = productData[currentProduct].selectedRelays || [];
+}else if (data.isNetworkDBBox) {
         // FIX: Check if data exists before accessing properties
         const networkData = productData[currentProduct];
         brand = networkData.brand || '';
@@ -4748,19 +4951,43 @@ if (currentProduct === 'ACCESS POINT') {
         descText = productDataForMark?.desc || data.desc || '';
     }
 
+    if (isSwitchFamily) {
+        brand = productData[currentProduct].brand || 'LUMI';
+        modelName = productDataForMark?.title || data.title || '';
+
+        // Get the appropriate configuration
+        if (currentProduct === 'ACCESS POINT') {
+            accessPointConfig = productData[currentProduct].defaultAccessPointConfig || '';
+            if (accessPointConfig) {
+                // For access points, configuration IS the model
+                modelName = accessPointConfig;
+            }
+        } else {
+            switchConfig = productData[currentProduct].defaultSwitchConfig || '';
+            if (switchConfig) {
+                // For switches, append configuration
+                modelName = `${modelName} (${switchConfig})`;
+            }
+        }
+
+        descText = productDataForMark?.desc || data.desc || '';
+        featuresList = (productDataForMark?.features || data.features || []).slice();
+
+    }
+
     const el = document.createElement('div');
     el.className = 'mark ' + shape;
     el.dataset.id = id;
     el.dataset.size = size;
     el.dataset.shape = shape;
 
-if (isEquipment) {
-    el.dataset.isEquipment = 'true';
-    el.dataset.equipmentType = modelName; // Add this for identification
+    if (isEquipment) {
+        el.dataset.isEquipment = 'true';
+        el.dataset.equipmentType = modelName; // Add this for identification
 
-    const iconContainer = document.createElement('div');
-    iconContainer.className = 'equipment-icon';
-    iconContainer.style.cssText = `
+        const iconContainer = document.createElement('div');
+        iconContainer.className = 'equipment-icon';
+        iconContainer.style.cssText = `
         position: absolute;
         top: 50%;
         left: 50%;
@@ -4774,9 +5001,9 @@ if (isEquipment) {
         /* REMOVE pointer-events: none; */
     `;
 
-    const iconImg = document.createElement('img');
-    iconImg.src = equipmentIcon || productDataForMark?.icon || '';
-    iconImg.style.cssText = `
+        const iconImg = document.createElement('img');
+        iconImg.src = equipmentIcon || productDataForMark?.icon || '';
+        iconImg.style.cssText = `
         width: 100%;
         height: 100%;
         object-fit: contain;
@@ -4784,13 +5011,13 @@ if (isEquipment) {
         /* REMOVE pointer-events: none; */
     `;
 
-    iconContainer.appendChild(iconImg);
-    el.appendChild(iconContainer);
+        iconContainer.appendChild(iconImg);
+        el.appendChild(iconContainer);
 
-    const eqText = document.createElement('div');
-    eqText.className = 'equipment-label-text';
-    eqText.textContent = label;
-    eqText.style.cssText = `
+        const eqText = document.createElement('div');
+        eqText.className = 'equipment-label-text';
+        eqText.textContent = label;
+        eqText.style.cssText = `
         position: absolute;
         top: 100%;
         left: 50%;
@@ -4801,8 +5028,8 @@ if (isEquipment) {
         white-space: nowrap;
         /* REMOVE pointer-events: none; */
     `;
-    el.appendChild(eqText);
-} else {
+        el.appendChild(eqText);
+    } else {
         const badge = document.createElement('div');
         badge.className = 'label-badge';
         badge.textContent = label;
@@ -4819,9 +5046,24 @@ if (isEquipment) {
     tooltipTitle.className = 'tooltip-title';
     tooltipTitle.textContent = categoryName || 'Product';
 
-    const tooltipModel = document.createElement('div');
-    tooltipModel.className = 'tooltip-model';
+// In createMark() function, update tooltip creation:
+const tooltipModel = document.createElement('div');
+tooltipModel.className = 'tooltip-model';
+
+// Show configuration in tooltip
+if (isSwitchFamily) {
+    if (currentProduct === 'ACCESS POINT') {
+        tooltipModel.textContent = accessPointConfig || modelName || '—';
+    } else {
+        if (switchConfig) {
+            tooltipModel.textContent = `${modelName} (${switchConfig})`;
+        } else {
+            tooltipModel.textContent = modelName || '—';
+        }
+    }
+} else {
     tooltipModel.textContent = modelName || '—';
+}
 
     tooltipContent.appendChild(tooltipTitle);
     tooltipContent.appendChild(tooltipModel);
@@ -4831,75 +5073,75 @@ if (isEquipment) {
     imgInner.appendChild(el);
 
     const markData = {
-    id,
-    x,
-    y,
-    size,
-    shape,
-    el,
-    productData: productDataForMark,
-    seriesCode,
-    seriesLabel: label,
-    tooltip,
-    categoryName,
-    modelName,
-    desc: descText,
-    features: featuresList,
-    imageSrc: isEquipment ? equipmentIcon : productDataForMark?.img || data.img || previewImage.src,
-    relayItems,
-    brand: brand,
-    sizeFt: sizeFt,
-    isDBBox: data.isDBBox || false,
-    isNetworkDBBox: data.isNetworkDBBox || false,
-    isEmitter: data.isEmitter || false,
-    isEquipment: isEquipment,
-    isTextLabel: false,
-    isSwitchFamily: isSwitchFamily,
-    selectedRelays: selectedRelays,
-    selectedModules: selectedModules,
-    routerBrand: routerBrand,
-    routerModel: routerModel,
-    routerQty: routerQty,
-    switchConfig: isSwitchFamily && currentProduct !== 'ACCESS POINT' ? (productData[currentProduct].defaultSwitchConfig || '') : '',
-    accessPointConfig: currentProduct === 'ACCESS POINT' ? (productData[currentProduct].defaultAccessPointConfig || '') : '', // ADD THIS
-    equipmentIcon: equipmentIcon
-};
+        id,
+        x,
+        y,
+        size,
+        shape,
+        el,
+        productData: productDataForMark,
+        seriesCode,
+        seriesLabel: label,
+        tooltip,
+        categoryName,
+        modelName,
+        desc: descText,
+        features: featuresList,
+        imageSrc: isEquipment ? equipmentIcon : productDataForMark?.img || data.img || previewImage.src,
+        relayItems,
+        brand: brand,
+        sizeFt: sizeFt,
+        isDBBox: data.isDBBox || false,
+        isNetworkDBBox: data.isNetworkDBBox || false,
+        isEmitter: data.isEmitter || false,
+        isEquipment: isEquipment,
+        isTextLabel: false,
+        isSwitchFamily: isSwitchFamily,
+        selectedRelays: selectedRelays,
+        selectedModules: selectedModules,
+        routerBrand: routerBrand,
+        routerModel: routerModel,
+        routerQty: routerQty,
+        switchConfig: isSwitchFamily && currentProduct !== 'ACCESS POINT' ? (productData[currentProduct].defaultSwitchConfig || '') : '',
+        accessPointConfig: currentProduct === 'ACCESS POINT' ? (productData[currentProduct].defaultAccessPointConfig || '') : '', // ADD THIS
+        equipmentIcon: equipmentIcon
+    };
 
     marks.push(markData);
 
-// Event listener setup with configuration refresh
-// In the click event handler around line 3957, update it to:
-el.addEventListener('click', function (e) {
-    e.stopPropagation();
+    // Event listener setup with configuration refresh
+    // In the click event handler around line 3957, update it to:
+    el.addEventListener('click', function (e) {
+        e.stopPropagation();
 
-    if (isWireMode && currentWireType && !e.defaultPrevented) {
-        // Wire selection logic - Add equipment handling
-        if (!wireStartMark) {
-            wireStartMark = markData;
-            const labelText = isEquipment ? `${markData.modelName} (${markData.seriesLabel})` : markData.seriesLabel;
-            showNotification(`First mark selected: "${labelText}". Now select second mark.`, 'info');
-        } else if (!wireEndMark && wireStartMark !== markData) {
-            wireEndMark = markData;
-            const wireTypeInfo = getWireTypeInfo(currentWireType);
-            const labelText = isEquipment ? `${markData.modelName} (${markData.seriesLabel})` : markData.seriesLabel;
-            showNotification(`Second mark selected: "${labelText}". ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
-        } else if (wireStartMark === markData) {
-            wireStartMark = null;
-            wireEndMark = null;
-            wirePoints = [];
-            showNotification('First mark selection cleared.', 'info');
-        } else if (wireEndMark === markData) {
-            wireEndMark = null;
-            wirePoints = [];
-            showNotification('Second mark selection cleared.', 'info');
+        if (isWireMode && currentWireType && !e.defaultPrevented) {
+            // Wire selection logic - Add equipment handling
+            if (!wireStartMark) {
+                wireStartMark = markData;
+                const labelText = isEquipment ? `${markData.modelName} (${markData.seriesLabel})` : markData.seriesLabel;
+                showNotification(`First mark selected: "${labelText}". Now select second mark.`, 'info');
+            } else if (!wireEndMark && wireStartMark !== markData) {
+                wireEndMark = markData;
+                const wireTypeInfo = getWireTypeInfo(currentWireType);
+                const labelText = isEquipment ? `${markData.modelName} (${markData.seriesLabel})` : markData.seriesLabel;
+                showNotification(`Second mark selected: "${labelText}". ${currentWireMode === 'curve' ? 'Adjust curve' : 'Add points'} and click "Create ${wireTypeInfo.title}".`, 'info');
+            } else if (wireStartMark === markData) {
+                wireStartMark = null;
+                wireEndMark = null;
+                wirePoints = [];
+                showNotification('First mark selection cleared.', 'info');
+            } else if (wireEndMark === markData) {
+                wireEndMark = null;
+                wirePoints = [];
+                showNotification('Second mark selection cleared.', 'info');
+            }
+            updateWireSelectionLabels();
+            updatePointsList();
+            e.preventDefault();
+        } else if (!isWireMode && !e.defaultPrevented) {
+            // Existing selection logic...
         }
-        updateWireSelectionLabels();
-        updatePointsList();
-        e.preventDefault();
-    } else if (!isWireMode && !e.defaultPrevented) {
-        // Existing selection logic...
-    }
-});
+    });
 
     let dragging = false;
     let startX = 0, startY = 0;
@@ -5691,38 +5933,54 @@ function renderMarksList() {
             label.style.fontStyle = 'normal';
             labelContainer.appendChild(label);
         } else {
-    // For switches and access points, show configuration in the list
-    if (m.isSwitchFamily) {
-        const mainLabel = document.createElement('div');
-        mainLabel.style.fontSize = '11px';
-        mainLabel.style.fontWeight = 'bold';
-        mainLabel.textContent = m.seriesLabel;
-        labelContainer.appendChild(mainLabel);
+            // For switches and access points, show configuration in the list
+// In renderMarksList() function, find the mark item creation and update:
+if (m.isSwitchFamily) {
+    const mainLabel = document.createElement('div');
+    mainLabel.style.fontSize = '11px';
+    mainLabel.style.fontWeight = 'bold';
+    mainLabel.textContent = m.seriesLabel;
+    labelContainer.appendChild(mainLabel);
 
-        const configLabel = document.createElement('div');
-        configLabel.style.fontSize = '10px';
-        configLabel.style.color = '#666';
-        configLabel.style.marginTop = '2px';
-        
-        // SHOW APPROPRIATE CONFIG
-        if (m.categoryName === 'ACCESS POINT' && m.accessPointConfig) {
+    const configLabel = document.createElement('div');
+    configLabel.style.fontSize = '10px';
+    configLabel.style.color = '#666';
+    configLabel.style.marginTop = '2px';
+    
+    // SHOW APPROPRIATE CONFIG
+    if (m.categoryName === 'ACCESS POINT') {
+        if (m.accessPointConfig) {
             configLabel.textContent = m.accessPointConfig;
             configLabel.style.color = '#2196F3';
-        } else if (m.switchConfig) {
-            configLabel.textContent = m.switchConfig;
-            configLabel.style.color = '#FF9800';
+        } else if (productData[m.categoryName]?.defaultAccessPointConfig) {
+            configLabel.textContent = `${productData[m.categoryName].defaultAccessPointConfig} (default)`;
+            configLabel.style.color = '#2196F3';
+            configLabel.style.fontStyle = 'italic';
         } else {
-            configLabel.textContent = m.modelName || 'No configuration';
+            configLabel.textContent = 'No configuration';
             configLabel.style.color = '#999';
         }
-        
-        labelContainer.appendChild(configLabel);
     } else {
-        const label = document.createElement('span');
-        label.textContent = m.seriesLabel;
-        labelContainer.appendChild(label);
+        if (m.switchConfig) {
+            configLabel.textContent = m.switchConfig;
+            configLabel.style.color = '#FF9800';
+        } else if (productData[m.categoryName]?.defaultSwitchConfig) {
+            configLabel.textContent = `${productData[m.categoryName].defaultSwitchConfig} (default)`;
+            configLabel.style.color = '#FF9800';
+            configLabel.style.fontStyle = 'italic';
+        } else {
+            configLabel.textContent = 'No configuration';
+            configLabel.style.color = '#999';
+        }
     }
-}
+    
+    labelContainer.appendChild(configLabel);
+} else {
+                const label = document.createElement('span');
+                label.textContent = m.seriesLabel;
+                labelContainer.appendChild(label);
+            }
+        }
 
         item.appendChild(labelContainer);
 
@@ -5994,7 +6252,7 @@ function enhanceProductDataWithBrands() {
         "TREMBLAY SOUNDS": "Tremblay",
         "Z-WAVE RELAY": "LUMI",
         "CURTAIN MOTORS": "LUMI",
-        "KNX SENSORS":"LUMI",
+        "KNX SENSORS": "LUMI",
         "SENSORS": "Big Sense",
         "IR BLASTER - ZMOTE": "Zmote",
         "ACCESS POINT": "Ubiquiti", // ADD THIS LINE
@@ -6133,6 +6391,8 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
         const hasEquipment = tables.equipment.length > 0;
 
         // In the Automation DB Box section, update to show like:
+        // In the PDF generation section for DB Boxes:
+
         if (hasDBBoxes) {
             doc.setFontSize(14);
             doc.setTextColor(26, 115, 232);
@@ -6179,13 +6439,111 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
 
             yPosition = doc.lastAutoTable.finalY + 15;
 
-            // DB Box Relays section
-            const dbBoxWithRelays = tables.dbBoxes.filter(item => item.selectedRelays && item.selectedRelays.length > 0);
+            // DB Box Modules section
+            const dbBoxesWithModules = tables.dbBoxes.filter(item =>
+                item.selectedModules && item.selectedModules.length > 0
+            );
+
+            if (dbBoxesWithModules.length > 0) {
+                yPosition += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(33, 150, 243);
+                doc.text('Automation DB Box Modules:', 20, yPosition);
+                yPosition += 8;
+
+                let itemY = yPosition;
+                dbBoxesWithModules.forEach(dbBox => {
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
+
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`${dbBox.label}:`, 25, itemY);
+                    itemY += 5;
+
+                    dbBox.selectedModules.forEach(item => {
+                        if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                            doc.addPage();
+                            itemY = 30;
+                        }
+                        doc.setFontSize(9);
+                        doc.setTextColor(60, 60, 60);
+                        doc.text(`• ${item.name} x${item.quantity}`, 35, itemY);
+                        itemY += 4;
+                    });
+                    itemY += 3;
+                });
+                yPosition = itemY + 10;
+            }
+
+            // DB Box Remarks section - WITHOUT BULLETS
+            const dbBoxesWithRemarks = tables.dbBoxes ?
+                tables.dbBoxes.filter(item => item.dbBoxRemark && item.dbBoxRemark.trim() !== '') : [];
+
+            if (dbBoxesWithRemarks.length > 0) {
+                yPosition += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(33, 150, 243);
+                doc.text('DB Box Remarks:', 20, yPosition);
+                yPosition += 8;
+
+                let itemY = yPosition;
+                dbBoxesWithRemarks.forEach(dbBox => {
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
+
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`${dbBox.label}:`, 25, itemY);
+                    itemY += 5;
+
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
+
+                    doc.setFontSize(9);
+                    doc.setTextColor(60, 60, 60);
+
+                    // Split long remarks into multiple lines - WITHOUT BULLETS
+                    const maxLineLength = 80;
+                    let remainingText = dbBox.dbBoxRemark || '';
+                    let lineCount = 0;
+
+                    while (remainingText.length > 0) {
+                        const line = remainingText.substring(0, maxLineLength);
+                        remainingText = remainingText.substring(maxLineLength);
+
+                        // First line starts from position 35, subsequent lines continue
+                        const indent = lineCount === 0 ? 35 : 25;
+                        doc.text(line, indent, itemY);
+                        itemY += 4;
+                        lineCount++;
+
+                        if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                            doc.addPage();
+                            itemY = 30;
+                        }
+                    }
+                    itemY += 3;
+                });
+                yPosition = itemY + 10;
+            }
+
+            // DB Box Relays section (existing)
+            const dbBoxWithRelays = tables.dbBoxes.filter(item =>
+                item.selectedRelays && item.selectedRelays.length > 0
+            );
+
             if (dbBoxWithRelays.length > 0) {
                 yPosition += 5;
                 doc.setFontSize(12);
                 doc.setTextColor(33, 150, 243);
-                doc.text('DB Box Modules:', 20, yPosition);
+                doc.text('DB Box Relays:', 20, yPosition);
                 yPosition += 8;
 
                 let itemY = yPosition;
@@ -6334,8 +6692,64 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 });
                 yPosition = itemY + 10;
             }
+
+            // Network DB Box Remarks section - WITHOUT BULLETS
+            const networkDBBoxesWithRemarks = tables.networkDBBoxes ?
+                tables.networkDBBoxes.filter(item => item.networkDBBoxRemark && item.networkDBBoxRemark.trim() !== '') : [];
+
+            if (networkDBBoxesWithRemarks.length > 0) {
+                yPosition += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(156, 39, 176);
+                doc.text('Network DB Box Remarks:', 20, yPosition);
+                yPosition += 8;
+
+                let itemY = yPosition;
+                networkDBBoxesWithRemarks.forEach(dbBox => {
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
+
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`${dbBox.label}:`, 25, itemY);
+                    itemY += 5;
+
+                    if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                        doc.addPage();
+                        itemY = 30;
+                    }
+
+                    doc.setFontSize(9);
+                    doc.setTextColor(60, 60, 60);
+
+                    // Split long remarks into multiple lines - WITHOUT BULLETS
+                    const maxLineLength = 80;
+                    let remainingText = dbBox.networkDBBoxRemark || '';
+                    let lineCount = 0;
+
+                    while (remainingText.length > 0) {
+                        const line = remainingText.substring(0, maxLineLength);
+                        remainingText = remainingText.substring(maxLineLength);
+
+                        // First line starts from position 35, subsequent lines continue
+                        const indent = lineCount === 0 ? 35 : 25;
+                        doc.text(line, indent, itemY);
+                        itemY += 4;
+                        lineCount++;
+
+                        if (itemY > doc.internal.pageSize.getHeight() - 30) {
+                            doc.addPage();
+                            itemY = 30;
+                        }
+                    }
+                    itemY += 3;
+                });
+                yPosition = itemY + 10;
+            }
         }
-        
+
         if (hasMainProducts) {
             if (hasDBBoxes || hasNetworkDBBoxes) {
                 doc.setFontSize(14);
@@ -6344,17 +6758,21 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                 yPosition += 8;
             }
 
-            const mainTableData = tables.mainProducts.map(item => [
-                item.label,
-                item.category,
-                item.brand,
-                item.model,
-                item.quantity.toString()
-            ]);
+            // Create table data with configuration
+            const mainTableData = tables.mainProducts.map(item => {
+                // For switches and access points, the model field already contains configuration
+                return [
+                    item.label,
+                    item.category,
+                    item.brand,
+                    item.model, // This already has "Model (Configuration)" or just configuration for AP
+                    item.quantity.toString()
+                ];
+            });
 
             doc.autoTable({
                 startY: yPosition,
-                head: [['Label', 'Category', 'Brand', 'Model', 'Qty']],
+                head: [['Label', 'Category', 'Brand', 'Model/Configuration', 'Qty']],
                 body: mainTableData,
                 theme: 'grid',
                 headStyles: {
@@ -6374,7 +6792,7 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
                     0: { cellWidth: 15, halign: 'center' },
                     1: { cellWidth: 40, halign: 'center' },
                     2: { cellWidth: 30, halign: 'center' },
-                    3: { cellWidth: 80, halign: 'left' },
+                    3: { cellWidth: 80, halign: 'left' }, // Wider column for model/configuration
                     4: { cellWidth: 15, halign: 'center' }
                 },
                 margin: { left: 15 }
@@ -6474,57 +6892,57 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async functi
             wire.title,
             wire.color
         ]);
-const cableTableBody = cableData.map(row => [...row]);
+        const cableTableBody = cableData.map(row => [...row]);
 
 
 
-doc.autoTable({
-    startY: yPosition,
-    head: [['Cable Type', 'Color Code']],
-    body: cableTableBody,
-    theme: 'grid',
+        doc.autoTable({
+            startY: yPosition,
+            head: [['Cable Type', 'Color Code']],
+            body: cableTableBody,
+            theme: 'grid',
 
-    headStyles: {
-        fillColor: [66, 66, 66],
-        textColor: 255,
-        fontStyle: 'bold',
-        halign: 'center'
-    },
+            headStyles: {
+                fillColor: [66, 66, 66],
+                textColor: 255,
+                fontStyle: 'bold',
+                halign: 'center'
+            },
 
-    styles: {
-        fontSize: 9,
-        cellPadding: 4,
-        halign: 'center'
-    },
+            styles: {
+                fontSize: 9,
+                cellPadding: 4,
+                halign: 'center'
+            },
 
-    columnStyles: {
-        0: { cellWidth: 90, halign: 'left' },
-        1: { cellWidth: 60 }
-    },
+            columnStyles: {
+                0: { cellWidth: 90, halign: 'left' },
+                1: { cellWidth: 60 }
+            },
 
-    didParseCell: function (data) {
-        // Apply only to body rows & Color Code column
-        if (data.section === 'body' && data.column.index === 1) {
+            didParseCell: function (data) {
+                // Apply only to body rows & Color Code column
+                if (data.section === 'body' && data.column.index === 1) {
 
-            const hex = data.cell.raw.replace('#', '');
+                    const hex = data.cell.raw.replace('#', '');
 
-            const r = parseInt(hex.substring(0, 2), 16);
-            const g = parseInt(hex.substring(2, 4), 16);
-            const b = parseInt(hex.substring(4, 6), 16);
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
 
-            // Set background color
-            data.cell.styles.fillColor = [r, g, b];
+                    // Set background color
+                    data.cell.styles.fillColor = [r, g, b];
 
-            // Auto contrast for text
-            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            data.cell.styles.textColor = brightness > 140
-                ? [0, 0, 0]
-                : [255, 255, 255];
-        }
-    },
+                    // Auto contrast for text
+                    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                    data.cell.styles.textColor = brightness > 140
+                        ? [0, 0, 0]
+                        : [255, 255, 255];
+                }
+            },
 
-    margin: { left: 20, right: 20 }
-});
+            margin: { left: 20, right: 20 }
+        });
 
 
         yPosition = doc.lastAutoTable.finalY + 15;
@@ -6580,28 +6998,28 @@ async function captureFloorPlanScreenshot() {
         const imageContainer = document.querySelector('.img-container');
         const previewImage = document.getElementById('previewImage');
         const imgInner = document.getElementById('imgInner');
-        
+
         // Store current state
         const originalScale = imageScale;
         const originalTransform = imgInner.style.transform;
         const originalOverflow = imageContainer.style.overflow;
-        
+
         // Hide notifications temporarily
         const notifications = document.querySelectorAll('.pdf-notification');
         notifications.forEach(n => n.style.visibility = 'hidden');
-        
+
         // Reset to 100% scale for screenshot
         imageScale = 1;
         imgInner.style.transform = 'scale(1)';
         imageContainer.style.overflow = 'hidden';
-        
+
         // Force a reflow to apply changes
         await new Promise(resolve => setTimeout(resolve, 100));
-        
+
         // Update all marks and wires to the new scale
         updateAllMarks();
         updateAllWires();
-        
+
         // Take screenshot of the entire image container (including marks)
         const canvas = await html2canvas(imageContainer, {
             backgroundColor: '#ffffff',
@@ -6617,7 +7035,7 @@ async function captureFloorPlanScreenshot() {
                     if (img.complete) return;
                     img.crossOrigin = 'anonymous';
                 });
-                
+
                 // Force marks to be visible at scale 1
                 const clonedImgInner = clonedDoc.getElementById('imgInner');
                 if (clonedImgInner) {
@@ -6625,24 +7043,24 @@ async function captureFloorPlanScreenshot() {
                 }
             }
         });
-        
+
         // Restore original state
         imageScale = originalScale;
         imgInner.style.transform = originalTransform;
         imageContainer.style.overflow = originalOverflow;
-        
+
         // Restore marks and wires to original positions
         updateAllMarks();
         updateAllWires();
-        
+
         // Show notifications again
         notifications.forEach(n => n.style.visibility = 'visible');
-        
+
         return canvas.toDataURL('image/png');
-        
+
     } catch (error) {
         console.error('Screenshot capture error:', error);
-        
+
         // Fallback: create a simple placeholder with product list
         return createFallbackScreenshot();
     }
@@ -6653,68 +7071,68 @@ function createFallbackScreenshot() {
     canvas.width = 800;
     canvas.height = 600;
     const ctx = canvas.getContext('2d');
-    
+
     // Background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     // Title
     ctx.fillStyle = '#333333';
     ctx.font = 'bold 20px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Automation Configuration', canvas.width / 2, 50);
-    
+
     // Subtitle
     ctx.font = '14px Arial';
     ctx.fillStyle = '#666666';
     ctx.fillText('Floor plan with product placement', canvas.width / 2, 80);
-    
+
     // Product summary
     const tables = generateProductTable();
     let y = 120;
-    
+
     // Draw product count
-    const totalProducts = tables.mainProducts.length + 
-                         tables.dbBoxes.length + 
-                         tables.networkDBBoxes.length +
-                         tables.equipment.length;
-    
+    const totalProducts = tables.mainProducts.length +
+        tables.dbBoxes.length +
+        tables.networkDBBoxes.length +
+        tables.equipment.length;
+
     ctx.font = 'bold 16px Arial';
     ctx.fillStyle = '#2196F3';
     ctx.textAlign = 'left';
     ctx.fillText(`Total Products: ${totalProducts}`, 50, y);
     y += 30;
-    
+
     // Draw product categories
     ctx.font = '14px Arial';
     ctx.fillStyle = '#555555';
-    
+
     if (tables.dbBoxes.length > 0) {
         ctx.fillText(`• Automation DB Boxes: ${tables.dbBoxes.length}`, 70, y);
         y += 25;
     }
-    
+
     if (tables.networkDBBoxes.length > 0) {
         ctx.fillText(`• Network DB Boxes: ${tables.networkDBBoxes.length}`, 70, y);
         y += 25;
     }
-    
+
     if (tables.mainProducts.length > 0) {
         ctx.fillText(`• Automation Products: ${tables.mainProducts.length}`, 70, y);
         y += 25;
     }
-    
+
     if (tables.equipment.length > 0) {
         ctx.fillText(`• Equipment: ${tables.equipment.length}`, 70, y);
         y += 25;
     }
-    
+
     // Footer note
     ctx.font = '12px Arial';
     ctx.fillStyle = '#999999';
     ctx.textAlign = 'center';
     ctx.fillText('Screenshot generation failed. See detailed product list in PDF.', canvas.width / 2, canvas.height - 50);
-    
+
     return canvas.toDataURL('image/png');
 }
 
@@ -6722,15 +7140,15 @@ function createFallbackScreenshot() {
 function updateMarkPositionForScreenshot(mark, scale = 1) {
     const transform = getImageTransform();
     if (!transform) return;
-    
+
     const x = mark.x * transform.scaleX * scale + transform.imgOffsetX;
     const y = mark.y * transform.scaleY * scale + transform.imgOffsetY;
-    
+
     if (mark.isTextLabel) {
         // For text labels
         const textWidth = mark.el.offsetWidth || 50;
         const textHeight = mark.el.offsetHeight || 20;
-        
+
         mark.el.style.left = (x - textWidth / 2) + 'px';
         mark.el.style.top = (y - textHeight / 2) + 'px';
         mark.el.style.width = 'auto';
@@ -6742,7 +7160,7 @@ function updateMarkPositionForScreenshot(mark, scale = 1) {
         mark.el.style.width = size + 'px';
         mark.el.style.height = size + 'px';
     }
-    
+
     if (mark.tooltip) {
         orientTooltip(mark);
     }
@@ -6752,22 +7170,22 @@ function updateMarkPositionForScreenshot(mark, scale = 1) {
 function getCurrentImageTransform() {
     const previewImage = document.getElementById('previewImage');
     const imgContainer = document.getElementById('imgContainer');
-    
+
     if (!previewImage || !imgContainer) return null;
-    
+
     const imgRect = previewImage.getBoundingClientRect();
     const containerRect = imgContainer.getBoundingClientRect();
-    
+
     // Calculate natural dimensions
     const naturalWidth = previewImage.naturalWidth || imgRect.width;
     const naturalHeight = previewImage.naturalHeight || imgRect.height;
-    
+
     // Calculate displayed dimensions based on object-fit: contain
     const imgAspect = naturalWidth / naturalHeight;
     const containerAspect = containerRect.width / containerRect.height;
-    
+
     let displayWidth, displayHeight, imgOffsetX, imgOffsetY;
-    
+
     if (imgAspect > containerAspect) {
         // Image is wider than container
         displayWidth = containerRect.width;
@@ -6781,7 +7199,7 @@ function getCurrentImageTransform() {
         imgOffsetX = (containerRect.width - displayWidth) / 2;
         imgOffsetY = 0;
     }
-    
+
     return {
         imgOffsetX,
         imgOffsetY,
@@ -6825,6 +7243,62 @@ function generateProductTable() {
         let model = mark.modelName || 'Unknown';
         let brand = 'LUMI';
 
+        // KEEP DB BOX CODE AS IS - DON'T CHANGE
+        if (mark.isDBBox) {
+            dbBoxesTable.push({
+                label: mark.seriesLabel,
+                category: category,
+                brand: mark.brand || brand,
+                size: mark.sizeFt || 'Not specified',
+                model: mark.modelName || model,
+                quantity: 1,
+                dbBoxRemark: mark.dbBoxRemark || '',
+                selectedRelays: mark.selectedRelays || [],
+                selectedModules: mark.selectedModules || []
+            });
+            return; // Return early - don't process DB boxes further
+        }
+
+        // KEEP NETWORK DB BOX CODE AS IS - DON'T CHANGE
+        if (mark.isNetworkDBBox) {
+            networkDBBoxesTable.push({
+                label: mark.seriesLabel,
+                category: category,
+                brand: mark.brand || brand,
+                size: mark.sizeFt || 'Not specified',
+                model: mark.modelName || model,
+                quantity: 1,
+                routerBrand: mark.routerBrand || '',
+                routerModel: mark.routerModel || '',
+                routerQty: mark.routerQty || 1,
+                networkDBBoxRemark: mark.networkDBBoxRemark || '',
+                selectedModules: mark.selectedModules || []
+            });
+            return; // Return early - don't process Network DB boxes further
+        }
+
+        // NOW HANDLE SWITCHES AND ACCESS POINTS
+        if (mark.isSwitchFamily) {
+            if (mark.categoryName === 'ACCESS POINT') {
+                // For access points, use the configuration as the model
+                const apConfig = mark.accessPointConfig || productData[mark.categoryName]?.defaultAccessPointConfig || '';
+                model = apConfig || 'Access Point';
+                if (model === 'Access Point') {
+                    model = 'No configuration';
+                }
+            } else {
+                // For regular switches, combine model with configuration
+                const baseModel = mark.modelName || mark.categoryName || 'Switch';
+                const switchConfig = mark.switchConfig || productData[mark.categoryName]?.defaultSwitchConfig || '';
+                
+                if (switchConfig) {
+                    model = `${baseModel} (${switchConfig})`;
+                } else {
+                    model = `${baseModel} (No configuration)`;
+                }
+            }
+        }
+
         if (mark.categoryName && productData[mark.categoryName]) {
             brand = productData[mark.categoryName].brand || brand;
         }
@@ -6844,42 +7318,17 @@ function generateProductTable() {
             return;
         }
 
-        if (mark.isDBBox) {
-            dbBoxesTable.push({
-                label: mark.seriesLabel,
+        // Handle regular products (including switches/access points)
+        if (!productMap.has(key)) {
+            productMap.set(key, {
+                label: key,
                 category: category,
-                brand: mark.brand || brand,
-                size: mark.sizeFt || 'Not specified',
-                model: mark.modelName || model,
-                quantity: 1,
-                selectedRelays: mark.selectedRelays || []
-            });
-        } else if (mark.isNetworkDBBox) {
-            networkDBBoxesTable.push({
-                label: mark.seriesLabel,
-                category: category,
-                brand: mark.brand || brand,
-                size: mark.sizeFt || 'Not specified',
-                model: mark.modelName || model,
-                quantity: 1,
-                routerBrand: mark.routerBrand || '',
-                routerModel: mark.routerModel || '',
-                routerQty: mark.routerQty || 1,
-                selectedModules: mark.selectedModules || []
+                brand: brand,
+                model: model, // This now includes configuration for switches/APs
+                quantity: 1
             });
         } else {
-            // Handle regular products
-            if (!productMap.has(key)) {
-                productMap.set(key, {
-                    label: key,
-                    category: category,
-                    brand: brand,
-                    model: model,
-                    quantity: 1
-                });
-            } else {
-                productMap.get(key).quantity += 1;
-            }
+            productMap.get(key).quantity += 1;
         }
     });
 
@@ -6897,12 +7346,11 @@ function generateProductTable() {
 
     return {
         mainProducts: Array.from(productMap.values()),
-        dbBoxes: dbBoxesTable,
-        networkDBBoxes: networkDBBoxesTable,
+        dbBoxes: dbBoxesTable,  // This stays exactly as you have it
+        networkDBBoxes: networkDBBoxesTable,  // This stays exactly as you have it
         equipment: equipmentTable
     };
 }
-
 /* ------------------------- PROJECT SAVE/LOAD FUNCTIONS ------------------------- */
 /* ------------------------- PROJECT SAVE/LOAD FUNCTIONS ------------------------- */
 document.addEventListener('DOMContentLoaded', function () {
@@ -6945,7 +7393,10 @@ function saveProject() {
                 seriesCode: mark.seriesCode,
                 seriesLabel: mark.seriesLabel,
                 categoryName: mark.categoryName,
-                modelName: mark.modelName,
+                // FIX: Save clean model without remark for DB boxes
+                modelName: (mark.isDBBox || mark.isNetworkDBBox) ?
+                    `${mark.brand || ''} - ${mark.sizeFt || ''} ft` :
+                    mark.modelName,
                 groupId: mark.groupId,
                 componentType: mark.componentType,
                 componentIndex: mark.componentIndex,
@@ -6967,14 +7418,17 @@ function saveProject() {
                 brand: mark.brand,
                 sizeFt: mark.sizeFt,
                 selectedRelays: mark.selectedRelays,
-                routerBrand: mark.routerBrand,          // ADD THIS
-                routerModel: mark.routerModel,          // ADD THIS
-                routerQty: mark.routerQty || 1,         // ADD THIS
-                selectedModules: mark.selectedModules || [], // ADD THIS
-                switchConfig: mark.switchConfig || '',  // Individual switch config
-                accessPointConfig: mark.accessPointConfig || '', // ADD THIS - Individual AP config
+                routerBrand: mark.routerBrand,
+                routerModel: mark.routerModel,
+                routerQty: mark.routerQty || 1,
+                selectedModules: mark.selectedModules || [],
+                switchConfig: mark.switchConfig || '',
+                accessPointConfig: mark.accessPointConfig || '',
                 equipmentIcon: mark.equipmentIcon || '',
-                originalId: mark.id
+                originalId: mark.id,
+                // MAKE SURE THESE ARE INCLUDED:
+                dbBoxRemark: mark.dbBoxRemark || '',
+                networkDBBoxRemark: mark.networkDBBoxRemark || ''
             })),
             multiComponentGroups: multiComponentGroups,
             wires: wires.map(wire => ({
@@ -7139,48 +7593,51 @@ function loadProjectData(projectData) {
         const newId = 'mark-' + (++markCounter);
 
         // Create mark data object
+        // In the mark creation in loadProjectData():
         const mark = {
-        id: newId,
-        x: savedMark.x,
-        y: savedMark.y,
-        size: savedMark.size,
-        shape: savedMark.shape || 'circle',
-        seriesCode: savedMark.seriesCode,
-        seriesLabel: savedMark.seriesLabel,
-        categoryName: savedMark.categoryName,
-        modelName: savedMark.modelName,
-        desc: savedMark.desc,
-        features: savedMark.features || [],
-        imageSrc: savedMark.imageSrc,
-        relayItems: savedMark.relayItems || [],
-        isDBBox: savedMark.isDBBox || false,
-        isNetworkDBBox: savedMark.isNetworkDBBox || false,
-        isTextLabel: savedMark.isTextLabel || false,
-        isEquipment: savedMark.isEquipment || false,
-        isMultiComponent: savedMark.isMultiComponent || false,
-        brand: savedMark.brand || '',
-        sizeFt: savedMark.sizeFt || '',
-        selectedRelays: savedMark.selectedRelays || [],
-        routerBrand: savedMark.routerBrand || '',           // ADD THIS
-        routerModel: savedMark.routerModel || '',           // ADD THIS
-        routerQty: savedMark.routerQty || 1,                // ADD THIS
-        selectedModules: savedMark.selectedModules || [],   // ADD THIS
-        apBrand: savedMark.apBrand || '',
-        apModel: savedMark.apModel || '',
-        apQty: savedMark.apQty || 1,
-        text: savedMark.text || '',
-        fontSize: savedMark.fontSize || 12,
-        isTremblay: savedMark.categoryName === 'TREMBLAY SOUNDS',
-        groupId: savedMark.groupId || null,
-        componentType: savedMark.componentType || '',
-        isSwitchFamily: savedMark.isSwitchFamily || false,
-        switchConfig: savedMark.switchConfig || '',         // Individual switch config
-        accessPointConfig: savedMark.accessPointConfig || '', // ADD THIS - Individual AP config
-        equipmentIcon: savedMark.equipmentIcon || '',
-        componentIndex: savedMark.componentIndex || 0,
-        componentUniqueKey: savedMark.componentUniqueKey || savedMark.seriesLabel
-    };
-
+            id: newId,
+            x: savedMark.x,
+            y: savedMark.y,
+            size: savedMark.size,
+            shape: savedMark.shape || 'circle',
+            seriesCode: savedMark.seriesCode,
+            seriesLabel: savedMark.seriesLabel,
+            categoryName: savedMark.categoryName,
+            modelName: savedMark.modelName,
+            desc: savedMark.desc,
+            features: savedMark.features || [],
+            imageSrc: savedMark.imageSrc,
+            relayItems: savedMark.relayItems || [],
+            isDBBox: savedMark.isDBBox || false,
+            isNetworkDBBox: savedMark.isNetworkDBBox || false,
+            isTextLabel: savedMark.isTextLabel || false,
+            isEquipment: savedMark.isEquipment || false,
+            isMultiComponent: savedMark.isMultiComponent || false,
+            brand: savedMark.brand || '',
+            sizeFt: savedMark.sizeFt || '',
+            selectedRelays: savedMark.selectedRelays || [],
+            routerBrand: savedMark.routerBrand || '',
+            routerModel: savedMark.routerModel || '',
+            routerQty: savedMark.routerQty || 1,
+            selectedModules: savedMark.selectedModules || [],
+            apBrand: savedMark.apBrand || '',
+            apModel: savedMark.apModel || '',
+            apQty: savedMark.apQty || 1,
+            text: savedMark.text || '',
+            fontSize: savedMark.fontSize || 12,
+            isTremblay: savedMark.categoryName === 'TREMBLAY SOUNDS',
+            groupId: savedMark.groupId || null,
+            componentType: savedMark.componentType || '',
+            isSwitchFamily: savedMark.isSwitchFamily || false,
+            switchConfig: savedMark.switchConfig || '',
+            accessPointConfig: savedMark.accessPointConfig || '',
+            equipmentIcon: savedMark.equipmentIcon || '',
+            componentIndex: savedMark.componentIndex || 0,
+            componentUniqueKey: savedMark.componentUniqueKey || savedMark.seriesLabel,
+            // ADD THESE TO LOAD REMARKS:
+            dbBoxRemark: savedMark.dbBoxRemark || '',
+            networkDBBoxRemark: savedMark.networkDBBoxRemark || ''
+        };
         // CRITICAL: Ensure equipment is NOT treated as text label
         if (mark.isEquipment) {
             mark.isTextLabel = false;
@@ -7487,31 +7944,31 @@ function loadProjectData(projectData) {
     }
 
     // Restore product selection
-// In the loadProjectData function, update the restore product section:
-if (projectData.currentProduct) {
-    setTimeout(() => {
-        selectProduct(projectData.currentProduct, projectData.currentSubProduct);
-        
-        // Refresh the mark selection if needed
-        if (selectedMarkId) {
-            const selectedMark = marks.find(m => m.id === selectedMarkId);
-            if (selectedMark) {
-                // Recreate configuration controls for the selected mark
-                if (selectedMark.isSwitchFamily) {
-                    if (selectedMark.categoryName === 'ACCESS POINT') {
-                        createAccessPointConfigurationControls();
-                    } else {
-                        createSwitchConfigurationControls();
+    // In the loadProjectData function, update the restore product section:
+    if (projectData.currentProduct) {
+        setTimeout(() => {
+            selectProduct(projectData.currentProduct, projectData.currentSubProduct);
+
+            // Refresh the mark selection if needed
+            if (selectedMarkId) {
+                const selectedMark = marks.find(m => m.id === selectedMarkId);
+                if (selectedMark) {
+                    // Recreate configuration controls for the selected mark
+                    if (selectedMark.isSwitchFamily) {
+                        if (selectedMark.categoryName === 'ACCESS POINT') {
+                            createAccessPointConfigurationControls();
+                        } else {
+                            createSwitchConfigurationControls();
+                        }
                     }
                 }
             }
-        }
-        
-        if (projectData.currentProduct === 'Z-WAVE RELAY') {
-            updateRelayOverlay();
-        }
-    }, 200);
-}
+
+            if (projectData.currentProduct === 'Z-WAVE RELAY') {
+                updateRelayOverlay();
+            }
+        }, 200);
+    }
 
     // Update wires list if needed
     if (currentWireType) {
