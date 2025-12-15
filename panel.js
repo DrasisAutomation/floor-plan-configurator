@@ -1611,14 +1611,10 @@ function createNetworkDBBoxControls() {
 
     // Network DB box specific modules
     const networkDBModules = [
-        { id: 'network-switch', label: 'Network Switch' },
-        { id: 'patch-panel', label: 'Patch Panel' },
-        { id: 'fiber-termination', label: 'Fiber Termination Box' },
-        { id: 'ups', label: 'UPS System' },
-        { id: 'cable-manager', label: 'Cable Manager' },
-        { id: 'pdu', label: 'PDU Unit' },
-        { id: 'surge-protector', label: 'Surge Protector' },
-        { id: 'media-converter', label: 'Media Converter' }
+        { id: 'zmote-pro-lan', label: 'ZMOTE PRO LAN' },
+        { id: 'zmote-pro-wifi', label: 'ZMOTE PRO WIFI' },
+        { id: 'zmote-blaster-pro', label: 'ZMOTE BLASTER PRO' },
+        { id: 'zmote-wifi2ir', label: 'ZMOTE WIFI2IR' }
     ];
 
     const networkControlsHTML = `
@@ -4886,14 +4882,14 @@ function createMark({ x, y, size, shape }) {
     let equipmentIcon = '';
     let fallbackImg = '';
 
-if (data.isDBBox) {
-    brand = productData[currentProduct].brand || '';
-    sizeFt = productData[currentProduct].size || '';
-    modelName = brand ? `${brand} - ${sizeFt} ft` : 'DB Box';
-    descText = `${categoryName}: ${brand} ${sizeFt} ft`;
-    featuresList = [];
-    selectedRelays = productData[currentProduct].selectedRelays || [];
-}else if (data.isNetworkDBBox) {
+    if (data.isDBBox) {
+        brand = productData[currentProduct].brand || '';
+        sizeFt = productData[currentProduct].size || '';
+        modelName = brand ? `${brand} - ${sizeFt} ft` : 'DB Box';
+        descText = `${categoryName}: ${brand} ${sizeFt} ft`;
+        featuresList = [];
+        selectedRelays = productData[currentProduct].selectedRelays || [];
+    } else if (data.isNetworkDBBox) {
         // FIX: Check if data exists before accessing properties
         const networkData = productData[currentProduct];
         brand = networkData.brand || '';
@@ -5046,24 +5042,24 @@ if (data.isDBBox) {
     tooltipTitle.className = 'tooltip-title';
     tooltipTitle.textContent = categoryName || 'Product';
 
-// In createMark() function, update tooltip creation:
-const tooltipModel = document.createElement('div');
-tooltipModel.className = 'tooltip-model';
+    // In createMark() function, update tooltip creation:
+    const tooltipModel = document.createElement('div');
+    tooltipModel.className = 'tooltip-model';
 
-// Show configuration in tooltip
-if (isSwitchFamily) {
-    if (currentProduct === 'ACCESS POINT') {
-        tooltipModel.textContent = accessPointConfig || modelName || '—';
-    } else {
-        if (switchConfig) {
-            tooltipModel.textContent = `${modelName} (${switchConfig})`;
+    // Show configuration in tooltip
+    if (isSwitchFamily) {
+        if (currentProduct === 'ACCESS POINT') {
+            tooltipModel.textContent = accessPointConfig || modelName || '—';
         } else {
-            tooltipModel.textContent = modelName || '—';
+            if (switchConfig) {
+                tooltipModel.textContent = `${modelName} (${switchConfig})`;
+            } else {
+                tooltipModel.textContent = modelName || '—';
+            }
         }
+    } else {
+        tooltipModel.textContent = modelName || '—';
     }
-} else {
-    tooltipModel.textContent = modelName || '—';
-}
 
     tooltipContent.appendChild(tooltipTitle);
     tooltipContent.appendChild(tooltipModel);
@@ -5934,48 +5930,48 @@ function renderMarksList() {
             labelContainer.appendChild(label);
         } else {
             // For switches and access points, show configuration in the list
-// In renderMarksList() function, find the mark item creation and update:
-if (m.isSwitchFamily) {
-    const mainLabel = document.createElement('div');
-    mainLabel.style.fontSize = '11px';
-    mainLabel.style.fontWeight = 'bold';
-    mainLabel.textContent = m.seriesLabel;
-    labelContainer.appendChild(mainLabel);
+            // In renderMarksList() function, find the mark item creation and update:
+            if (m.isSwitchFamily) {
+                const mainLabel = document.createElement('div');
+                mainLabel.style.fontSize = '11px';
+                mainLabel.style.fontWeight = 'bold';
+                mainLabel.textContent = m.seriesLabel;
+                labelContainer.appendChild(mainLabel);
 
-    const configLabel = document.createElement('div');
-    configLabel.style.fontSize = '10px';
-    configLabel.style.color = '#666';
-    configLabel.style.marginTop = '2px';
-    
-    // SHOW APPROPRIATE CONFIG
-    if (m.categoryName === 'ACCESS POINT') {
-        if (m.accessPointConfig) {
-            configLabel.textContent = m.accessPointConfig;
-            configLabel.style.color = '#2196F3';
-        } else if (productData[m.categoryName]?.defaultAccessPointConfig) {
-            configLabel.textContent = `${productData[m.categoryName].defaultAccessPointConfig} (default)`;
-            configLabel.style.color = '#2196F3';
-            configLabel.style.fontStyle = 'italic';
-        } else {
-            configLabel.textContent = 'No configuration';
-            configLabel.style.color = '#999';
-        }
-    } else {
-        if (m.switchConfig) {
-            configLabel.textContent = m.switchConfig;
-            configLabel.style.color = '#FF9800';
-        } else if (productData[m.categoryName]?.defaultSwitchConfig) {
-            configLabel.textContent = `${productData[m.categoryName].defaultSwitchConfig} (default)`;
-            configLabel.style.color = '#FF9800';
-            configLabel.style.fontStyle = 'italic';
-        } else {
-            configLabel.textContent = 'No configuration';
-            configLabel.style.color = '#999';
-        }
-    }
-    
-    labelContainer.appendChild(configLabel);
-} else {
+                const configLabel = document.createElement('div');
+                configLabel.style.fontSize = '10px';
+                configLabel.style.color = '#666';
+                configLabel.style.marginTop = '2px';
+
+                // SHOW APPROPRIATE CONFIG
+                if (m.categoryName === 'ACCESS POINT') {
+                    if (m.accessPointConfig) {
+                        configLabel.textContent = m.accessPointConfig;
+                        configLabel.style.color = '#2196F3';
+                    } else if (productData[m.categoryName]?.defaultAccessPointConfig) {
+                        configLabel.textContent = `${productData[m.categoryName].defaultAccessPointConfig} (default)`;
+                        configLabel.style.color = '#2196F3';
+                        configLabel.style.fontStyle = 'italic';
+                    } else {
+                        configLabel.textContent = 'No configuration';
+                        configLabel.style.color = '#999';
+                    }
+                } else {
+                    if (m.switchConfig) {
+                        configLabel.textContent = m.switchConfig;
+                        configLabel.style.color = '#FF9800';
+                    } else if (productData[m.categoryName]?.defaultSwitchConfig) {
+                        configLabel.textContent = `${productData[m.categoryName].defaultSwitchConfig} (default)`;
+                        configLabel.style.color = '#FF9800';
+                        configLabel.style.fontStyle = 'italic';
+                    } else {
+                        configLabel.textContent = 'No configuration';
+                        configLabel.style.color = '#999';
+                    }
+                }
+
+                labelContainer.appendChild(configLabel);
+            } else {
                 const label = document.createElement('span');
                 label.textContent = m.seriesLabel;
                 labelContainer.appendChild(label);
@@ -7290,7 +7286,7 @@ function generateProductTable() {
                 // For regular switches, combine model with configuration
                 const baseModel = mark.modelName || mark.categoryName || 'Switch';
                 const switchConfig = mark.switchConfig || productData[mark.categoryName]?.defaultSwitchConfig || '';
-                
+
                 if (switchConfig) {
                     model = `${baseModel} (${switchConfig})`;
                 } else {
