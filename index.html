@@ -1,245 +1,997 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="DomoticsLogo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DomoticsDesigner | Professional Automation Design Tool</title>
+    <title>DomoticsDesigner - Professional Smart Home Automation Design Tools</title>
+    <meta name="description"
+        content="Design complete smart home automation systems with floor plans, device placement, wiring layouts, and stunning control dashboards.">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
+        :root {
+            --background: hsl(0, 0%, 100%);
+            --foreground: hsl(220, 9%, 20%);
+            --card: hsl(0, 0%, 100%);
+            --primary: hsl(217, 91%, 60%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(220, 14%, 96%);
+            --secondary-foreground: hsl(220, 9%, 20%);
+            --muted: hsl(220, 14%, 96%);
+            --muted-foreground: hsl(220, 9%, 46%);
+            --accent: hsl(142, 71%, 45%);
+            --accent-foreground: hsl(0, 0%, 100%);
+            --border: hsl(220, 13%, 91%);
+            --google-yellow: hsl(45, 100%, 51%);
+            --radius: 0.5rem;
+        }
+
         body {
-            background-color: #f8f9fa;
-            color: #333;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--foreground);
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
-        
+
         .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .nav a {
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: var(--secondary);
+            color: var(--foreground);
+        }
+
+        .header-cta {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--foreground);
+        }
+
+        .btn-ghost:hover {
+            background: var(--secondary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border-radius: 9999px;
+            padding: 0.5rem 1.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary:hover {
+            background: hsl(217, 91%, 55%);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary);
+        }
+
+        .btn-lg {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 5rem 0 6rem;
+            background: linear-gradient(to bottom, var(--secondary), var(--background));
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 400;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .text-gradient {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 500;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+            max-width: 640px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .trust {
+            margin-top: 4rem;
+        }
+
+        .trust p {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-bottom: 1.5rem;
+        }
+
+        .trust-logos {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0.5;
+        }
+
+        .trust-logos span {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        /* Stats */
+        .stats {
+            padding: 4rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 500;
+            color: var(--foreground);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Products */
+        .products {
+            padding: 5rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 640px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--muted-foreground);
+            font-size: 1.125rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .product-card {
+            padding: 2rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-icon.blue {
+            background: hsla(217, 91%, 60%, 0.1);
+            color: var(--primary);
+        }
+
+        .product-icon.green {
+            background: hsla(142, 71%, 45%, 0.1);
+            color: var(--accent);
+        }
+
+        .product-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .product-label.blue {
+            color: var(--primary);
+        }
+
+        .product-label.green {
+            color: var(--accent);
+        }
+
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .product-desc {
+            color: var(--muted-foreground);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-list li svg {
+            color: var(--accent);
+            width: 16px;
+            height: 16px;
+        }
+
+        .button-types {
+            margin-bottom: 1.5rem;
+        }
+
+        .button-types p {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .button-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .button-tag {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-card {
+            padding: 1rem;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .dashboard-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-card-header span {
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .dashboard-card p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.75rem;
+        }
+
+        .dashboard-card ul {
+            list-style: none;
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .dashboard-card ul li {
+            margin-bottom: 0.25rem;
+        }
+
+        .product-tags {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .product-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--secondary);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--secondary-foreground);
+        }
+
+        /* Features */
+        .features {
+            padding: 5rem 0;
+            background: var(--secondary);
+        }
+
+        .features-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .features-divider::before,
+        .features-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .features-divider span {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .features-divider span.blue {
+            background: hsla(217, 91%, 60%, 0.1);
+            color: var(--primary);
+        }
+
+        .features-divider span.green {
+            background: hsla(142, 71%, 45%, 0.1);
+            color: var(--accent);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 5rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card-icon.blue {
+            background: hsla(217, 91%, 60%, 0.1);
+            color: var(--primary);
+        }
+
+        .feature-card-icon.green {
+            background: hsla(142, 71%, 45%, 0.1);
+            color: var(--accent);
+        }
+
+        .feature-card h3 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 5rem 0;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4rem;
+        }
+
+        .steps-column h3 {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        .steps-column h3.blue {
+            color: var(--primary);
+        }
+
+        .steps-column h3.green {
+            color: var(--accent);
+        }
+
+        .steps {
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+        }
+
+        .steps.blue::before {
+            background: linear-gradient(to bottom, var(--primary), hsla(217, 91%, 60%, 0.1));
+        }
+
+        .steps.green::before {
+            background: linear-gradient(to bottom, var(--accent), hsla(142, 71%, 45%, 0.1));
+        }
+
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: white;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-number.blue {
+            background: var(--primary);
+        }
+
+        .step-number.green {
+            background: var(--accent);
+        }
+
+        .step-content {
+            flex: 1;
+            padding: 1.25rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-content h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Why Choose Us */
+        .why-choose {
+            padding: 5rem 0;
+        }
+
+        .reasons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .reason {
+            text-align: center;
+        }
+
+        .reason-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 1rem;
+            background: hsla(217, 91%, 60%, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            transition: background 0.2s;
+        }
+
+        .reason:hover .reason-icon {
+            background: hsla(217, 91%, 60%, 0.2);
+        }
+
+        .reason h3 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .reason p {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        /* CTA */
+        .cta {
+            padding: 5rem 0;
+            background: var(--secondary);
+        }
+
+        .cta-box {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem;
+            background: linear-gradient(135deg, var(--primary), hsl(217, 91%, 50%));
+            border-radius: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .cta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-box h2 {
+            font-size: 2rem;
+            font-weight: 400;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .cta-box>p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-cta-primary {
+            background: white;
+            color: var(--primary);
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .btn-cta-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-cta-outline {
+            background: transparent;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-cta-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cta-note {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand p {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            max-width: 280px;
+            margin: 1rem 0 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .social-links a {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--secondary);
+            border-radius: 50%;
+            color: var(--muted-foreground);
+            transition: all 0.2s;
+        }
+
+        .social-links a:hover {
+            background: var(--border);
+            color: var(--foreground);
+        }
+
+        .footer-column h4 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column a {
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: var(--foreground);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-bottom p {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .reasons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .footer-brand {
+                grid-column: span 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .nav,
+            .header-cta {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .reasons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-box {
+                padding: 2rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-brand {
+                grid-column: span 2;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        /* Brands Section with Marquee */
+        .brands {
+            padding: 80px 0;
+            background-color: #f8f9fa;
+            overflow: hidden;
+        }
+
+        .brands .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
-        /* Header */
-        header {
-            background-color: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo-icon {
-            color: #2a5bd7;
-            font-size: 28px;
-        }
-        
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            color: #2a5bd7;
-        }
-        
-        .logo-text span {
-            color: #ff6b35;
-        }
-        
-        .cta-button {
-            background-color: #2a5bd7;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 16px;
-        }
-        
-        .cta-button:hover {
-            background-color: #1e4ac4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(42, 91, 215, 0.2);
-        }
-        
-        /* Hero Section */
-        .hero {
-            padding: 160px 0 100px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 40px;
-        }
-        
-        .hero-text {
-            flex: 1;
-        }
-        
-        .hero-title {
-            font-size: 48px;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-        }
-        
-        .hero-title span {
-            color: #2a5bd7;
-        }
-        
-        .hero-subtitle {
-            font-size: 20px;
-            color: #555;
-            margin-bottom: 30px;
-            max-width: 600px;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 40px;
-        }
-        
-        .btn-primary {
-            background-color: #2a5bd7;
-            color: white;
-            padding: 14px 32px;
-            border-radius: 4px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background-color: #1e4ac4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(42, 91, 215, 0.2);
-        }
-        
-        .btn-secondary {
-            background-color: transparent;
-            color: #2a5bd7;
-            border: 2px solid #2a5bd7;
-            padding: 14px 32px;
-            border-radius: 4px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-secondary:hover {
-            background-color: rgba(42, 91, 215, 0.05);
-            transform: translateY(-2px);
-        }
-        
-        .hero-visual {
-            flex: 1;
-            position: relative;
-        }
-        
-        .design-interface {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            position: relative;
-            height: auto;
-            min-height: 400px;
-        }
-        
-        .design-toolbar {
-            background-color: #2a5bd7;
-            padding: 15px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .toolbar-icon {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-        
-        .design-canvas {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-gap: 15px;
-            height: calc(100% - 70px);
-        }
-        
-        .device-icon {
-            background-color: #f1f5ff;
-            border-radius: 6px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 12px;
-            color: #2a5bd7;
-            transition: all 0.3s ease;
-        }
-        
-        .device-icon:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(42, 91, 215, 0.1);
-        }
-        
-        .device-icon i {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        
-        /* Features Section */
-        .features {
-            padding: 100px 0;
-            background-color: white;
-        }
-        
+
         .section-title {
             text-align: center;
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 2rem;
+            font-weight: 400;
             margin-bottom: 15px;
             color: #1a1a1a;
         }
-        
+
         .section-subtitle {
             text-align: center;
             font-size: 18px;
@@ -247,265 +999,26 @@
             max-width: 700px;
             margin: 0 auto 60px;
         }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature-card {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 30px;
-            transition: all 0.3s ease;
-            border: 1px solid #eee;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-        
-        .feature-icon {
-            background-color: #e9efff;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            color: #2a5bd7;
-            font-size: 24px;
-        }
-        
-        .feature-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #1a1a1a;
-        }
-        
-        .feature-description {
-            color: #666;
-        }
-        
-        /* Testimonials Section */
-        .testimonials {
-            padding: 100px 0;
-            background-color: #f8f9fa;
-        }
-        
-        .testimonial-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .testimonial-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-        
-        .testimonial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-        }
-        
-        .testimonial-content {
-            font-style: italic;
-            color: #555;
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-        
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #e9efff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #2a5bd7;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        
-        .author-info h4 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-        
-        .author-info p {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        /* How It Works Section */
-        .how-it-works {
-            padding: 100px 0;
-            background-color: white;
-        }
-        
-        .steps-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 50px;
-        }
-        
-        .step {
-            flex: 1;
-            min-width: 250px;
-            max-width: 300px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .step-number {
-            width: 60px;
-            height: 60px;
-            background-color: #2a5bd7;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0 auto 20px;
-        }
-        
-        .step-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #1a1a1a;
-        }
-        
-        .step-description {
-            color: #666;
-        }
-        
-        /* Stats Section */
-        .stats {
-            padding: 80px 0;
-            background-color: #2a5bd7;
-            color: white;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            text-align: center;
-        }
-        
-        .stat-item h3 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        
-        .stat-item p {
-            font-size: 18px;
-            opacity: 0.9;
-        }
-        
-        /* Coming Soon Banner */
-        .coming-soon-banner {
-            padding: 60px 0;
-            background: linear-gradient(135deg, #2a5bd7 0%, #1e4ac4 100%);
-            color: white;
-            text-align: center;
-        }
-        
-        .coming-soon-content {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        
-        .coming-soon-title {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-        
-        .coming-soon-text {
-            font-size: 18px;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-        
-        .notify-form {
-            display: flex;
-            max-width: 500px;
-            margin: 0 auto;
-            gap: 10px;
-        }
-        
-        .notify-input {
-            flex: 1;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .notify-button {
-            background-color: white;
-            color: #2a5bd7;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .notify-button:hover {
-            background-color: #f8f9fa;
-            transform: translateY(-2px);
-        }
-        
-        /* Brands Section with Marquee */
-        .brands {
-            padding: 80px 0;
-            background-color: #f8f9fa;
-            overflow: hidden;
-        }
-        
+
+        /* Marquee container */
         .marquee-container {
             position: relative;
             width: 100%;
             overflow: hidden;
             margin: 30px 0;
+            padding: 15px 0;
         }
-        
+
         .marquee-track {
             display: flex;
             width: max-content;
             animation: marqueeLeft 30s linear infinite;
         }
-        
+
         .marquee-track.reverse {
             animation: marqueeRight 30s linear infinite;
         }
-        
+
         .brand-logo {
             background-color: white;
             padding: 15px 30px;
@@ -522,1152 +1035,1361 @@
             width: 180px;
             flex-shrink: 0;
         }
-        
-        .brand-logo img {
-            max-height: 40px;
+
+        .brand-image {
+            height: 40px;
+            width: auto;
             max-width: 120px;
             object-fit: contain;
+            filter: grayscale(100%);
+            opacity: 0.7;
+            transition: all 0.3s ease;
         }
-        
+
+        .brand-image:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
         @keyframes marqueeLeft {
             0% {
                 transform: translateX(0);
             }
+
             100% {
                 transform: translateX(-50%);
             }
         }
-        
+
         @keyframes marqueeRight {
             0% {
                 transform: translateX(-50%);
             }
+
             100% {
                 transform: translateX(0);
             }
         }
-        
-        /* FAQ Section */
-        .faq {
-            padding: 100px 0;
-            background-color: white;
+
+        /* Pause animation on hover */
+        .marquee-container:hover .marquee-track {
+            animation-play-state: paused;
         }
-        
-        .faq-container {
-            max-width: 800px;
-            margin: 50px auto 0;
+
+        .marquee-container:hover .marquee-track.reverse {
+            animation-play-state: paused;
         }
-        
-        .faq-item {
-            margin-bottom: 15px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        .faq-question {
-            background-color: #f8f9fa;
-            padding: 20px 25px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a1a;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-        
-        .faq-question:hover {
-            background-color: #e9ecef;
-        }
-        
-        .faq-question.active {
-            background-color: #e9efff;
-        }
-        
-        .faq-answer {
-            padding: 0 25px;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .faq-answer.active {
-            padding: 20px 25px;
-            max-height: 500px;
-        }
-        
-        /* CTA Section */
-        .cta-section {
-            padding: 100px 0;
-            background: linear-gradient(135deg, #2a5bd7 0%, #1e4ac4 100%);
-            color: white;
-            text-align: center;
-        }
-        
-        .cta-title {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-        
-        .cta-text {
-            font-size: 18px;
-            max-width: 700px;
-            margin: 0 auto 40px;
-            opacity: 0.9;
-        }
-        
-        .cta-button-white {
-            background-color: white;
-            color: #2a5bd7;
-            border: none;
-            padding: 16px 40px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 18px;
-        }
-        
-        .cta-button-white:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        /* Footer */
-        footer {
-            background-color: #1a1a1a;
-            color: #aaa;
-            padding: 60px 0 30px;
-        }
-        
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .footer-logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 20px;
-        }
-        
-        .footer-logo span {
-            color: #ff6b35;
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid #333;
-            font-size: 14px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 992px) {
-            .hero-content {
-                flex-direction: column;
-            }
-            
-            .hero-text, .hero-visual {
-                width: 100%;
-            }
-            
-            .hero-title {
-                font-size: 40px;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-        
+
+        /* Responsive styles */
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 32px;
+            .brands {
+                padding: 60px 0;
             }
-            
-            .hero-subtitle {
-                font-size: 18px;
+
+            .section-subtitle {
+                font-size: 16px;
+                margin-bottom: 40px;
             }
-            
-            .section-title {
-                font-size: 30px;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .testimonial-cards {
-                grid-template-columns: 1fr;
-            }
-            
+
             .brand-logo {
                 height: 60px;
                 width: 140px;
                 padding: 10px 15px;
                 margin: 0 10px;
             }
-            
-            .brand-logo img {
+
+            .brand-image {
                 max-height: 30px;
                 max-width: 100px;
             }
-            
-            .steps-container {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .step {
-                max-width: 100%;
-            }
-            
-            .notify-form {
-                flex-direction: column;
-            }
         }
-        
-        @media (max-width: 768px) {
-            .design-canvas {
-                grid-template-columns: repeat(2, 1fr);
-                height: fit-content;
-            }
-            
-            .device-icon {
-                height: auto;
-                padding: 20px;
-                font-size: 14px;
-            }
+
+        /* Icons */
+        .icon {
+            width: 24px;
+            height: 24px;
         }
-        
-        .logo-img {
-            height: 48px;
-            width: 48px;
-            background: linear-gradient(135deg, #2a5bd7 0%, #1e4ac4 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
+
+        .icon-sm {
+            width: 16px;
+            height: 16px;
         }
-        
-        /* Video Modal Styles */
-        .video-modal {
-            display: none;
+
+        .icon-lg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Premium Mobile Menu Styles */
+        .mobile-menu-overlay {
             position: fixed;
-            z-index: 2000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            justify-content: center;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
         }
-        
-        .modal-content {
-            position: relative;
-            width: 90%;
-            max-width: 900px;
-            background: #000;
-            border-radius: 8px;
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 85%;
+            max-width: 400px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--background) 0%, #f8fafc 100%);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
-        
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
+
+        .mobile-menu-container.active {
+            transform: translateX(0);
         }
-        
-        .video-container video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+
+        .mobile-menu-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
         }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 10;
-            background: rgba(0,0,0,0.5);
+
+        .mobile-menu-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .mobile-menu-close {
             width: 40px;
             height: 40px;
+            border-radius: 50%;
+            background: var(--secondary);
+            border: none;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+            color: var(--foreground);
+        }
+
+        .mobile-menu-close:hover {
+            background: var(--border);
+            transform: rotate(90deg);
+        }
+
+        .mobile-menu-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            padding-bottom: 2rem;
+        }
+
+        .mobile-menu-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mobile-menu-nav a {
+            padding: 1rem 1.25rem;
+            text-decoration: none;
+            color: var(--foreground);
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mobile-menu-nav a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu-nav a:hover::before {
+            transform: scaleY(1);
+        }
+
+        .mobile-menu-nav a:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+            padding-left: 1.5rem;
+        }
+
+        .mobile-menu-nav a.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+            color: var(--primary);
+        }
+
+        .mobile-menu-nav a.active::before {
+            transform: scaleY(1);
+        }
+
+        .mobile-menu-nav a i {
+            width: 20px;
+            text-align: center;
+            color: var(--muted-foreground);
+        }
+
+        .mobile-menu-nav a:hover i,
+        .mobile-menu-nav a.active i {
+            color: var(--primary);
+        }
+
+        .mobile-menu-cta {
+            background: linear-gradient(135deg, var(--primary) 0%, hsl(217, 91%, 50%) 100%);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            color: white;
+            text-align: center;
+        }
+
+        .mobile-menu-cta h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-menu-cta p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .mobile-menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .mobile-menu-btn {
+            width: 100%;
+            padding: 0.875rem;
+            border-radius: 9999px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .mobile-menu-btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .mobile-menu-btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu-btn-outline {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mobile-menu-btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            background: white;
+        }
+
+        .mobile-menu-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .mobile-menu-social a {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-foreground);
+            transition: all 0.3s ease;
         }
-        
-        .close-modal:hover {
-            background: rgba(255,255,255,0.2);
+
+        .mobile-menu-social a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
         }
-        
+
+        /* Hamburger animation */
+        .mobile-menu-btn {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 18px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: var(--foreground);
+            border-radius: 2px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: all 0.3s ease;
+        }
+        .mobile-menu-close-btn{
+            background-color: transparent;
+            border: none;
+        }
+        .hamburger span:nth-child(1) {
+            top: 0px;
+        }
+
+        .hamburger span:nth-child(2) {
+            top: 8px;
+        }
+
+        .hamburger span:nth-child(3) {
+            top: 16px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            top: 8px;
+            transform: rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .hamburger.active span:nth-child(3) {
+            top: 8px;
+            transform: rotate(-45deg);
+        }
+
         /* Mobile responsive */
         @media (max-width: 768px) {
-            .modal-content {
-                width: 95%;
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .nav,
+            .header-cta {
+                display: none;
+            }
+
+            .mobile-menu-container {
+                width: 85%;
             }
         }
 
-        /* Brand logo styling */
-.brand-logo {
-    flex-shrink: 0;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        @media (max-width: 480px) {
+            .mobile-menu-container {
+                width: 90%;
+            }
 
-.brand-image {
-    height: 40px; /* Adjust this value as needed */
-    width: auto;
-    object-fit: contain;
-    filter: grayscale(100%);
-    opacity: 0.7;
-    transition: all 0.3s ease;
-}
+            .mobile-menu-header {
+                padding: 1.25rem;
+            }
 
-.brand-image:hover {
-    filter: grayscale(0%);
-    opacity: 1;
-}
+            .mobile-menu-content {
+                padding: 1.25rem;
+            }
+        }
 
-/* Marquee container */
-.marquee-container {
-    overflow: hidden;
-    position: relative;
-    margin: 30px 0;
-    padding: 15px 0;
-}
+        /* Body scroll lock */
+        body.menu-open {
+            overflow: hidden;
+        }
 
-.marquee-track {
-    display: flex;
-    animation: marquee 30s linear infinite;
-}
+        /* Smooth transitions for menu items */
+        .mobile-menu-nav a {
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.marquee-track.reverse {
-    animation: marquee-reverse 30s linear infinite;
-}
+        .mobile-menu-container.active .mobile-menu-nav a {
+            opacity: 1;
+            transform: translateX(0);
+        }
 
-@keyframes marquee {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
-}
+        /* Stagger animation for menu items */
+        .mobile-menu-nav a:nth-child(1) {
+            transition-delay: 0.1s;
+        }
 
-@keyframes marquee-reverse {
-    0% {
-        transform: translateX(-50%);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
+        .mobile-menu-nav a:nth-child(2) {
+            transition-delay: 0.15s;
+        }
 
-/* Pause animation on hover */
-.marquee-container:hover .marquee-track {
-    animation-play-state: paused;
-}
+        .mobile-menu-nav a:nth-child(3) {
+            transition-delay: 0.2s;
+        }
 
-.marquee-container:hover .marquee-track.reverse {
-    animation-play-state: paused;
-}
+        .mobile-menu-nav a:nth-child(4) {
+            transition-delay: 0.25s;
+        }
 
-.cta-section {
-    background: linear-gradient(135deg, #1a2980 0%, #1a2980 100%);
-    color: white;
-    padding: 80px 0;
-    text-align: center;
-}
-
-.cta-title {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    font-weight: 700;
-}
-
-.cta-text {
-    font-size: 1.2rem;
-    max-width: 600px;
-    margin: 0 auto 40px;
-    opacity: 0.9;
-}
-
-.cta-button-group {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-bottom: 40px;
-    flex-wrap: wrap;
-}
-
-.cta-button-primary {
-    background-color: #ffffff;
-    color: #1a2980;
-    border: none;
-    padding: 16px 32px;
-    font-size: 1.1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.cta-button-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-
-.cta-button-secondary {
-    background-color: transparent;
-    color: white;
-    border: 2px solid rgba(255,255,255,0.3);
-    padding: 14px 30px;
-    font-size: 1.1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.cta-button-secondary:hover {
-    background-color: rgba(255,255,255,0.1);
-    border-color: white;
-}
-
-.cta-features {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin: 40px auto;
-    flex-wrap: wrap;
-    max-width: 800px;
-}
-
-.feature-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    min-width: 150px;
-}
-
-.feature-item i {
-    font-size: 2rem;
-    margin-bottom: 8px;
-    opacity: 0.9;
-}
-
-.feature-item span {
-    font-size: 0.9rem;
-    font-weight: 500;
-    opacity: 0.9;
-}
-
-.cta-subtext {
-    font-size: 0.9rem;
-    opacity: 0.8;
-    margin-top: 30px;
-    font-style: italic;
-}
-
-@media (max-width: 768px) {
-    .cta-title {
-        font-size: 2rem;
-    }
-    
-    .cta-button-group {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .cta-button-primary,
-    .cta-button-secondary {
-        width: 100%;
-        max-width: 300px;
-        justify-content: center;
-    }
-    
-    .cta-features {
-        gap: 30px;
-    }
-    
-    .feature-item {
-        min-width: 120px;
-    }
-}
+        .mobile-menu-nav a:nth-child(5) {
+            transition-delay: 0.3s;
+        }
     </style>
 </head>
+
 <body>
     <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <img class="logo-img" src="DomoticsLogo.png" alt="">
-                    <div class="logo-text">Domotics<span>Designer</span></div>
-                </div>
+    <header class="header">
+        <div class="container header-inner">
+            <a href="#" class="logo">
+                <img src="DomoticsLogo.png" alt="Logo" style="height: 40px; width: auto;">
+                Domotics<span>Designer</span>
+            </a>
+            <nav class="nav">
+                <a href="#products">Products</a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#brands">Brands</a>
+                <a href="#about">About</a>
+            </nav>
+            <div class="header-cta">
+                <button class="btn btn-primary">
+                    <a href="home.html" style="color: white; text-decoration: none;">Start Designing</a></button>
             </div>
+            <button class="mobile-menu-btn">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
         </div>
     </header>
-    
-    <!-- Video Modal -->
-    <div id="videoModal" class="video-modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div class="video-container">
-                <video id="demoVideo" controls>
-                    <source src="DomoticsDesignerDemoVideo.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Hero Section -->
-<!-- Hero Section -->
-<section class="hero">
-    <div class="container">
-        <div class="hero-content">
-            <div class="hero-text">
-                <h1 class="hero-title">Professional <span>Automation Design Suite</span> for Smart Homes & Buildings</h1>
-                <p class="hero-subtitle">Design, visualize, and plan complete automation systems with our powerful web-based platform. Create floor plans, add devices, manage wiring, and integrate with leading brands—all in one intuitive interface.</p>
-                
-                <div class="hero-buttons" style="
-                    display: flex;
-                    gap: 15px;
-                    margin-top: 40px;
-                    max-width: 500px;
-                ">
-                    <a href="home.html" class="btn-primary" style="
-                        background-color: #2a5bd7;
-                        color: white;
-                        padding: 14px 32px;
-                        border-radius: 4px;
-                        font-weight: 600;
-                        text-decoration: none;
-                        display: inline-block;
-                        transition: all 0.3s ease;
-                        flex: 1;
-                        text-align: center;
-                        min-width: 250px;
-                    ">
-                        <i class="fa-solid fa-compass-drafting"></i> Start Designing now
-                    </a>
-                    <a href="#" class="btn-secondary" id="videoDemoBtn" style="
-                        background-color: transparent;
-                        color: #2a5bd7;
-                        border: 2px solid #2a5bd7;
-                        padding: 14px 32px;
-                        border-radius: 4px;
-                        font-weight: 600;
-                        text-decoration: none;
-                        display: inline-block;
-                        transition: all 0.3s ease;
-                        flex: 1;
-                        text-align: center;
-                        min-width: 250px;
-                    ">
-                        <i class="fas fa-video"></i> Watch Demo
-                    </a>
-                </div>
-            </div>
-            
-            <div class="hero-visual">
-                <div class="design-interface">
-                    <div class="design-toolbar">
-                        <div class="toolbar-icon">
-                            <i class="fas fa-layer-group"></i>
-                        </div>
-                        <div class="toolbar-icon">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <div class="toolbar-icon">
-                            <i class="fas fa-project-diagram"></i>
-                        </div>
-                        <div class="toolbar-icon">
-                            <i class="fa-solid fa-ethernet"></i>
-                        </div>
-                        <div class="toolbar-icon">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                    </div>
-                    <div class="design-canvas">
-                        <div class="device-icon">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>Smart Switches</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-volume-up"></i>
-                            <span>Speakers</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-desktop"></i>
-                            <span>Wall Mount Display</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-wifi"></i>
-                            <span>IR Blasters</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-temperature-high"></i>
-                            <span>Sensors</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-microchip"></i>
-                            <span>DB Box</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-broadcast-tower"></i>
-                            <span>Relays</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-satellite-dish"></i>
-                            <span>KNX Wiring</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-network-wired"></i>
-                            <span>CAT6 Cable</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-plug"></i>
-                            <span>IR Cable</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-bolt"></i>
-                            <span>Phase Wire</span>
-                        </div>
-                        <div class="device-icon">
-                            <i class="fas fa-minus"></i>
-                            <span>Neutral Wire</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-    
 
-    <!-- Features Section -->
-    <section class="features">
+    <!-- Hero -->
+    <section class="hero">
         <div class="container">
-            <h2 class="section-title">Complete Automation Design Solution</h2>
-            <p class="section-subtitle">From concept to installation-ready plans, Automation Design Suite provides everything you need for professional automation system design.</p>
-            
+            <div class="badge">
+                <span class="badge-dot"></span>
+                New: 3D Dashboard Designer now available
+            </div>
+            <h1>Design smart homes with <span class="text-gradient">professional precision</span></h1>
+            <p>Two powerful design tools for smart home automation professionals. Create floor plans, manage devices,
+                design wiring layouts, and build stunning control dashboards.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary btn-lg">
+                    <a href="home.html" style="color: white; text-decoration: none;">Start Designing</a>
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12,5 19,12 12,19" />
+                    </svg>
+                </button>
+                <!-- <button class="btn btn-outline btn-lg">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5,3 19,12 5,21" />
+                    </svg>
+                    Watch Demo
+                </button> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section id="products" class="products">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Products</h2>
+                <p>Two powerful design tools by DomoticsDesigner for smart home automation professionals.</p>
+            </div>
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <div class="product-header">
+                        <div class="product-icon blue">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <line x1="3" y1="9" x2="21" y2="9" />
+                                <line x1="9" y1="21" x2="9" y2="9" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="product-label blue">Product 1</div>
+                            <h3 class="product-title">Automation Design Suite</h3>
+                        </div>
+                    </div>
+                    <p class="product-desc">Design complete automation systems with floor plans, device placement, and
+                        wiring layouts. Create professional documentation ready for installation.</p>
+                    <ul class="feature-list">
+                        <li>
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                            Import floor plans (PNG, JPG, JPEG)
+                        </li>
+                        <li>
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                            Comprehensive device library
+                        </li>
+                        <li>
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                            Advanced wiring management
+                        </li>
+                        <li>
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                            Export & share design files
+                        </li>
+                    </ul>
+                    <button class="btn btn-primary">
+                        
+                    <a href="floorplan.html" style="color: white; text-decoration: none;">Open Automation Suite</a>
+                        
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12,5 19,12 12,19" />
+                        </svg>
+                    </button>
+                    <div class="product-tags">
+                        <span class="product-tag">Floor Plan Designer</span>
+                        <span class="product-tag">Devices & Wiring</span>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <div class="product-header">
+                        <div class="product-icon green">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="product-label green">Product 2</div>
+                            <h3 class="product-title">Dashboard Designer</h3>
+                        </div>
+                    </div>
+                    <p class="product-desc">Create stunning control interfaces for your Lumi Processor. Import floor
+                        plan images, add control buttons, and export directly to your smart home system.</p>
+                    <div class="button-types">
+                        <p>Available Control Buttons:</p>
+                        <div class="button-tags">
+                            <span class="button-tag"><i class="fas fa-bolt"></i> Switch</span>
+                            <span class="button-tag"><i class="fas fa-lightbulb"></i> Light</span>
+                            <span class="button-tag"><i class="fas fa-sliders-h"></i> Dimmer</span>
+                            <span class="button-tag"><i class="fas fa-palette"></i> RGB</span>
+                            <span class="button-tag"><i class="fas fa-temperature-high"></i> CCT</span>
+                            <span class="button-tag"><i class="fas fa-satellite-dish"></i> Remote</span>
+                            <span class="button-tag"><i class="fas fa-rss"></i> Sensor</span>
+                            <span class="button-tag"><i class="fas fa-lock"></i> Lock</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <svg class="icon-sm" style="color: var(--primary);" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                                </svg>
+                                <span>2D Dashboard</span>
+                            </div>
+                            <p>Flat control interface</p>
+                            <ul>
+                                <li>• Floor image mapping</li>
+                                <li>• Drag & drop controls</li>
+                                <li>• Export to Lumi Processor</li>
+                            </ul>
+                            <button class="btn btn-outline"
+                                style="width: 100%; margin-top: 0.75rem; font-size: 0.75rem; padding: 0.375rem;">
+                    <a href="Web-Control---Home-Assistance/index-floor.html" style="color: rgb(0, 110, 255); text-decoration: none;">Open 2D
+                                Designer</a></button>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dashboard-card-header">
+                                <svg class="icon-sm" style="color: var(--accent);" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                </svg>
+                                <span>3D Dashboard</span>
+                            </div>
+                            <p>Immersive experience</p>
+                            <ul>
+                                <li>• 3D visualization</li>
+                                <li>• Room navigation</li>
+                                <li>• Lumi integration</li>
+                            </ul>
+                            <button class="btn btn-outline"
+                                style="width: 100%; margin-top: 0.75rem; font-size: 0.75rem; padding: 0.375rem;">
+                    <a href="home.html" style="color: rgb(0, 110, 255); text-decoration: none;">Open 3D
+                                Designer</a></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Powerful Features</h2>
+                <p>Everything you need to design professional automation systems and dashboards.</p>
+            </div>
+
+            <div class="features-divider">
+                <span class="blue">Automation Design Suite</span>
+            </div>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-drafting-compass"></i>
+                    <div class="feature-card-icon blue">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17,8 12,3 7,8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
                     </div>
-                    <h3 class="feature-title">Intuitive Floor Plan Design</h3>
-                    <p class="feature-description">Draw new floor plans or upload existing ones in multiple formats. Our drag-and-drop interface makes it easy to create accurate representations of any space.</p>
+                    <h3>Import Floor Plans</h3>
+                    <p>Upload floor plan images in PNG, JPG, or JPEG. Use them as the foundation for your automation
+                        design.</p>
                 </div>
-                
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-puzzle-piece"></i>
+                    <div class="feature-card-icon blue">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" />
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        </svg>
                     </div>
-                    <h3 class="feature-title">Comprehensive Device Library</h3>
-                    <p class="feature-description">Access a vast library of smart switches, relays, speakers, sensors, and DB boxes. Drag and drop devices directly onto your floor plans.</p>
+                    <h3>Device Library</h3>
+                    <p>Access a comprehensive library of smart switches, relays, speakers, sensors, and DB boxes.</p>
                 </div>
-                
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-project-diagram"></i>
+                    <div class="feature-card-icon blue">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4Z" />
+                            <path d="M14 21a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4Z" />
+                            <path d="M6 9v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9" />
+                        </svg>
                     </div>
-                    <h3 class="feature-title">Advanced Wiring Management</h3>
-                    <p class="feature-description">Design and visualize wiring layouts for KNX, IR cables, CAT6, neutral cables, and more. Calculate cable lengths and requirements automatically.</p>
+                    <h3>Wiring Management</h3>
+                    <p>Design and visualize wiring layouts for KNX, IR, CAT6, and more. Calculate cable lengths
+                        automatically.</p>
                 </div>
-                
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-handshake"></i>
+                    <div class="feature-card-icon blue">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+                            <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+                            <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+                        </svg>
                     </div>
-                    <h3 class="feature-title">Multi-Brand Integration</h3>
-                    <p class="feature-description">Seamlessly integrate devices from leading automation brands. Our platform supports Lumi Electronics and dozens of other manufacturers.</p>
+                    <h3>Multi-Brand Support</h3>
+                    <p>Integrate devices from Lumi Electronics and dozens of other automation manufacturers.</p>
                 </div>
-                
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-export"></i>
+                    <div class="feature-card-icon blue">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14,2 14,8 20,8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10,9 9,9 8,9" />
+                        </svg>
                     </div>
-                    <h3 class="feature-title">Export & Documentation</h3>
-                    <p class="feature-description">Generate professional installation documents, wiring diagrams, bills of materials, and client presentations with a single click.</p>
+                    <h3>Export Documentation</h3>
+                    <p>Generate professional installation documents, wiring diagrams, and bills of materials.</p>
                 </div>
-                
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fa-solid fa-share"></i>
+                    <div class="feature-card-icon blue">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3" />
+                            <circle cx="6" cy="12" r="3" />
+                            <circle cx="18" cy="19" r="3" />
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                        </svg>
                     </div>
-                    <h3 class="feature-title">Shareable Design Files</h3>
-                    <p class="feature-description">
-                        Save your automation designs as project files that can be opened, edited, and updated by anyone you share them with—perfect for teams, clients, and collaborative workflows.
+                    <h3>Share Projects</h3>
+                    <p>Save designs as shareable files. Collaborate with team members or share with clients.</p>
+                </div>
+            </div>
+
+            <div class="features-divider">
+                <span class="green">Dashboard Designer (2D & 3D)</span>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon green">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2 1,6" />
+                            <line x1="8" y1="2" x2="8" y2="18" />
+                            <line x1="16" y1="6" x2="16" y2="22" />
+                        </svg>
+                    </div>
+                    <h3>Floor Image Mapping</h3>
+                    <p>Upload your floor plan images in PNG, JPG, or JPEG format. Use them as the canvas for your
+                        dashboard.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon green">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" />
+                            <path d="M13 13l6 6" />
+                        </svg>
+                    </div>
+                    <h3>Drag & Drop Buttons</h3>
+                    <p>Add switches, lights, dimmers, RGB, CCT, remotes, sensors, and locks with simple drag-and-drop.
                     </p>
                 </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon green">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="13.5" cy="6.5" r="2.5" />
+                            <circle cx="17.5" cy="10.5" r="2.5" />
+                            <circle cx="8.5" cy="7.5" r="2.5" />
+                            <circle cx="6.5" cy="12.5" r="2.5" />
+                            <path d="M12 22V8l-5 14v-6l12 3" />
+                        </svg>
+                    </div>
+                    <h3>Customize Controls</h3>
+                    <p>Style your buttons and widgets to match your interior design or brand. Full customization
+                        available.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon green">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="4" width="16" height="16" rx="2" />
+                            <rect x="9" y="9" width="6" height="6" />
+                            <line x1="9" y1="1" x2="9" y2="4" />
+                            <line x1="15" y1="1" x2="15" y2="4" />
+                            <line x1="9" y1="20" x2="9" y2="23" />
+                            <line x1="15" y1="20" x2="15" y2="23" />
+                            <line x1="20" y1="9" x2="23" y2="9" />
+                            <line x1="20" y1="14" x2="23" y2="14" />
+                            <line x1="1" y1="9" x2="4" y2="9" />
+                            <line x1="1" y1="14" x2="4" y2="14" />
+                        </svg>
+                    </div>
+                    <h3>Lumi Processor Ready</h3>
+                    <p>Export your designs directly to Lumi Processor format. Seamless integration with your system.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon green">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <h3>Share & Collaborate</h3>
+                    <p>Save projects as shareable files. Collaborate with team members or share with clients for review.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon green">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7,10 12,15 17,10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                    </div>
+                    <h3>Export Anywhere</h3>
+                    <p>Generate PNG exports or directly sync with your Lumi Processor for immediate use.</p>
+                </div>
             </div>
         </div>
     </section>
-    
-    <!-- How It Works Section -->
-    <section class="how-it-works">
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
         <div class="container">
-            <h2 class="section-title">How Automation Design Suite Works</h2>
-            <p class="section-subtitle">Get from concept to installation-ready plans in just four simple steps.</p>
-            
-            <div class="steps-container">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3 class="step-title">Create or Import Floor Plans</h3>
-                    <p class="step-description">Start from scratch with our intuitive drawing tools or import existing plans in PDF, DXF, or image formats.</p>
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Simple steps to create professional automation designs and dashboards.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="steps-column">
+                    <h3 class="blue">Automation Design Suite</h3>
+                    <div class="steps blue">
+                        <div class="step">
+                            <div class="step-number blue">1</div>
+                            <div class="step-content">
+                                <h4>Import Floor Plans</h4>
+                                <p>Upload existing floor plans in PDF, DXF, or image formats, or draw new ones from
+                                    scratch.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number blue">2</div>
+                            <div class="step-content">
+                                <h4>Add Devices</h4>
+                                <p>Drag and drop smart devices from the library onto your floor plan. Configure each
+                                    device.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number blue">3</div>
+                            <div class="step-content">
+                                <h4>Design Wiring</h4>
+                                <p>Create wiring layouts for KNX, CAT6, IR cables, and more. Calculate cable
+                                    requirements.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number blue">4</div>
+                            <div class="step-content">
+                                <h4>Export & Share</h4>
+                                <p>Generate installation documents, wiring diagrams, and bills of materials. Share with
+                                    installers.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3 class="step-title">Add Devices & Components</h3>
-                    <p class="step-description">Drag and drop smart devices from our extensive library onto your floor plan. Configure each device with just a few clicks.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3 class="step-title">Design Wiring Layouts</h3>
-                    <p class="step-description">Automatically generate wiring diagrams or manually design custom cable routes. Calculate cable lengths and requirements.</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3 class="step-title">Export & Share</h3>
-                    <p class="step-description">Generate professional documentation including bills of materials, wiring diagrams, and installation guides. Share with clients and installers.</p>
+                <div class="steps-column">
+                    <h3 class="green">Dashboard Designer (2D & 3D)</h3>
+                    <div class="steps green">
+                        <div class="step">
+                            <div class="step-number green">1</div>
+                            <div class="step-content">
+                                <h4>Import Floor Image</h4>
+                                <p>Upload your floor plan image in PNG, JPG, or JPEG. This becomes your dashboard
+                                    canvas.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number green">2</div>
+                            <div class="step-content">
+                                <h4>Add Control Buttons</h4>
+                                <p>Drag and drop switches, lights, dimmers, RGB, CCT, sensors, and locks onto your floor
+                                    plan.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number green">3</div>
+                            <div class="step-content">
+                                <h4>Customize Design</h4>
+                                <p>Style your dashboard to match your preferences. Adjust colors, sizes, and button
+                                    appearances.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number green">4</div>
+                            <div class="step-content">
+                                <h4>Export to Lumi</h4>
+                                <p>Export your finished dashboard directly to your Lumi Processor for immediate use.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-<!-- Brands Section with Marquee -->
-<section class="brands">
-    <div class="container">
-        <h2 class="section-title">Integrated with Leading Brands</h2>
-        <p class="section-subtitle">Automation Design Suite supports devices and systems from top automation manufacturers worldwide.</p>
-        
-        <!-- First marquee line (left to right) -->
-        <div class="marquee-container">
-            <div class="marquee-track">
-                <div class="brand-logo">
-                    <img src="images/icons/lumi.png" alt="Lumi" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/locpro.webp" alt="LocPro" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/escult.png" alt="Escult" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/domogenie.jpg" alt="Domogenie" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/tremblay.png" alt="Tremblay" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/bigsense.png" alt="Big Sense" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/zmote.png" alt="Zmote" class="brand-image">
-                </div>
-                <!-- Duplicate for seamless loop -->
-                <div class="brand-logo">
-                    <img src="images/icons/lumi.png" alt="Lumi" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/locpro.webp" alt="LocPro" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/escult.png" alt="Escult" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/domogenie.jpg" alt="Domogenie" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/tremblay.png" alt="Tremblay" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/bigsense.png" alt="Big Sense" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/zmote.png" alt="Zmote" class="brand-image">
-                </div>
-            </div>
-        </div>
-        
-        <!-- Second marquee line (right to left) - Same brands -->
-        <div class="marquee-container">
-            <div class="marquee-track reverse">
-                <div class="brand-logo">
-                    <img src="images/icons/lumi.png" alt="Lumi" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/locpro.webp" alt="LocPro" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/escult.png" alt="Escult" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/domogenie.jpg" alt="Domogenie" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/tremblay.png" alt="Tremblay" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/bigsense.png" alt="Big Sense" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/zmote.png" alt="Zmote" class="brand-image">
-                </div>
-                <!-- Duplicate for seamless loop -->
-                <div class="brand-logo">
-                    <img src="images/icons/lumi.png" alt="Lumi" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/locpro.webp" alt="LocPro" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/escult.png" alt="Escult" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/domogenie.jpg" alt="Domogenie" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/tremblay.png" alt="Tremblay" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/bigsense.png" alt="Big Sense" class="brand-image">
-                </div>
-                <div class="brand-logo">
-                    <img src="images/icons/zmote.png" alt="Zmote" class="brand-image">
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-    
-<!-- FAQ Section -->
-<section class="faq">
-    <div class="container">
-        <h2 class="section-title">Frequently Asked Questions</h2>
-        <p class="section-subtitle">Find answers to common questions about Automation Design Suite.</p>
-        
-        <div class="faq-container">
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>What file formats can I import for floor plans?</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Automation Design Suite supports file formats including PNG, JPG and JPEG
-            </div>
-            
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>Which automation brands are currently supported?</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Our platform currently supports Lumi Electronics and is continuously expanding to include dozens of other manufacturers. You can suggest specific brands through our support portal.</p>
-                </div>
-            </div>
-            
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>How often is the device library updated?</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Our device library is updated monthly with new products from supported brands. You can also request specific devices to be added through our support portal.</p>
-                </div>
-            </div>
-            
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>What types of wiring can I design with Automation Design Suite?</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>You can design and visualize various wiring layouts including KNX, IR cables, CAT6, neutral cables, phase wires, and more. The platform automatically calculates cable lengths and requirements.</p>
-                </div>
-            </div>
-            
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>What documentation can I export from my designs?</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>You can generate professional installation documents, wiring diagrams, bills of materials, and client presentations with a single click. All exports are ready for sharing with clients and installers.</p>
-                </div>
-            </div>
-            
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>Can I collaborate with team members on projects?</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Yes! Automation Design Suite includes team collaboration features. You can invite team members, share design files, and work together on the same project. Saved designs can be opened, edited, and updated by anyone you share them with.</p>
-                </div>
-            </div>
-            
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>What devices are included in your library?</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Our library includes smart switches, relays, speakers, sensors, wall mount displays, IR blasters, DB boxes, and all necessary wiring components. We're constantly adding new devices to support comprehensive automation system design.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    <!-- Brands Section with Marquee -->
+    <section class="brands" id="brands">
+        <div class="container">
+            <h2 class="section-title">Integrated with Leading Brands</h2>
+            <p class="section-subtitle">Automation Design Suite supports devices and systems from top automation
+                manufacturers worldwide.</p>
 
-<!-- CTA Section -->
-<section class="cta-section">
-    <div class="container">
-        <h2 class="cta-title">Transform Your Automation Design Workflow</h2>
-        <p class="cta-text">
-            Create professional automation designs, visualize wiring layouts, and generate installation-ready documentation—all in one intuitive platform.
-        </p>
-        
-        <div class="cta-button-group">
-            <a href="home.html">
-                <button class="cta-button-primary">
-                    <i class="fas fa-magic"></i> Start Designing Now
-                </button>
-            </a>
+            <!-- First marquee line (left to right) -->
+            <div class="marquee-container">
+                <div class="marquee-track">
+                    <div class="brand-logo">
+                        <img src="images/icons/lumi.png" alt="Lumi" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/locpro.webp" alt="LocPro" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/escult.png" alt="Escult" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/domogenie.jpg" alt="Domogenie" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/tremblay.png" alt="Tremblay" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/bigsense.png" alt="Big Sense" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/zmote.png" alt="Zmote" class="brand-image">
+                    </div>
+                    <!-- Duplicate for seamless loop -->
+                    <div class="brand-logo">
+                        <img src="images/icons/lumi.png" alt="Lumi" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/locpro.webp" alt="LocPro" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/escult.png" alt="Escult" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/domogenie.jpg" alt="Domogenie" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/tremblay.png" alt="Tremblay" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/bigsense.png" alt="Big Sense" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/zmote.png" alt="Zmote" class="brand-image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second marquee line (right to left) - Same brands -->
+            <div class="marquee-container">
+                <div class="marquee-track reverse">
+                    <div class="brand-logo">
+                        <img src="images/icons/lumi.png" alt="Lumi" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/locpro.webp" alt="LocPro" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/escult.png" alt="Escult" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/domogenie.jpg" alt="Domogenie" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/tremblay.png" alt="Tremblay" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/bigsense.png" alt="Big Sense" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/zmote.png" alt="Zmote" class="brand-image">
+                    </div>
+                    <!-- Duplicate for seamless loop -->
+                    <div class="brand-logo">
+                        <img src="images/icons/lumi.png" alt="Lumi" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/locpro.webp" alt="LocPro" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/escult.png" alt="Escult" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/domogenie.jpg" alt="Domogenie" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/tremblay.png" alt="Tremblay" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/bigsense.png" alt="Big Sense" class="brand-image">
+                    </div>
+                    <div class="brand-logo">
+                        <img src="images/icons/zmote.png" alt="Zmote" class="brand-image">
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <!-- Desktop Required Message -->
-        <div class="desktop-message" style="
-            background-color: rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #ff6b35;
-            padding: 12px 20px;
-            margin: 20px auto 30px;
-            border-radius: 6px;
-            max-width: 600px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: 0.95rem;
-        ">
-            <span style="color: white; font-weight: 500;">
-                For the best experience, please use this tool on a desktop or laptop computer.
-                <br><span style="font-size: 0.85rem; opacity: 0.8; font-weight: normal;">This design platform is optimized for larger screens with mouse/touchpad controls.</span>
-            </span>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section id="about" class="why-choose">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose DomoticsDesigner</h2>
+                <p>Built by automation professionals, for automation professionals.</p>
+            </div>
+            <div class="reasons-grid">
+                <div class="reason">
+                    <div class="reason-icon">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" />
+                        </svg>
+                    </div>
+                    <h3>Lightning Fast</h3>
+                    <p>Design complete automation systems in minutes, not hours. Our intuitive interface accelerates
+                        your workflow.</p>
+                </div>
+                <div class="reason">
+                    <div class="reason-icon">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <h3>Industry Standard</h3>
+                    <p>Built to meet professional automation standards. Compatible with KNX, Lumi, and other major
+                        protocols.</p>
+                </div>
+                <div class="reason">
+                    <div class="reason-icon">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12,6 12,12 16,14" />
+                        </svg>
+                    </div>
+                    <h3>Save Time</h3>
+                    <p>Automatic cable calculations, device configurations, and documentation generation save hours per
+                        project.</p>
+                </div>
+                <div class="reason">
+                    <div class="reason-icon">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                            <path
+                                d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                        </svg>
+                    </div>
+                    <h3>Expert Support</h3>
+                    <p>Dedicated support team with real automation experience. We understand your challenges.</p>
+                </div>
+                <div class="reason">
+                    <div class="reason-icon">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <!-- Download/Share icon -->
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                            <!-- Share indicator -->
+                            <circle cx="12" cy="19" r="1" />
+                            <circle cx="8" cy="19" r="1" />
+                            <circle cx="16" cy="19" r="1" />
+                        </svg>
+                    </div>
+                    <h3>Shareable Design</h3>
+                    <p>Download your designs as project files. Share them with others who can open, edit, and update the
+                        designs.</p>
+                </div>
+                <div class="reason">
+                    <div class="reason-icon">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="7" />
+                            <polyline points="8.21,13.89 7,23 12,20 17,23 15.79,13.88" />
+                        </svg>
+                    </div>
+                    <h3>Regular Updates</h3>
+                    <p>New features and device libraries added regularly. Stay ahead with the latest automation
+                        technology.</p>
+                </div>
+            </div>
         </div>
-        
-        <div class="cta-features">
-            <div class="feature-item">
-                <i class="fas fa-drafting-compass"></i>
-                <span>Draw & Import Floor Plans</span>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-plug"></i>
-                <span>Drag & Drop Devices</span>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-network-wired"></i>
-                <span>Design Wiring Layouts</span>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-file-export"></i>
-                <span>Export Professional Docs</span>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-box">
+                <div class="cta-badge">
+                    ✨ Start your free trial today
+                </div>
+                <h2>Ready to design smarter?</h2>
+                <p>Join thousands of automation professionals who trust DomoticsDesigner to create stunning,
+                    professional smart home designs.</p>
+                <div class="cta-buttons">
+                    <a href="home.html" class="btn-cta-primary">
+                        Get Started
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12,5 19,12 12,19" />
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
-        
-        <p class="cta-subtext">
-            Trusted by automation professionals worldwide to design smarter homes and buildings
-        </p>
-    </div>
-</section>
+    </section>
 
     <!-- Footer -->
-    <footer>
+    <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div>
-                    <div class="footer-logo">Domotics<span>Designer</span></div>
-                    <p>Professional Automation Design Tool for smart homes and commercial buildings.</p>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                <img src="DomoticsLogo.png" alt="Logo" style="height: 40px; width: auto;">
+                        Domotics<span>Designer</span>
+                    </a>
+                    <p>Professional design tools for smart home automation. Create stunning floor plans, wiring
+                        diagrams, and control dashboards.</p>
                 </div>
-                <div>
-                    <p><i class="fas fa-globe"></i> domoticsdesigner.com</p>
-                    <!-- <p><i class="fas fa-envelope"></i> contact@domoticsdesigner.com</p> -->
+                <div class="footer-column">
+                    <h4>Products</h4>
+                    <ul>
+                        <li><a href="#">Automation Suite</a></li>
+                        <li><a href="#">2D Dashboard</a></li>
+                        <li><a href="#">3D Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="copyright">
-                &copy; 2025 DomoticsDesigner.com. All rights reserved.
+            <div class="footer-bottom">
+                <p>© 2026 DomoticsDesigner. All rights reserved.</p>
+                <p>Made with precision for automation professionals</p>
             </div>
         </div>
     </footer>
-
     <script>
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
+        // Premium Mobile Menu
+        document.addEventListener('DOMContentLoaded', function () {
+            const headerMobileMenuBtn = document.querySelector('.header .mobile-menu-btn');
+            const body = document.body;
+
+            // Create premium mobile menu
+            const mobileMenuHTML = `
+            <div class="mobile-menu-overlay"></div>
+            <div class="mobile-menu-container">
+                <div class="mobile-menu-header">
+                    <a href="#" class="mobile-menu-logo">
+                <img src="DomoticsLogo.png" alt="Logo" style="height: 40px; width: auto;">
+                        Domotics<span style="color: var(--primary);">Designer</span>
+                    </a>
+                    <button class="mobile-menu-close-btn" aria-label="Close menu">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
                 
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
+                <div class="mobile-menu-content">
+                    <nav class="mobile-menu-nav">
+                        <a href="#products">
+                            <i class="fas fa-box"></i>
+                            Products
+                        </a>
+                        <a href="#features">
+                            <i class="fas fa-star"></i>
+                            Features
+                        </a>
+                        <a href="#how-it-works">
+                            <i class="fas fa-play-circle"></i>
+                            How It Works
+                        </a>
+                        <a href="#brands">
+                            <i class="fas fa-tags"></i>
+                            Brands
+                        </a>
+                        <a href="#about">
+                            <i class="fas fa-info-circle"></i>
+                            About
+                        </a>
+                    </nav>
+                    
+                </div>
                 
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
+            </div>
+        `;
+
+            // Insert mobile menu HTML
+            body.insertAdjacentHTML('beforeend', mobileMenuHTML);
+
+            // Get menu elements
+            const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+            const mobileMenuContainer = document.querySelector('.mobile-menu-container');
+            const mobileMenuClose = document.querySelector('.mobile-menu-close-btn');
+            const mobileMenuLinks = document.querySelectorAll('.mobile-menu-nav a');
+            const mobileCtaButtons = document.querySelectorAll('.mobile-cta-btn');
+
+            // Toggle menu function
+            function toggleMenu() {
+                const isOpening = !mobileMenuContainer.classList.contains('active');
+
+                if (isOpening) {
+                    // Opening menu
+                    body.classList.add('menu-open');
+                    mobileMenuOverlay.classList.add('active');
+                    mobileMenuContainer.classList.add('active');
+
+                    // Add active class to current link
+                    const currentHash = window.location.hash;
+                    mobileMenuLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === currentHash) {
+                            link.classList.add('active');
+                        }
                     });
-                }
-            });
-        });
-        
-        // Add some interactive effects to device icons
-        document.querySelectorAll('.device-icon').forEach(icon => {
-            icon.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
-                this.style.boxShadow = '0 5px 15px rgba(42, 91, 215, 0.15)';
-            });
-            
-            icon.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = 'none';
-            });
-        });
-        
-        // Video Modal Functionality
-        const videoBtn = document.getElementById('videoDemoBtn');
-        const videoModal = document.getElementById('videoModal');
-        const closeModal = document.querySelector('.close-modal');
-        const demoVideo = document.getElementById('demoVideo');
-        
-        if (videoBtn) {
-            videoBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                videoModal.style.display = 'flex';
-                demoVideo.play();
-            });
-        }
-        
-        if (closeModal) {
-            closeModal.addEventListener('click', function() {
-                videoModal.style.display = 'none';
-                demoVideo.pause();
-                demoVideo.currentTime = 0;
-            });
-        }
-        
-        // Close modal when clicking outside video
-        videoModal.addEventListener('click', function(e) {
-            if (e.target === videoModal) {
-                videoModal.style.display = 'none';
-                demoVideo.pause();
-                demoVideo.currentTime = 0;
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && videoModal.style.display === 'flex') {
-                videoModal.style.display = 'none';
-                demoVideo.pause();
-                demoVideo.currentTime = 0;
-            }
-        });
-        
-        // FAQ accordion functionality
-        document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', function() {
-                const answer = this.nextElementSibling;
-                const isActive = this.classList.contains('active');
-                
-                // Close all other FAQ items
-                document.querySelectorAll('.faq-question').forEach(q => {
-                    q.classList.remove('active');
-                });
-                
-                document.querySelectorAll('.faq-answer').forEach(a => {
-                    a.classList.remove('active');
-                });
-                
-                // Open clicked item if it wasn't already active
-                if (!isActive) {
-                    this.classList.add('active');
-                    answer.classList.add('active');
-                }
-            });
-        });
-        
-        // Pause marquee on hover
-        document.querySelectorAll('.marquee-track').forEach(track => {
-            track.addEventListener('mouseenter', function() {
-                this.style.animationPlayState = 'paused';
-            });
-            
-            track.addEventListener('mouseleave', function() {
-                this.style.animationPlayState = 'running';
-            });
-        });
-        
-        // Notify form submission
-        const notifyForm = document.querySelector('.notify-form');
-        const notifyInput = document.querySelector('.notify-input');
-        const notifyButton = document.querySelector('.notify-button');
-        
-        if (notifyButton) {
-            notifyButton.addEventListener('click', function() {
-                if (notifyInput.value && notifyInput.value.includes('@')) {
-                    alert('Thank you! We\'ll notify you when DomoticsDesigner launches.');
-                    notifyInput.value = '';
                 } else {
-                    alert('Please enter a valid email address.');
+                    // Closing menu
+                    body.classList.remove('menu-open');
+                    mobileMenuOverlay.classList.remove('active');
+                    mobileMenuContainer.classList.remove('active');
                 }
-            });
-        }
-        
-        // Enter key support for notify form
-        if (notifyInput) {
-            notifyInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
+            }
+
+            // Event listeners
+            headerMobileMenuBtn.addEventListener('click', toggleMenu);
+            mobileMenuClose.addEventListener('click', toggleMenu);
+            mobileMenuOverlay.addEventListener('click', toggleMenu);
+
+            // Close menu when clicking on links
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    notifyButton.click();
+                    const targetId = link.getAttribute('href');
+
+                    // Close menu
+                    toggleMenu();
+
+                    // Scroll to section after a small delay
+                    setTimeout(() => {
+                        if (targetId.startsWith('#')) {
+                            const targetSection = document.querySelector(targetId);
+                            if (targetSection) {
+                                window.scrollTo({
+                                    top: targetSection.offsetTop - 80,
+                                    behavior: 'smooth'
+                                });
+
+                                // Update URL hash
+                                history.pushState(null, null, targetId);
+                            }
+                        }
+                    }, 400);
+                });
+            });
+
+            // Add click event to CTA buttons in mobile menu
+            mobileCtaButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    toggleMenu();
+
+                    if (this.classList.contains('mobile-cta-btn-primary')) {
+                        setTimeout(() => {
+                            // Scroll to top for "Get Started" action
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                        }, 400);
+                    } else if (this.classList.contains('mobile-cta-btn-outline')) {
+                        setTimeout(() => {
+                            // Handle demo video
+                            alert('Opening demo video...');
+                        }, 400);
+                    }
+                });
+            });
+
+            // Close menu with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && mobileMenuContainer.classList.contains('active')) {
+                    toggleMenu();
                 }
             });
-        }
+
+            // Update active link on scroll
+            window.addEventListener('scroll', () => {
+                if (mobileMenuContainer.classList.contains('active')) return;
+
+                const scrollPosition = window.scrollY + 100;
+
+                // Get all sections
+                const sections = Array.from(mobileMenuLinks)
+                    .map(link => {
+                        const id = link.getAttribute('href');
+                        if (id.startsWith('#')) {
+                            const section = document.querySelector(id);
+                            return section ? { id, element: section } : null;
+                        }
+                        return null;
+                    })
+                    .filter(Boolean);
+
+                // Find current section
+                let currentSection = null;
+                for (const section of sections) {
+                    if (section.element.offsetTop <= scrollPosition) {
+                        currentSection = section;
+                    } else {
+                        break;
+                    }
+                }
+
+                // Update active link
+                mobileMenuLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (currentSection && link.getAttribute('href') === currentSection.id) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Initial active link check
+            window.dispatchEvent(new Event('scroll'));
+        });
     </script>
 </body>
+
 </html>
