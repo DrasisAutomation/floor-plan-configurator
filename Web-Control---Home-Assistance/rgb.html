@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Center the button */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+        }
+
+        .toggle-button {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+        }
+
+        .toggle-button:hover {
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .toggle-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .toggle-button.on {
+            box-shadow: 0 0 15px rgba(255, 200, 0, 0.8);
+        }
+
+        .toggle-button .icon {
+            font-size: 18px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-button.on .icon {
+            color: #ffcc00;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 26, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            /* transparent black */
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 500px;
+            height: 400px;
+            /* INCREASED WIDTH FOR TWO SLIDERS */
+            padding: 20px 15px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #000000;
+            z-index: 1001;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .close-modal:hover {
+            color: #000000;
+        }
+
+        /* Brightness Slider Styles - Exactly as your design */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sliders-container {
+            width: 100%;
+            height: 100%;
+            min-width: 300px;
+            margin-top: -15px;
+            /* MOVED UP */
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .slider-title {
+            font-size: 14px;
+            color: #000000;
+            font-family: Arial, sans-serif;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .wrapper {
+            position: relative;
+            height: 20rem;
+            width: 3rem;
+        }
+
+        .wrapper::before,
+        .wrapper::after {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99;
+            color: black;
+            font-size: 20px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .wrapper::before {
+            content: "+";
+            top: 20px;
+            /* INSIDE */
+        }
+
+        .wrapper::after {
+            content: "−";
+            bottom: 20px;
+            /* INSIDE */
+        }
+
+        /* Hide + and - signs only for the RGB slider wrapper */
+        .slider-wrapper:last-child .wrapper::before,
+        .slider-wrapper:last-child .wrapper::after {
+            display: none;
+        }
+
+        /* Brightness Slider */
+        #brightnessSlider {
+            -webkit-appearance: none;
+            background-color: rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 18rem;
+            height: 3.5rem;
+            transform: translate(-50%, -50%) rotate(-90deg);
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        #brightnessSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 0;
+            box-shadow: -20rem 0 0 20rem rgba(0, 30, 255, 0.5);
+        }
+
+        #brightnessSlider::-moz-range-thumb {
+            width: 0;
+            box-shadow: -20rem 0 0 20rem rgba(255, 255, 255, 0.2);
+            border: none;
+        }
+
+        /* RGB Color Slider - FULL RGB SPECTRUM GRADIENT */
+        #rgbSlider {
+            -webkit-appearance: none;
+            background: linear-gradient(to right, 
+                #ff0000 0%,    /* Red */
+                #ffff00 16.66%, /* Yellow */
+                #00ff00 33.33%, /* Green */
+                #00ffff 50%,    /* Cyan */
+                #0000ff 66.66%, /* Blue */
+                #ff00ff 83.33%, /* Magenta */
+                #ff0000 100%    /* Back to Red */
+            );
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 18rem;
+            height: 3.5rem;
+            transform: translate(-50%, -50%) rotate(-90deg);
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        /* WIDER THUMB for needle effect - WHITE COLOR for contrast */
+        #rgbSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 6px; /* WIDER NEEDLE */
+            height: 3.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            cursor: grab;
+            padding: 3px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+        }
+
+        #rgbSlider::-moz-range-thumb {
+            width: 6px; /* WIDER NEEDLE */
+            height: 3.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 0;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            cursor: grab;
+        }
+
+        #rgbSlider::-webkit-slider-thumb:hover {
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid rgba(0, 0, 0, 0.5);
+        }
+
+        /* Remove the apply button and text styles */
+        .brightness-value,
+        .brightness-label,
+        .current-brightness,
+        .modal-title,
+        .apply-btn {
+            display: none;
+        }
+
+        /* Brightness percentage display at bottom */
+        .brightness-percentage {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #000000;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* STATIC RGB text display */
+        .rgb-display {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #000000;
+            font-family: Arial, sans-serif;
+        }
+        
+        .wrapper input{
+             border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="toggle-button" id="toggleBtn" disabled>
+        <i class="fas fa-lightbulb icon" id="bulbIcon"></i>
+    </button>
+
+    <!-- Brightness & RGB Modal -->
+    <div class="modal-overlay" id="brightnessModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+
+            <div class="sliders-container">
+                <!-- Brightness Slider -->
+                <div class="slider-wrapper">
+                    <div class="slider-title">Brightness</div>
+                    <div class="wrapper">
+                        <input type="range" min="0" max="100" value="50" id="brightnessSlider" />
+                    </div>
+                    <div class="percentage-display" id="brightnessValue">50%</div>
+                </div>
+
+                <!-- RGB Color Slider - REPLACED TEMPERATURE SLIDER -->
+                <div class="slider-wrapper">
+                    <div class="slider-title">Color</div>
+                    <div class="wrapper">
+                        <input type="range" min="0" max="360" value="180" id="rgbSlider" />
+                    </div>
+                    <div class="rgb-display">RGB</div> <!-- STATIC TEXT ONLY -->
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+function makeTest21Draggable(btn) {
+    let isDrag = false, startX, startY, origX, origY;
+
+    btn.addEventListener("mousedown", e => {
+        isDrag = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        origX = btn.offsetLeft;
+        origY = btn.offsetTop;
+        btn.style.cursor = "grabbing";
+        e.stopPropagation();
+    });
+
+    window.addEventListener("mousemove", e => {
+        if (!isDrag) return;
+        let dx = e.clientX - startX;
+        let dy = e.clientY - startY;
+        btn.style.left = (origX + dx) + "px";
+        btn.style.top = (origY + dy) + "px";
+    });
+
+    window.addEventListener("mouseup", () => {
+        isDrag = false;
+        btn.style.cursor = "grab";
+    });
+}
+</script>
+
+<script>
+    const WS_URL = "wss://demo.lumihomepro1.com/api/websocket";
+    const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzNGNlNThiNDk1Nzk0NDVmYjUxNzE2NDA0N2Q0MGNmZCIsImlhdCI6MTc2NTM0NzQ5MSwiZXhwIjoyMDgwNzA3NDkxfQ.Se5PGwx0U9aqyVRnD1uwvCv3F-aOE8H53CKA5TqsV7U";
+    const LIGHT = "light.rgbw_1";
+
+    let ws, isOn = false, ready = false, currentBrightness = 50, currentHue = 180;
+    const toggleBtn = document.getElementById('toggleBtn');
+    const bulbIcon = document.getElementById('bulbIcon');
+    const brightnessModal = document.getElementById('brightnessModal');
+    const closeModal = document.getElementById('closeModal');
+    const brightnessSlider = document.getElementById('brightnessSlider');
+    const rgbSlider = document.getElementById('rgbSlider');
+    const brightnessValue = document.getElementById('brightnessValue');
+
+    // Convert HSL to RGB (Hue: 0-360, Saturation: 0-100, Lightness: 0-100)
+    function hslToRgb(h, s, l) {
+        h /= 360;
+        s /= 100;
+        l /= 100;
+        
+        let r, g, b;
+        
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+        
+        return [
+            Math.round(r * 255),
+            Math.round(g * 255),
+            Math.round(b * 255)
+        ];
+    }
+
+    // Convert hue to RGB color for the light
+    function hueToRgbColor(hue) {
+        const [r, g, b] = hslToRgb(hue, 100, 50);
+        return { r, g, b };
+    }
+
+    // Convert RGB to approximate hue
+    function rgbToHue(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h;
+        
+        if (max === min) {
+            h = 0; // achromatic
+        } else {
+            const d = max - min;
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+        
+        return Math.round(h * 360);
+    }
+
+    // Connect to WebSocket
+    function connectWebSocket() {
+        ws = new WebSocket(WS_URL);
+
+        ws.onopen = () => {
+            console.log("WebSocket connected");
+            ws.send(JSON.stringify({ type: "auth", access_token: TOKEN }));
+        };
+
+        ws.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            console.log("Message received:", data);
+
+            if (data.type === "auth_ok") {
+                console.log("Authentication successful");
+                ready = true;
+                toggleBtn.disabled = false;
+
+                // Get initial state
+                setTimeout(() => {
+                    ws.send(JSON.stringify({
+                        id: 1,
+                        type: "get_states"
+                    }));
+                }, 100);
+            }
+            else if (data.type === "result" && data.id === 1) {
+                if (data.success && data.result) {
+                    const light = data.result.find(e => e.entity_id === LIGHT);
+                    if (light) {
+                        console.log("Light state found:", light);
+                        isOn = light.state === "on";
+                        
+                        // Get brightness from attributes if available
+                        if (light.attributes && light.attributes.brightness) {
+                            // HA brightness is 0-255, convert to percentage
+                            currentBrightness = Math.round((light.attributes.brightness / 255) * 100);
+                        } else {
+                            // Light is OFF → brightness attribute missing → set to 0
+                            currentBrightness = 0;
+                        }
+
+                        // Get color information if available
+                        if (light.attributes) {
+                            // Try different color attributes
+                            if (light.attributes.hs_color) {
+                                // HS Color format: [hue (0-360), saturation (0-100)]
+                                currentHue = Math.round(light.attributes.hs_color[0]);
+                                console.log("Found HS color:", light.attributes.hs_color);
+                            } else if (light.attributes.rgb_color) {
+                                // RGB Color format: [r, g, b]
+                                const [r, g, b] = light.attributes.rgb_color;
+                                // Convert RGB to approximate hue
+                                currentHue = rgbToHue(r, g, b);
+                                console.log("Found RGB color:", light.attributes.rgb_color);
+                            } else if (light.attributes.xy_color) {
+                                // XY color format
+                                console.log("Found XY color:", light.attributes.xy_color);
+                                // Default to cyan if XY color
+                                currentHue = 180;
+                            } else {
+                                currentHue = 180; // Default cyan color
+                            }
+                        } else {
+                            currentHue = 180; // Default cyan color
+                        }
+
+                        // Update UI elements
+                        brightnessSlider.value = currentBrightness;
+                        rgbSlider.value = currentHue;
+                        brightnessValue.textContent = `${currentBrightness}%`;
+                        
+                        updateUI();
+
+                        // Subscribe to changes after getting initial state
+                        setTimeout(() => {
+                            ws.send(JSON.stringify({
+                                id: 2,
+                                type: "subscribe_events",
+                                event_type: "state_changed"
+                            }));
+                        }, 100);
+                    } else {
+                        console.log("Light not found in states:", LIGHT);
+                    }
+                }
+            }
+            else if (data.type === "event" && data.event?.event_type === "state_changed") {
+                if (data.event.data.entity_id === LIGHT) {
+                    console.log("Light state changed:", data.event.data.new_state);
+                    isOn = data.event.data.new_state.state === "on";
+                    // Update brightness if available
+                    if (data.event.data.new_state.attributes && data.event.data.new_state.attributes.brightness) {
+                        currentBrightness = Math.round((data.event.data.new_state.attributes.brightness / 255) * 100);
+                        brightnessSlider.value = currentBrightness;
+                        brightnessValue.textContent = `${currentBrightness}%`;
+                    }
+                    // Update color if available
+                    if (data.event.data.new_state.attributes) {
+                        if (data.event.data.new_state.attributes.hs_color) {
+                            currentHue = Math.round(data.event.data.new_state.attributes.hs_color[0]);
+                            rgbSlider.value = currentHue;
+                        } else if (data.event.data.new_state.attributes.rgb_color) {
+                            const [r, g, b] = data.event.data.new_state.attributes.rgb_color;
+                            currentHue = rgbToHue(r, g, b);
+                            rgbSlider.value = currentHue;
+                        }
+                    }
+                    updateUI();
+                }
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket error:", error);
+            toggleBtn.disabled = true;
+        };
+
+        ws.onclose = () => {
+            console.log("WebSocket disconnected");
+            toggleBtn.disabled = true;
+            ready = false;
+            setTimeout(connectWebSocket, 3000);
+        };
+    }
+
+    // Toggle light function
+    function toggleLight() {
+        if (!ready || !ws || ws.readyState !== WebSocket.OPEN) {
+            console.log("Not ready to toggle");
+            return;
+        }
+
+        if (!isOn) {
+            // Turn on the light with current settings
+            ws.send(JSON.stringify({
+                id: Date.now(),
+                type: "call_service",
+                domain: "light",
+                service: "turn_on",
+                service_data: {
+                    entity_id: LIGHT,
+                    brightness: Math.round((currentBrightness / 100) * 255),
+                    hs_color: [currentHue, 100]
+                }
+            }));
+            isOn = true;
+            updateUI();
+        } else {
+            // Open brightness modal
+            openBrightnessModal();
+        }
+    }
+
+    // Open brightness modal
+    function openBrightnessModal() {
+        brightnessModal.style.display = 'flex';
+    }
+
+    // Close brightness modal
+    function closeBrightnessModal() {
+        brightnessModal.style.display = 'none';
+    }
+
+    // Update brightness via WebSocket
+    function updateBrightness(brightness) {
+        if (!ready || !ws || ws.readyState !== WebSocket.OPEN) {
+            console.log("Not ready to update brightness");
+            return;
+        }
+
+        // Convert percentage to HA brightness value (0-255)
+        const haBrightness = Math.round((brightness / 100) * 255);
+
+        const serviceData = {
+            entity_id: LIGHT,
+            brightness: haBrightness
+        };
+
+        // Also include color if we have one
+        if (currentHue !== null) {
+            serviceData.hs_color = [currentHue, 100];
+        }
+
+        ws.send(JSON.stringify({
+            id: Date.now(),
+            type: "call_service",
+            domain: "light",
+            service: "turn_on",
+            service_data: serviceData
+        }));
+
+        console.log(`Brightness updated to ${brightness}% (${haBrightness})`);
+
+        // Update UI if light is off
+        if (!isOn) {
+            isOn = true;
+            updateUI();
+        }
+    }
+
+    // Update color via WebSocket using HS color format
+    function updateColor(hue) {
+        if (!ready || !ws || ws.readyState !== WebSocket.OPEN) {
+            console.log("Not ready to update color");
+            return;
+        }
+
+        const serviceData = {
+            entity_id: LIGHT,
+            hs_color: [hue, 100] // Hue and full saturation
+        };
+
+        // Also include current brightness
+        if (currentBrightness > 0) {
+            serviceData.brightness = Math.round((currentBrightness / 100) * 255);
+        }
+
+        ws.send(JSON.stringify({
+            id: Date.now(),
+            type: "call_service",
+            domain: "light",
+            service: "turn_on",
+            service_data: serviceData
+        }));
+
+        console.log(`Color updated to hue: ${hue}°`);
+
+        // Update UI if light is off
+        if (!isOn) {
+            isOn = true;
+            updateUI();
+        }
+    }
+
+    // Update button UI
+    function updateUI() {
+        if (isOn) {
+            toggleBtn.classList.add('on');
+            bulbIcon.classList.remove('fa-lightbulb');
+            bulbIcon.classList.add('fa-solid', 'fa-lightbulb');
+        } else {
+            toggleBtn.classList.remove('on');
+            bulbIcon.classList.remove('fa-solid', 'fa-lightbulb');
+            bulbIcon.classList.add('fa-lightbulb');
+        }
+    }
+
+    // Event Listeners
+    toggleBtn.addEventListener('click', toggleLight);
+
+    closeModal.addEventListener('click', closeBrightnessModal);
+
+    // Close modal when clicking outside
+    brightnessModal.addEventListener('click', (e) => {
+        if (e.target === brightnessModal) {
+            closeBrightnessModal();
+        }
+    });
+
+    // Update brightness value display while dragging (UI only)
+    brightnessSlider.addEventListener('input', (e) => {
+        currentBrightness = parseInt(e.target.value);
+        brightnessValue.textContent = `${currentBrightness}%`;
+    });
+
+    // Update brightness only when slider is released
+    brightnessSlider.addEventListener('change', (e) => {
+        currentBrightness = parseInt(e.target.value);
+        brightnessValue.textContent = `${currentBrightness}%`;
+        updateBrightness(currentBrightness);
+    });
+
+    // Update color while dragging (UI only)
+    rgbSlider.addEventListener('input', (e) => {
+        currentHue = parseInt(e.target.value);
+        // Just update the slider value, no display updates needed
+    });
+
+    // Update color only when slider is released
+    rgbSlider.addEventListener('change', (e) => {
+        currentHue = parseInt(e.target.value);
+        updateColor(currentHue);
+    });
+
+    // Start connection
+    connectWebSocket();
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && brightnessModal.style.display === 'flex') {
+            closeBrightnessModal();
+        }
+    });
+
+    // Make button draggable
+    makeTest21Draggable(toggleBtn);
+</script>
+</body>
+</html>
