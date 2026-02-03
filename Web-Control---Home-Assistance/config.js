@@ -4,4 +4,4 @@ const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzNGNlNThiNDk1Nzk0
 
 // Make them globally available
 window.WS_URL = WS_URL
-window.TOKEN = TOKEN
+window.TOKEN = TOKEN    
