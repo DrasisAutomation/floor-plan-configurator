@@ -38,7 +38,7 @@ const MediaRemoteModule = (() => {
 
   // Default buttons for media remote - FIXED: Using separate serviceDomain and service fields
   const DEFAULT_BUTTONS = [
-    { icon: 'fas fa-power-off', text: 'Power', entityType: 'media_player', entityId: 'media_player.z9x_pro', serviceDomain: 'zidoo', service: 'send_key', key: 'Key.Power', textColor: '#000000', bgColor: '#ffffff' },
+    { icon: 'fas fa-power-off', text: 'Power', entityType: 'media_player', entityId: 'media_player.z9x_pro', serviceDomain: 'zidoo', service: 'send_key', key: 'Key.Select', textColor: '#000000', bgColor: '#ffffff' },
     { icon: 'fas fa-arrow-up', text: 'Up', entityType: 'media_player', entityId: 'media_player.z9x_pro', serviceDomain: 'zidoo', service: 'send_key', key: 'Key.Up', textColor: '#000000', bgColor: '#ffffff' },
     { icon: 'fas fa-home', text: 'Home', entityType: 'media_player', entityId: 'media_player.z9x_pro', serviceDomain: 'zidoo', service: 'send_key', key: 'Key.Home', textColor: '#000000', bgColor: '#ffffff' },
     { icon: 'fas fa-arrow-left', text: 'Left', entityType: 'media_player', entityId: 'media_player.z9x_pro', serviceDomain: 'zidoo', service: 'send_key', key: 'Key.Left', textColor: '#000000', bgColor: '#ffffff' },
@@ -637,7 +637,7 @@ const MediaRemoteModule = (() => {
           btnElement.style.transform = 'scale(1)';
         }
       }
-    }, 15000);
+    }, 1500);
   };
 
   const cancelLongPress = (e) => {
