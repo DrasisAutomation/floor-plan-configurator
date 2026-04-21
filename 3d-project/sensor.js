@@ -387,8 +387,13 @@ const SensorModule = (() => {
       if (deleteConfirmation) deleteConfirmation.classList.add('hidden');
     }
     
-    document.getElementById(`${sensorId}-modalTitle`).textContent = 'Sensor';
-    document.getElementById(`${sensorId}-modalSubtitle`).textContent = 'Smart Sensor';
+    const sensorData = sensorsData.get(sensorId);
+    if (document.getElementById(`${sensorId}-modalTitle`)) {
+      document.getElementById(`${sensorId}-modalTitle`).textContent = sensorData ? (sensorData.panelName || 'Sensor') : 'Sensor';
+    }
+    if (document.getElementById(`${sensorId}-modalSubtitle`)) {
+      document.getElementById(`${sensorId}-modalSubtitle`).textContent = 'Smart Sensor';
+    }
   };
 
   // Update sensor display based on current state
@@ -455,7 +460,7 @@ const SensorModule = (() => {
   };
 
   // Create HTML structure for sensor modal
-  const createSensorModal = (position, targetScene, statesOverride = null, entityIdOverride = null) => {
+  const createSensorModal = (position, targetScene, statesOverride = null, entityIdOverride = null, panelName = null, shape = null) => {
     const sensorId = `sensor-${instanceId++}`;
 
     // Create states for this sensor - use provided states or defaults
@@ -475,7 +480,7 @@ const SensorModule = (() => {
 
     container.innerHTML = `
       <!-- Main Button -->
-      <button class="sensor-main-button" id="${sensorId}-mainButton">
+      <button class="sensor-main-button" id="${sensorId}-mainButton" style="${shape === 'round' ? 'border-radius: 50%; aspect-ratio: 1/1;' : ''}">
         <i class="${states[0]?.icon || 'fas fa-circle-check'}" style="color: ${states[0]?.color || '#3b82f6'};"></i>
         <span class="sensor-state-name" id="${sensorId}-stateName">${states[0]?.displayName || 'Sensor'}</span>
         <div class="sensor-status-dot" id="${sensorId}-statusDot" style="background-color: ${states[0]?.color || '#3b82f6'};"></div>
@@ -492,12 +497,19 @@ const SensorModule = (() => {
             <i class="fas fa-edit"></i>
           </button>
 
-          <div class="sensor-title" id="${sensorId}-modalTitle">Sensor</div>
+          <div class="sensor-title" id="${sensorId}-modalTitle">${panelName || 'Sensor'}</div>
           <div class="sensor-subtitle" id="${sensorId}-modalSubtitle">Smart Sensor</div>
 
           <!-- Panel 1: Info & Current State -->
           <div id="${sensorId}-panelGrid" class="sensor-panel">
             <div class="sensor-entity-section">
+              <div class="sensor-entity-label">Panel Name</div>
+              <div class="sensor-entity-input-group">
+                <input type="text" class="sensor-entity-input" id="${sensorId}-panelNameInput" value="${panelName || 'Sensor'}" placeholder="Sensor Panel Name" maxlength="20">
+              </div>
+            </div>
+
+            <div class="sensor-entity-section" style="margin-top: 10px;">
               <div class="sensor-entity-label"><i class="fas fa-microchip"></i> Home Assistant Entity</div>
               <div class="sensor-entity-input-group">
                 <input type="text" class="sensor-entity-input" id="${sensorId}-entityId" value="${entityIdOverride || ''}" placeholder="e.g. binary_sensor.door">
@@ -534,6 +546,8 @@ const SensorModule = (() => {
 
               <div class="sensor-form-group">
                 <label class="sensor-form-label">Icon</label>
+                <input type="text" class="sensor-form-input" id="${sensorId}-iconSearch" placeholder="Search icons... (e.g. cat)" style="margin-bottom: 5px;">
+                <input type="hidden" id="${sensorId}-buttonIcon" value="fas fa-circle-check">
                 <div class="sensor-icon-grid" id="${sensorId}-iconGrid"></div>
               </div>
 
@@ -594,6 +608,8 @@ const SensorModule = (() => {
       targetScene: targetScene || '',
       states: states,
       entityId: entityIdOverride || '',
+      panelName: panelName || 'Sensor',
+      shape: shape || 'default',
       currentState: null,
       active: false,
       container: container,
@@ -795,46 +811,25 @@ const SensorModule = (() => {
   const populateIconGrid = (iconGridElement, sensorId) => {
     if (!iconGridElement) return;
 
-    iconGridElement.innerHTML = '';
-    ICONS.forEach(icon => {
-      const iconOption = document.createElement('div');
-      iconOption.className = 'sensor-icon-option';
-      iconOption.dataset.icon = icon.class;
-
-      const iconEl = document.createElement('i');
-      iconEl.className = icon.class;
-
-      iconOption.appendChild(iconEl);
-      iconGridElement.appendChild(iconOption);
-
-      iconOption.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.querySelectorAll(`#${iconGridElement.id} .sensor-icon-option`).forEach(opt => {
-          opt.classList.remove('selected');
-        });
-        iconOption.classList.add('selected');
-        selectedIcon = icon.class;
-        document.getElementById(`${sensorId}-buttonIcon`).value = icon.class;
-        updatePreview(sensorId);
-      });
-
-      iconOption.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        document.querySelectorAll(`#${iconGridElement.id} .sensor-icon-option`).forEach(opt => {
-          opt.classList.remove('selected');
-        });
-        iconOption.classList.add('selected');
-        selectedIcon = icon.class;
-        document.getElementById(`${sensorId}-buttonIcon`).value = icon.class;
-        updatePreview(sensorId);
-      });
-
-      // Select default if matches
-      if (icon.class === selectedIcon) {
-        iconOption.classList.add('selected');
-      }
+    const currentIconInput = document.getElementById(`${sensorId}-buttonIcon`);
+    const searchInput = document.getElementById(`${sensorId}-iconSearch`);
+    
+    // Initial render
+    window.FontAwesomeSearch.renderGrid(iconGridElement, '', selectedIcon, (selectedClass) => {
+      selectedIcon = selectedClass;
+      if (currentIconInput) currentIconInput.value = selectedClass;
+      updatePreview(sensorId);
     });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        window.FontAwesomeSearch.renderGrid(iconGridElement, e.target.value, selectedIcon, (selectedClass) => {
+          selectedIcon = selectedClass;
+          if (currentIconInput) currentIconInput.value = selectedClass;
+          updatePreview(sensorId);
+        });
+      });
+    }
   };
 
   // Update color selection
@@ -959,6 +954,17 @@ const SensorModule = (() => {
 
     // Open modal
     const openModal = () => {
+      if (window.shapeMode === 'round') {
+        sensorData.shape = 'round';
+        mainButton.style.borderRadius = '50%';
+        mainButton.style.aspectRatio = '1/1';
+        return;
+      } else if (window.shapeMode === 'default') {
+        sensorData.shape = 'default';
+        mainButton.style.borderRadius = '';
+        mainButton.style.aspectRatio = '';
+        return;
+      }
       modal.classList.add('show');
       mainButton.classList.add('active-main');
       mainButton.style.display = 'none';
@@ -1009,6 +1015,18 @@ const SensorModule = (() => {
     entityInput.addEventListener('input', debounce(() => {
       saveEntityId(sensorId);
     }, 500));
+
+    const panelNameInput = document.getElementById(`${sensorId}-panelNameInput`);
+    if (panelNameInput) {
+      panelNameInput.addEventListener('blur', () => {
+        const newPanelName = panelNameInput.value.trim();
+        sensorData.panelName = newPanelName;
+        const titleEl = document.getElementById(`${sensorId}-modalTitle`);
+        if (titleEl) titleEl.textContent = newPanelName || 'Sensor';
+      });
+      panelNameInput.addEventListener('click', (e) => e.stopPropagation());
+      panelNameInput.addEventListener('touchstart', (e) => e.stopPropagation());
+    }
 
     // Refresh button
     if (refreshBtn) {
@@ -1240,6 +1258,8 @@ const SensorModule = (() => {
           position: sensorData.position.toArray ? sensorData.position.toArray() : sensorData.position,
           targetScene: sensorData.targetScene || '',
           entityId: sensorData.entityId || '',
+          panelName: sensorData.panelName || 'Sensor',
+          shape: sensorData.shape || 'default',
           states: sensorData.states.map(state => ({
             stateValue: state.stateValue,
             displayName: state.displayName,
@@ -1287,7 +1307,7 @@ const SensorModule = (() => {
         }
 
         // Create sensor with saved states and entity ID
-        createSensorModal(position, sensorData.targetScene || '', savedStates, sensorData.entityId || '');
+        createSensorModal(position, sensorData.targetScene || '', savedStates, sensorData.entityId || '', sensorData.panelName, sensorData.shape);
       });
     },
 

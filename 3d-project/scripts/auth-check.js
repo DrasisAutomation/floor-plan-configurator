@@ -1,6 +1,6 @@
 auth.onAuthStateChanged(async (user) => {
 
-    // NOT LOGGED IN → redirect to login page inside /login/
+    // NOT LOGGED IN → redirect to index
     if (!user) {
         window.location.href = "../login.html";
         return;

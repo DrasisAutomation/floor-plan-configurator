@@ -364,7 +364,7 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
   };
 
   // Create remote modal
-  const createRemoteModal = (position, targetScene, configOverride = null) => {
+  const createRemoteModal = (position, targetScene, configOverride = null, shape = null) => {
     const remoteId = `lock-remote-${instanceId++}`;
     const config = configOverride ? { ...DEFAULT_CONFIG, ...configOverride } : { ...DEFAULT_CONFIG };
 
@@ -382,7 +382,7 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
 
     container.innerHTML = `
       <!-- Main Button -->
-      <button class="lock-remote-main-button" id="${remoteId}-mainButton">
+      <button class="lock-remote-main-button" id="${remoteId}-mainButton" style="${shape === 'round' ? 'border-radius: 50%; aspect-ratio: 1/1;' : ''}">
         <i class="${config.icon} icon" id="${remoteId}-lockIcon"></i>
       </button>
 
@@ -394,7 +394,7 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
           </button>
           
           <button class="lock-remote-edit-btn" id="${remoteId}-editBtn">
-            <i class="fas fa-edit" style="display:none !important;"></i>
+            <i class="fas fa-edit"></i>
           </button>
 
           <div class="lock-remote-title" id="${remoteId}-modalTitle">${config.friendlyName}</div>
@@ -421,12 +421,14 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
               </div>
 
               <div class="lock-remote-form-group">
-                <label class="lock-remote-form-label">Friendly Name</label>
+                <label class="lock-remote-form-label">Panel Name</label>
                 <input type="text" class="lock-remote-form-input" id="${remoteId}-friendlyName" value="${config.friendlyName}" placeholder="Front Door Lock">
               </div>
 
               <div class="lock-remote-form-group">
                 <label class="lock-remote-form-label">Button Icon</label>
+                <input type="text" class="lock-remote-form-input" id="${remoteId}-iconSearch" placeholder="Search icons... (e.g. cat)" style="margin-bottom: 5px;">
+                <input type="hidden" id="${remoteId}-buttonIcon" value="${config.icon}">
                 <div class="lock-remote-icon-grid" id="${remoteId}-iconGrid"></div>
               </div>
 
@@ -447,6 +449,7 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
       position: position,
       targetScene: targetScene || '',
       config: config,
+      shape: shape || 'default',
       isLocked: false,
       processing: false,
       container: container,
@@ -491,6 +494,17 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
     // Open modal
     mainButton.addEventListener('click', (e) => {
       e.stopPropagation();
+      if (window.shapeMode === 'round') {
+        remoteData.shape = 'round';
+        mainButton.style.borderRadius = '50%';
+        mainButton.style.aspectRatio = '1/1';
+        return;
+      } else if (window.shapeMode === 'default') {
+        remoteData.shape = 'default';
+        mainButton.style.borderRadius = '';
+        mainButton.style.aspectRatio = '';
+        return;
+      }
       modal.classList.add('show');
       mainButton.classList.add('active-main');
       mainButton.style.display = 'none';
@@ -502,6 +516,17 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
     mainButton.addEventListener('touchend', (e) => {
       e.stopPropagation();
       e.preventDefault();
+      if (window.shapeMode === 'round') {
+        remoteData.shape = 'round';
+        mainButton.style.borderRadius = '50%';
+        mainButton.style.aspectRatio = '1/1';
+        return;
+      } else if (window.shapeMode === 'default') {
+        remoteData.shape = 'default';
+        mainButton.style.borderRadius = '';
+        mainButton.style.aspectRatio = '';
+        return;
+      }
       modal.classList.add('show');
       mainButton.classList.add('active-main');
       mainButton.style.display = 'none';
@@ -635,41 +660,23 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
   const populateIconGrid = (iconGridElement, remoteId, selectedIconClass) => {
     if (!iconGridElement) return;
 
-    iconGridElement.innerHTML = '';
-    ICONS.forEach(icon => {
-      const iconOption = document.createElement('div');
-      iconOption.className = 'lock-remote-icon-option';
-      iconOption.dataset.icon = icon.class;
-
-      const iconEl = document.createElement('i');
-      iconEl.className = icon.class;
-
-      iconOption.appendChild(iconEl);
-      iconGridElement.appendChild(iconOption);
-
-      if (icon.class === selectedIconClass) {
-        iconOption.classList.add('selected');
-      }
-
-      iconOption.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.querySelectorAll(`#${iconGridElement.id} .lock-remote-icon-option`).forEach(opt => {
-          opt.classList.remove('selected');
-        });
-        iconOption.classList.add('selected');
-        selectedIcon = icon.class;
-      });
-
-      iconOption.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        document.querySelectorAll(`#${iconGridElement.id} .lock-remote-icon-option`).forEach(opt => {
-          opt.classList.remove('selected');
-        });
-        iconOption.classList.add('selected');
-        selectedIcon = icon.class;
-      });
+    const currentIconInput = document.getElementById(`${remoteId}-buttonIcon`);
+    const searchInput = document.getElementById(`${remoteId}-iconSearch`);
+    
+    // Initial render
+    window.FontAwesomeSearch.renderGrid(iconGridElement, '', selectedIconClass, (selectedClass) => {
+      selectedIcon = selectedClass;
+      if (currentIconInput) currentIconInput.value = selectedClass;
     });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        window.FontAwesomeSearch.renderGrid(iconGridElement, e.target.value, selectedIcon, (selectedClass) => {
+          selectedIcon = selectedClass;
+          if (currentIconInput) currentIconInput.value = selectedClass;
+        });
+      });
+    }
   };
 
   // Reset edit form
@@ -680,12 +687,18 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
     document.getElementById(`${remoteId}-entityId`).value = remoteData.config.entityId;
     document.getElementById(`${remoteId}-friendlyName`).value = remoteData.config.friendlyName;
 
-    document.querySelectorAll(`#${remoteId}-iconGrid .lock-remote-icon-option`).forEach(opt => {
-      opt.classList.remove('selected');
-      if (opt.dataset.icon === remoteData.config.icon) {
-        opt.classList.add('selected');
-      }
+    const currentIconInput = document.getElementById(`${remoteId}-buttonIcon`);
+    if (currentIconInput) currentIconInput.value = remoteData.config.icon;
+
+    const searchInput = document.getElementById(`${remoteId}-iconSearch`);
+    if (searchInput) searchInput.value = '';
+
+    const iconGrid = document.getElementById(`${remoteId}-iconGrid`);
+    window.FontAwesomeSearch.renderGrid(iconGrid, '', remoteData.config.icon, (selectedClass) => {
+      selectedIcon = selectedClass;
+      if (currentIconInput) currentIconInput.value = selectedClass;
     });
+
     selectedIcon = remoteData.config.icon;
   };
 
@@ -763,7 +776,8 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
           id: remoteData.id,
           position: remoteData.position.toArray ? remoteData.position.toArray() : remoteData.position,
           targetScene: remoteData.targetScene || '',
-          config: { ...remoteData.config }
+          shape: remoteData.shape || 'default',
+          config: remoteData.config
         });
       });
       return remotes;
@@ -780,7 +794,8 @@ const updateLockUI = (remoteId, locked, isProcessing) => {
       remotesDataArray.forEach(remoteData => {
         const position = Array.isArray(remoteData.position) ?
           new THREE.Vector3().fromArray(remoteData.position) : remoteData.position;
-        createRemoteModal(position, remoteData.targetScene || '', remoteData.config);
+        const config = remoteData.config || JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        createRemoteModal(position, remoteData.targetScene || '', config, remoteData.shape);
       });
 
       if (HA_CONFIG.connected) {

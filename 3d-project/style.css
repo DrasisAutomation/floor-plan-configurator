@@ -148,7 +148,7 @@ body {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.7);
-  z-index: 200;
+  z-index: 9999;
   justify-content: center;
   align-items: center;
   padding: 20px;
@@ -416,7 +416,7 @@ body {
   background: rgba(0, 0, 0, 0.95);
   border-radius: 12px;
   padding: 16px;
-  z-index: 1000;
+  z-index: 9999;
   display: none;
   flex-direction: column;
   gap: 8px;
@@ -615,6 +615,17 @@ body {
 
 .remote-main-button.active-main i {
   color: #FFC107;
+}
+
+/* Device ON theme for individual remote button */
+.remote-main-button.active-device {
+  box-shadow: 0 0 20px 10px rgba(255, 193, 7, 0.8), 
+              0 4px 8px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 193, 7, 0.5);
+}
+
+.remote-main-button.active-device i {
+  color: #FFC107 !important;
 }
 
 /* REMOTE MODAL STYLES */
@@ -1526,4 +1537,58 @@ body:has(.sidebar.open) .sidebar,
 body:has(.sidebar.open) .sidebar * {
   pointer-events: auto !important;
   touch-action: auto !important;
+}
+
+/* Mode Selector Button - Bottom Left */
+.mode-selector-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: white;
+  font-size: 20px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  opacity: 1;
+  pointer-events: auto;
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mode-selector-btn:hover {
+  background: rgba(0, 103, 184, 0.8);
+  transform: scale(1.05);
+}
+
+.mode-selector-btn:active {
+  transform: scale(0.95);
+  background: rgba(0, 103, 184, 0.9);
+}
+
+.mode-selector-btn i {
+  font-size: 20px;
+  color: white;
+}
+
+/* Make sure it doesn't overlap with hamburger on mobile */
+@media (max-width: 768px) {
+  .mode-selector-btn {
+    bottom: 20px;
+    left: 20px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .mode-selector-btn i {
+    font-size: 18px;
+  }
 }

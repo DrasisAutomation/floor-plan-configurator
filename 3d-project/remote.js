@@ -85,7 +85,7 @@ const RemoteModule = (() => {
     { name: "Fan", icon: 'fas fa-fan', entityId: "fan.living_room", active: false, _lastToggle: 0, controlType: 'dimmer' },
     { name: "Plug", icon: 'fas fa-plug', entityId: "switch.plug1", active: false, _lastToggle: 0, controlType: 'toggle' },
     { name: "Curtain", icon: 'fa-solid fa-window-maximize', entityId: "cover.living_room", active: false, _lastToggle: 0, controlType: 'curtain' },
-    { name: "CCT", icon: 'fas fa-sliders-h', entityId: "light.rgbw_1", active: false, _lastToggle: 0, controlType: 'cct' }
+    { name: "CCT", icon: 'fas fa-sliders-h', entityId: "light.rgb", active: false, _lastToggle: 0, controlType: 'cct' }
   ];
 
   let instanceId = 1;
@@ -97,19 +97,27 @@ const RemoteModule = (() => {
   let activeControlIndex = -1;
 
   // ========== HOME ASSISTANT CONFIGURATION ==========
-  const HA_CONFIG = {
-    url: "https://demo.lumihomepro1.com",
-    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI0OWU5NDM5ZWRjNWM0YTM4OTgzZmE5NzIyNjU0ZjY5MiIsImlhdCI6MTc2ODI5NjI1NSwiZXhwIjoyMDgzNjU2MjU1fQ.5C9sFe538kogRIL63dlwweBJldwhmQ7eoW86GEWls8U",
-    connected: false,
-    socket: null,
-    reconnectAttempts: 0,
-    maxReconnectAttempts: 5,
-    messageId: 1,
-    pendingRequests: new Map(),
-    autoReconnect: true,
-    reconnectInterval: 5000,
-    entityStates: new Map()   // entity_id -> {state, attributes}
-  };
+// ========== HOME ASSISTANT CONFIGURATION ==========
+const HA_CONFIG = {
+  get url() { 
+    // Always get the latest URL from HomeAssistantConfig
+    return window.HomeAssistantConfig?.getWebSocketUrl() || ''; 
+  },
+  get token() { 
+    // Always get the latest token from HomeAssistantConfig
+    return window.HomeAssistantConfig?.active?.token || ''; 
+  },
+  connected: false,
+  socket: null,
+  reconnectAttempts: 0,
+  maxReconnectAttempts: window.HomeAssistantConfig?.maxReconnectAttempts || 5,
+  messageId: 1,
+  pendingRequests: new Map(),
+  autoReconnect: true,
+  reconnectInterval: window.HomeAssistantConfig?.reconnectInterval || 5000,
+  entityStates: new Map()   // entity_id -> {state, attributes}
+};
+// ==================================================
   // ==================================================
 
   // Convert HTTP URL to WebSocket URL
@@ -354,7 +362,7 @@ const RemoteModule = (() => {
   };
 
   // Create HTML structure for remote modal (3-panel design from test.html)
-  const createRemoteModal = (position, targetScene, switchesOverride = null) => {
+  const createRemoteModal = (position, targetScene, switchesOverride = null, panelName = null, shape = null, mainIcon = null) => {
     const remoteId = `remote-${instanceId++}`;
 
     // Create switches for this remote - use provided switches or defaults
@@ -369,8 +377,8 @@ const RemoteModule = (() => {
 
     container.innerHTML = `
       <!-- Main Button -->
-      <button class="remote-main-button" id="${remoteId}-mainButton">
-        <i class="fas fa-sliders-h"></i>
+      <button class="remote-main-button" id="${remoteId}-mainButton" style="${shape === 'round' ? 'border-radius: 50%; aspect-ratio: 1/1;' : ''}">
+        <i class="${mainIcon || 'fas fa-sliders-h'}" id="${remoteId}-mainIconEl"></i>
       </button>
 
       <!-- Main Modal - contains all panels -->
@@ -382,7 +390,7 @@ const RemoteModule = (() => {
           
           <!-- Panel 1: switch grid -->
           <div id="${remoteId}-panelSwitch" class="remote-panel">
-            <div class="remote-modal-title">Switch Panel</div>
+            <div class="remote-modal-title" id="${remoteId}-modalTitle">${panelName || 'Switch Panel'}</div>
             <div class="remote-switch-grid" id="${remoteId}-switchGrid"></div>
           </div>
 
@@ -390,6 +398,10 @@ const RemoteModule = (() => {
           <div id="${remoteId}-panelEdit" class="remote-panel hidden">
             <div class="remote-modal-title">Edit Switch</div>
             <form class="remote-edit-form" id="${remoteId}-editForm">
+              <div class="remote-form-group">
+                <label class="remote-form-label">Panel Name</label>
+                <input type="text" class="remote-form-input" id="${remoteId}-panelNameInput" value="${panelName || 'Switch Panel'}" maxlength="20">
+              </div>
               <div class="remote-form-group">
                 <label class="remote-form-label">Name (8 max)</label>
                 <input type="text" class="remote-form-input" id="${remoteId}-switchName" maxlength="8" required>
@@ -410,6 +422,8 @@ const RemoteModule = (() => {
               </div>
               <div class="remote-form-group">
                 <label class="remote-form-label">Icon</label>
+                <input type="text" class="remote-form-input" id="${remoteId}-iconSearch" placeholder="Search icons... (e.g. cat)" style="margin-bottom: 5px;">
+                <input type="hidden" id="${remoteId}-buttonIcon" value="fas fa-power-off">
                 <div class="remote-icon-selection">
                   <div class="remote-icon-grid" id="${remoteId}-iconGrid"></div>
                 </div>
@@ -426,6 +440,23 @@ const RemoteModule = (() => {
             <div class="remote-modal-title" id="${remoteId}-controlTitle">Control</div>
             <div class="remote-control-container" id="${remoteId}-controlContainer"></div>
           </div>
+
+          <!-- Panel 4: edit main button icon -->
+          <div id="${remoteId}-panelMainEdit" class="remote-panel hidden">
+            <div class="remote-modal-title">Edit Main Icon</div>
+            <div class="remote-form-group">
+              <label class="remote-form-label">Search Icon</label>
+              <input type="text" class="remote-form-input" id="${remoteId}-mainIconSearch" placeholder="Search icons... (e.g. cat)" style="margin-bottom: 5px;">
+              <input type="hidden" id="${remoteId}-mainIconButtonValue" value="${mainIcon || 'fas fa-sliders-h'}">
+              <div class="remote-icon-selection">
+                <div class="remote-icon-grid" id="${remoteId}-mainIconGrid"></div>
+              </div>
+            </div>
+            <div class="remote-form-actions">
+              <button type="button" class="remote-form-btn cancel" id="${remoteId}-cancelMainEditBtn">Cancel</button>
+              <button type="button" class="remote-form-btn save" id="${remoteId}-saveMainEditBtn">Save</button>
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -438,6 +469,9 @@ const RemoteModule = (() => {
       position: position,
       targetScene: targetScene || '',
       switches: switches,
+      panelName: panelName || 'Switch Panel',
+      shape: shape || 'default',
+      mainIcon: mainIcon || 'fas fa-sliders-h',
       active: false,
       container: container,
       visible: true
@@ -470,7 +504,7 @@ const RemoteModule = (() => {
     const controlTypeSelect = document.getElementById(`${remoteId}-controlType`);
 
     // Populate icon grid
-    populateIconGrid(iconGrid);
+    populateIconGrid(iconGrid, remoteId);
 
     // Render switches
     renderSwitches(switchGrid, remoteData.switches, remoteId);
@@ -483,45 +517,26 @@ const RemoteModule = (() => {
   };
 
   // Populate icon selection grid
-  const populateIconGrid = (iconGridElement) => {
+  const populateIconGrid = (iconGridElement, remoteId) => {
     if (!iconGridElement) return;
 
-    iconGridElement.innerHTML = '';
-    ICONS.forEach(icon => {
-      const iconOption = document.createElement('div');
-      iconOption.className = 'remote-icon-option';
-      iconOption.dataset.icon = icon.class;
-
-      const iconEl = document.createElement('i');
-      iconEl.className = icon.class;
-
-      const nameEl = document.createElement('div');
-      nameEl.className = 'remote-icon-name';
-      nameEl.textContent = icon.name;
-
-      iconOption.appendChild(iconEl);
-      iconOption.appendChild(nameEl);
-      iconGridElement.appendChild(iconOption);
-
-      iconOption.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.querySelectorAll(`#${iconGridElement.id} .remote-icon-option`).forEach(opt => {
-          opt.classList.remove('selected');
-        });
-        iconOption.classList.add('selected');
-        selectedIcon = icon.class;
-      });
-
-      iconOption.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        document.querySelectorAll(`#${iconGridElement.id} .remote-icon-option`).forEach(opt => {
-          opt.classList.remove('selected');
-        });
-        iconOption.classList.add('selected');
-        selectedIcon = icon.class;
-      });
+    const currentIconInput = document.getElementById(`${remoteId}-buttonIcon`);
+    const searchInput = document.getElementById(`${remoteId}-iconSearch`);
+    
+    // Initial render
+    window.FontAwesomeSearch.renderGrid(iconGridElement, '', selectedIcon, (selectedClass) => {
+      selectedIcon = selectedClass;
+      if (currentIconInput) currentIconInput.value = selectedClass;
     });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        window.FontAwesomeSearch.renderGrid(iconGridElement, e.target.value, selectedIcon, (selectedClass) => {
+          selectedIcon = selectedClass;
+          if (currentIconInput) currentIconInput.value = selectedClass;
+        });
+      });
+    }
   };
 
   // Render switches
@@ -965,24 +980,26 @@ const RemoteModule = (() => {
   };
 
   // Show switch panel - FIXED
-const showSwitchPanel = (remoteId) => {
-  console.log('Showing switch panel for:', remoteId); // Debug log
-  
-  const panelSwitch = document.getElementById(`${remoteId}-panelSwitch`);
-  const panelEdit = document.getElementById(`${remoteId}-panelEdit`);
-  const panelControl = document.getElementById(`${remoteId}-panelControl`);
-  const modal = document.getElementById(`${remoteId}-modal`);
-  const mainButton = document.getElementById(`${remoteId}-mainButton`);
-  
-  if (panelSwitch && panelEdit && panelControl) {
-    // Hide edit and control panels
-    panelEdit.classList.add('hidden');
-    panelControl.classList.add('hidden');
-    // Show switch panel
-    panelSwitch.classList.remove('hidden');
-    console.log('Switch panel should now be visible');
-  }
-  
+  const showSwitchPanel = (remoteId) => {
+    console.log('Showing switch panel for:', remoteId); // Debug log
+    
+    const panelSwitch = document.getElementById(`${remoteId}-panelSwitch`);
+    const panelEdit = document.getElementById(`${remoteId}-panelEdit`);
+    const panelControl = document.getElementById(`${remoteId}-panelControl`);
+    const panelMainEdit = document.getElementById(`${remoteId}-panelMainEdit`);
+    const modal = document.getElementById(`${remoteId}-modal`);
+    const mainButton = document.getElementById(`${remoteId}-mainButton`);
+    
+    if (panelSwitch && panelEdit && panelControl) {
+      // Hide edit and control panels
+      panelEdit.classList.add('hidden');
+      panelControl.classList.add('hidden');
+      if (panelMainEdit) panelMainEdit.classList.add('hidden');
+      // Show switch panel
+      panelSwitch.classList.remove('hidden');
+      console.log('Switch panel should now be visible');
+    }
+    
   // Don't close the modal, just show the switch panel
   if (modal && modal.classList.contains('show')) {
     // Keep modal open
@@ -1025,10 +1042,111 @@ const setupEventListeners = (id, modal, panelSwitch, panelEdit, panelControl,
       document.body.classList.add('remote-modal-active');
     };
     
+    // Main button long press
+    let mainLongPressTimer;
+    let isMainLongPressing = false;
+
+    const showMainEditPanel = () => {
+      document.getElementById(`${id}-panelSwitch`).classList.add('hidden');
+      document.getElementById(`${id}-panelEdit`).classList.add('hidden');
+      const panelControl = document.getElementById(`${id}-panelControl`);
+      const panelMainEdit = document.getElementById(`${id}-panelMainEdit`);
+      if (panelControl) panelControl.classList.add('hidden');
+      if (panelMainEdit) panelMainEdit.classList.remove('hidden');
+    };
+
+    const handleMainTouchStart = (e) => {
+      isMainLongPressing = false;
+      mainButton.style.transform = 'scale(0.95)';
+      mainLongPressTimer = setTimeout(() => {
+        isMainLongPressing = true;
+        mainButton.style.transform = '';
+        
+        const mainIconGrid = document.getElementById(`${id}-mainIconGrid`);
+        const currentMainIconInput = document.getElementById(`${id}-mainIconButtonValue`);
+        window.FontAwesomeSearch.renderGrid(mainIconGrid, '', currentMainIconInput.value, (selectedClass) => {
+          currentMainIconInput.value = selectedClass;
+        });
+
+        const mainSearchInput = document.getElementById(`${id}-mainIconSearch`);
+        mainSearchInput.oninput = (ev) => {
+          window.FontAwesomeSearch.renderGrid(mainIconGrid, ev.target.value, currentMainIconInput.value, (selectedClass) => {
+            currentMainIconInput.value = selectedClass;
+          });
+        };
+
+        showMainEditPanel();
+        modal.classList.add('show');
+        mainButton.classList.add('active-main');
+        mainButton.style.display = 'none';
+        disableBodyRotation();
+      }, 700);
+    };
+
+    const handleMainTouchEnd = (e) => {
+      clearTimeout(mainLongPressTimer);
+      mainButton.style.transform = '';
+      if (isMainLongPressing) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    mainButton.addEventListener('mousedown', handleMainTouchStart);
+    mainButton.addEventListener('touchstart', handleMainTouchStart);
+    mainButton.addEventListener('mouseup', handleMainTouchEnd);
+    mainButton.addEventListener('mouseleave', handleMainTouchEnd);
+    mainButton.addEventListener('touchend', handleMainTouchEnd);
+    mainButton.addEventListener('touchcancel', handleMainTouchEnd);
+
+    // Cancel main Edit
+    document.getElementById(`${id}-cancelMainEditBtn`).addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      showSwitchPanel(id);
+    });
+    
+    document.getElementById(`${id}-cancelMainEditBtn`).addEventListener('touchend', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      showSwitchPanel(id);
+    });
+
+    // Save main Edit
+    document.getElementById(`${id}-saveMainEditBtn`).addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const newIcon = document.getElementById(`${id}-mainIconButtonValue`).value;
+      remoteData.mainIcon = newIcon;
+      document.getElementById(`${id}-mainIconEl`).className = newIcon;
+      showSwitchPanel(id);
+    });
+    
+    document.getElementById(`${id}-saveMainEditBtn`).addEventListener('touchend', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const newIcon = document.getElementById(`${id}-mainIconButtonValue`).value;
+      remoteData.mainIcon = newIcon;
+      document.getElementById(`${id}-mainIconEl`).className = newIcon;
+      showSwitchPanel(id);
+    });
+
     // Open main modal
     mainButton.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
+      if (isMainLongPressing) return;
+      if (window.shapeMode === 'round') {
+        remoteData.shape = 'round';
+        mainButton.style.borderRadius = '50%';
+        mainButton.style.aspectRatio = '1/1';
+        return;
+      } else if (window.shapeMode === 'default') {
+        remoteData.shape = 'default';
+        mainButton.style.borderRadius = '';
+        mainButton.style.aspectRatio = '';
+        return;
+      }
       showSwitchPanel(id);
       modal.classList.add('show');
       mainButton.classList.add('active-main');
@@ -1040,6 +1158,18 @@ const setupEventListeners = (id, modal, panelSwitch, panelEdit, panelControl,
     mainButton.addEventListener('touchend', (e) => {
       e.stopPropagation();
       e.preventDefault();
+      if (isMainLongPressing) return;
+      if (window.shapeMode === 'round') {
+        remoteData.shape = 'round';
+        mainButton.style.borderRadius = '50%';
+        mainButton.style.aspectRatio = '1/1';
+        return;
+      } else if (window.shapeMode === 'default') {
+        remoteData.shape = 'default';
+        mainButton.style.borderRadius = '';
+        mainButton.style.aspectRatio = '';
+        return;
+      }
       showSwitchPanel(id);
       modal.classList.add('show');
       mainButton.classList.add('active-main');
@@ -1121,6 +1251,13 @@ const setupEventListeners = (id, modal, panelSwitch, panelEdit, panelControl,
         active: false,
         _lastToggle: 0
       };
+
+      const newPanelName = document.getElementById(`${id}-panelNameInput`).value.trim();
+      if (newPanelName) {
+        remote.panelName = newPanelName;
+        const titleEl = document.getElementById(`${id}-modalTitle`);
+        if (titleEl) titleEl.textContent = newPanelName;
+      }
 
       renderSwitches(switchGrid, remote.switches, id);
       showSwitchPanel(id);
@@ -1254,6 +1391,9 @@ const setupEventListeners = (id, modal, panelSwitch, panelEdit, panelControl,
           id: remoteData.id,
           position: remoteData.position.toArray ? remoteData.position.toArray() : remoteData.position,
           targetScene: remoteData.targetScene || '',
+          panelName: remoteData.panelName || 'Switch Panel',
+          shape: remoteData.shape || 'default',
+          mainIcon: remoteData.mainIcon || 'fas fa-sliders-h',
           switches: remoteData.switches.map(sw => ({
             name: sw.name,
             icon: sw.icon,
@@ -1304,7 +1444,7 @@ const setupEventListeners = (id, modal, panelSwitch, panelEdit, panelControl,
         }
 
         // Create remote with saved switches
-        createRemoteModal(position, remoteData.targetScene || '', savedSwitches);
+        createRemoteModal(position, remoteData.targetScene || '', savedSwitches, remoteData.panelName, remoteData.shape, remoteData.mainIcon);
       });
 
       // If HA is connected, fetch states for all loaded entities
@@ -1356,7 +1496,15 @@ const setupEventListeners = (id, modal, panelSwitch, panelEdit, panelControl,
         }
       });
     },
-
+// Add this to the public API if it's missing
+disconnectHomeAssistant: () => {
+  if (HA_CONFIG.socket) {
+    HA_CONFIG.autoReconnect = false;
+    HA_CONFIG.socket.close();
+    HA_CONFIG.connected = false;
+    console.log('Home Assistant WebSocket disconnected');
+  }
+},
     // Update remote visibility based on current scene
     updateRemoteVisibility: (sceneName) => {
       currentScene = sceneName;

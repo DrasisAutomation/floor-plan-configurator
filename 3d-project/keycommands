@@ -4,6 +4,7 @@ N + B	    Add hotspot (room link)
 M + E	    Move hotspot
 N + E	    Change hotspot target room
 S + R	    Place remote switch
+S + O	    Place individual remote switch
 M + R + B   Place Media Remote switch
 M + D	    Exit / Cancel any mode
 S + Y	    Sync Home Assistant devices
@@ -12,3 +13,5 @@ I + M + R	Manage scenes (rename / delete)
 S + D	    Save design (download JSON)
 L + D	    Load design
 D + T       Delete hotspot or Remote button
+R + N + D   Round button
+S + Q       Square button
