@@ -330,6 +330,78 @@ const productData = {
             }
         }
     },
+    "VERSA SERIES": {
+        title: "Versa Series",
+        desc: "Premium versa series switches.",
+        subProducts: {
+            "1 SWITCH": {
+                title: "1 SWITCH",
+                desc: "1 gang switch",
+                img: "./images/versa/4.png",
+                features: ["1 gang switch configuration"]
+            },
+            "2 SWITCH": {
+                title: "2 SWITCH",
+                desc: "2 gang switch",
+                img: "./images/versa/5.png",
+                features: ["2 gang switch configuration"]
+            },
+            "3 SWITCH": {
+                title: "3 SWITCH",
+                desc: "3 gang switch",
+                img: "./images/versa/6.png",
+                features: ["3 gang switch configuration"]
+            },
+            "4 SWITCH": {
+                title: "4 SWITCH",
+                desc: "4 gang switch",
+                img: "./images/versa/7.png",
+                features: ["4 gang switch configuration"]
+            },
+            "6 SWITCH": {
+                title: "6 SWITCH",
+                desc: "6 gang switch",
+                img: "./images/versa/8.png",
+                features: ["6 gang switch configuration"]
+            },
+            "8 SWITCH": {
+                title: "8 SWITCH",
+                desc: "8 gang switch",
+                img: "./images/versa/9.png",
+                features: ["8 gang switch configuration"]
+            }
+        }
+    },
+    "LUMI GLASS LITE SERIES": {
+        title: "Lumi Glass Lite Series",
+        desc: "Lumi glass lite series switches.",
+        subProducts: {
+            "2 MODEL": {
+                title: "2 MODEL",
+                desc: "2 module",
+                img: "./images/lumiglasslite/1.png",
+                features: ["2 module configuration"]
+            },
+            "4 MODEL": {
+                title: "4 MODEL",
+                desc: "4 module",
+                img: "./images/lumiglasslite/2.png",
+                features: ["4 module configuration"]
+            },
+            "6 MODEL": {
+                title: "6 MODEL",
+                desc: "6 module",
+                img: "./images/lumiglasslite/3.png",
+                features: ["6 module configuration"]
+            },
+            "8 MODEL": {
+                title: "8 MODEL",
+                desc: "8 module",
+                img: "./images/lumiglasslite/3.png",
+                features: ["8 module configuration"]
+            }
+        }
+    },
     // In the productData object, replace the TREMBLAY SOUNDS section with:
     // Replace the TREMBLAY SOUNDS section with:
     "TREMBLAY SOUNDS": {
@@ -420,6 +492,36 @@ const productData = {
         desc: "Multi-channel relay modules and accessories.",
         relay: true,
         img: "./images/relay/47.png"
+    },
+    "KNX RELAY": {
+        title: "KNX Relay",
+        desc: "KNX relay modules and actuators.",
+        subProducts: {
+            "4 CHANNEL INWALL BINARY RELAY": {
+                title: "4 Channel Inwall Binary Relay",
+                desc: "4-channel binary relay module.",
+                img: "./images/knxrelay/16.png",
+                features: ["4-channel binary relay"]
+            },
+            "8 CHANNEL ACTUATOR": {
+                title: "8 Channel Actuator",
+                desc: "8-channel actuator module.",
+                img: "./images/knxrelay/17.png",
+                features: ["8-channel actuator"]
+            },
+            "12 CHANNEL ACTUATOR": {
+                title: "12 Channel Actuator",
+                desc: "12-channel actuator module.",
+                img: "./images/knxrelay/18.png",
+                features: ["12-channel actuator"]
+            },
+            "24 CHANNEL ACTUATOR": {
+                title: "24 Channel Actuator",
+                desc: "24-channel actuator module.",
+                img: "./images/knxrelay/19.png",
+                features: ["24-channel actuator"]
+            }
+        }
     },
     "CURTAIN MOTORS": {
         title: "Curtain Motors",
@@ -578,13 +680,16 @@ const PRODUCT_ORDER = [
     "DOOR LOCK",
     "PROCESSOR",
     "LUMI GLASS SERIES",
+    "LUMI GLASS LITE SERIES",
     "ESCULT SERIES",
     "TACTILE HEXA SERIES",
+    "VERSA SERIES",
     "DUO-QUAD SERIES",
     "DOMOGENIE GLASS SERIES",
     "WALL MOUNT DISPLAY",
     "TREMBLAY SOUNDS",
     "Z-WAVE RELAY",
+    "KNX RELAY",
     "CURTAIN MOTORS",
     "KNX SENSORS",
     "SENSORS",
@@ -999,8 +1104,10 @@ function resetRelayPreview() {
 
 const switchFamilies = new Set([
     "LUMI GLASS SERIES",
+    "LUMI GLASS LITE SERIES",
     "ESCULT SERIES",
     "TACTILE HEXA SERIES",
+    "VERSA SERIES",
     "DUO-QUAD SERIES",
     "DOMOGENIE GLASS SERIES",
     "ACCESS POINT" // ADD THIS LINE
@@ -1253,7 +1360,9 @@ function createAutomationDBBoxControls() {
     // Automation DB box specific options
     const dbBoxRelays = [
         { id: 'knx-power-supply', label: 'KNX Power Supply' },
+        { id: '8-channel-actuator', label: '8 Channel Actuator' },
         { id: '12-channel-actuator', label: '12 Channel Actuator' },
+        { id: '24-channel-actuator', label: '24 Channel Actuator' },
         { id: '2-fold-dally-gateway', label: '2 Fold Dally Gateway' },
         { id: 'knx-tuya-gateway', label: 'KNX Tuya Gateway' },
         { id: '4-channel-face-cut-dimmer', label: '4 Channel Face Cut Dimmer' },
@@ -1409,7 +1518,7 @@ function attachAutomationDBControlsEvents() {
     // Add event listeners to relay checkboxes
     document.querySelectorAll('#automationDBRelaysList input[type="checkbox"]').forEach(checkbox => {
         const relayId = checkbox.dataset.relayId;
-        const qtyInput = document.querySelector(`input[data-relay-id="${relayId}"]`);
+        const qtyInput = document.querySelector(`input[type="number"][data-relay-id="${relayId}"]`);
 
         checkbox.addEventListener('change', function () {
             qtyInput.disabled = !this.checked;
@@ -1438,7 +1547,7 @@ function attachAutomationDBControlsEvents() {
             const selectedRelays = [];
             document.querySelectorAll('#automationDBRelaysList input[type="checkbox"]:checked').forEach(checkbox => {
                 const relayId = checkbox.dataset.relayId;
-                const qtyInput = document.querySelector(`input[data-relay-id="${relayId}"]`);
+                const qtyInput = document.querySelector(`input[type="number"][data-relay-id="${relayId}"]`);
                 const relayLabel = checkbox.parentElement.querySelector('span').textContent;
                 selectedRelays.push({
                     id: relayId,
@@ -1478,7 +1587,7 @@ function attachAutomationDBControlsEvents() {
     // Add event listeners to relay checkboxes
     document.querySelectorAll('#automationDBRelaysList input[type="checkbox"]').forEach(checkbox => {
         const relayId = checkbox.dataset.relayId;
-        const qtyInput = document.querySelector(`input[data-relay-id="${relayId}"]`);
+        const qtyInput = document.querySelector(`input[type="number"][data-relay-id="${relayId}"]`);
 
         checkbox.addEventListener('change', function () {
             qtyInput.disabled = !this.checked;
@@ -1508,7 +1617,7 @@ function attachAutomationDBControlsEvents() {
             const selectedRelays = [];
             document.querySelectorAll('#automationDBRelaysList input[type="checkbox"]:checked').forEach(checkbox => {
                 const relayId = checkbox.dataset.relayId;
-                const qtyInput = document.querySelector(`input[data-relay-id="${relayId}"]`);
+                const qtyInput = document.querySelector(`input[type="number"][data-relay-id="${relayId}"]`);
                 const relayLabel = checkbox.parentElement.querySelector('span').textContent;
                 selectedRelays.push({
                     id: relayId,
@@ -1797,7 +1906,7 @@ function attachNetworkDBControlsEvents() {
     // Add event listeners to module checkboxes
     document.querySelectorAll('#networkDBModulesList input[type="checkbox"]').forEach(checkbox => {
         const moduleId = checkbox.dataset.moduleId;
-        const qtyInput = document.querySelector(`input[data-module-id="${moduleId}"]`);
+        const qtyInput = document.querySelector(`input[type="number"][data-module-id="${moduleId}"]`);
 
         checkbox.addEventListener('change', function () {
             qtyInput.disabled = !this.checked;
@@ -1840,7 +1949,7 @@ function attachNetworkDBControlsEvents() {
             const selectedModules = [];
             document.querySelectorAll('#networkDBModulesList input[type="checkbox"]:checked').forEach(checkbox => {
                 const moduleId = checkbox.dataset.moduleId;
-                const qtyInput = document.querySelector(`input[data-module-id="${moduleId}"]`);
+        const qtyInput = document.querySelector(`input[type="number"][data-module-id="${moduleId}"]`);
                 const moduleLabel = checkbox.parentElement.querySelector('span').textContent;
                 selectedModules.push({
                     id: moduleId,
